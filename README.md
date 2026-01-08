@@ -9,7 +9,7 @@ docker build . -t ai-api:1  --platform linux/amd64
 导出
 
 ```bash
-docker save ai-api:1 -o ai-api.tar
+docker save ai-api:1 -o ai-api:1.tar
 ```
 
 删除本地镜像
