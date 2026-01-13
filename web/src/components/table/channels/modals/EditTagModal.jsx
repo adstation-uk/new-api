@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useState, useEffect, useRef } from 'react';
 import {
   API,
@@ -533,7 +514,11 @@ const EditTagModal = (props) => {
               <Card className='!rounded-2xl shadow-sm border-0 mb-6'>
                 {/* Header: Advanced Settings */}
                 <div className='flex items-center mb-2'>
-                  <Avatar size='small' color='orange' className='mr-2 shadow-md'>
+                  <Avatar
+                    size='small'
+                    color='orange'
+                    className='mr-2 shadow-md'
+                  >
                     <IconSetting size={16} />
                   </Avatar>
                   <div>
@@ -549,9 +534,7 @@ const EditTagModal = (props) => {
                     field='param_override'
                     label={t('参数覆盖')}
                     placeholder={
-                      t(
-                        '此项可选，用于覆盖请求参数。不支持覆盖 stream 参数',
-                      ) +
+                      t('此项可选，用于覆盖请求参数。不支持覆盖 stream 参数') +
                       '\n' +
                       t('旧格式（直接覆盖）：') +
                       '\n{\n  "temperature": 0,\n  "max_tokens": 1000\n}' +

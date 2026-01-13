@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Button,
@@ -481,10 +462,14 @@ const SystemSetting = () => {
     const options = [];
 
     if (originInputs['discord.client_id'] !== inputs['discord.client_id']) {
-      options.push({ key: 'discord.client_id', value: inputs['discord.client_id'] });
+      options.push({
+        key: 'discord.client_id',
+        value: inputs['discord.client_id'],
+      });
     }
     if (
-      originInputs['discord.client_secret'] !== inputs['discord.client_secret'] &&
+      originInputs['discord.client_secret'] !==
+        inputs['discord.client_secret'] &&
       inputs['discord.client_secret'] !== ''
     ) {
       options.push({
@@ -745,8 +730,8 @@ const SystemSetting = () => {
                       rel='noreferrer'
                     >
                       new-api-worker
-                    </a>
-                    {' '}{t('或其兼容new-api-worker格式的其他版本')}
+                    </a>{' '}
+                    {t('或其兼容new-api-worker格式的其他版本')}
                   </Text>
                   <Row
                     gutter={{ xs: 8, sm: 16, md: 24, lg: 24, xl: 24, xxl: 24 }}

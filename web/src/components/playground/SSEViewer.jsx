@@ -1,25 +1,20 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useState, useMemo, useCallback } from 'react';
-import { Button, Tooltip, Toast, Collapse, Badge, Typography } from '@douyinfe/semi-ui';
-import { Copy, ChevronDown, ChevronUp, Zap, CheckCircle, XCircle } from 'lucide-react';
+import {
+  Button,
+  Tooltip,
+  Toast,
+  Collapse,
+  Badge,
+  Typography,
+} from '@douyinfe/semi-ui';
+import {
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { copy } from '../../helpers';
 
@@ -67,19 +62,19 @@ const SSEViewer = ({ sseData }) => {
 
   const stats = useMemo(() => {
     const total = parsedSSEData.length;
-    const errors = parsedSSEData.filter(item => item.error).length;
-    const done = parsedSSEData.filter(item => item.isDone).length;
+    const errors = parsedSSEData.filter((item) => item.error).length;
+    const done = parsedSSEData.filter((item) => item.isDone).length;
     const valid = total - errors - done;
 
     return { total, errors, done, valid };
   }, [parsedSSEData]);
 
   const handleToggleAll = useCallback(() => {
-    setExpandedKeys(prev => {
+    setExpandedKeys((prev) => {
       if (prev.length === parsedSSEData.length) {
         return [];
       } else {
-        return parsedSSEData.map(item => item.key);
+        return parsedSSEData.map((item) => item.key);
       }
     });
   }, [parsedSSEData]);
@@ -87,7 +82,9 @@ const SSEViewer = ({ sseData }) => {
   const handleCopyAll = useCallback(async () => {
     try {
       const allData = parsedSSEData
-        .map(item => (item.parsed ? JSON.stringify(item.parsed, null, 2) : item.raw))
+        .map((item) =>
+          item.parsed ? JSON.stringify(item.parsed, null, 2) : item.raw,
+        )
         .join('\n\n');
 
       await copy(allData);
@@ -100,15 +97,20 @@ const SSEViewer = ({ sseData }) => {
     }
   }, [parsedSSEData, t]);
 
-  const handleCopySingle = useCallback(async (item) => {
-    try {
-      const textToCopy = item.parsed ? JSON.stringify(item.parsed, null, 2) : item.raw;
-      await copy(textToCopy);
-      Toast.success(t('已复制'));
-    } catch (err) {
-      Toast.error(t('复制失败'));
-    }
-  }, [t]);
+  const handleCopySingle = useCallback(
+    async (item) => {
+      try {
+        const textToCopy = item.parsed
+          ? JSON.stringify(item.parsed, null, 2)
+          : item.raw;
+        await copy(textToCopy);
+        Toast.success(t('已复制'));
+      } catch (err) {
+        Toast.error(t('复制失败'));
+      }
+    },
+    [t],
+  );
 
   const renderSSEItem = (item) => {
     if (item.isDone) {
@@ -158,18 +160,24 @@ const SSEViewer = ({ sseData }) => {
         {item.parsed?.choices?.[0] && (
           <div className='flex flex-wrap gap-2 text-xs'>
             {item.parsed.choices[0].delta?.content && (
-              <Badge count={`${t('内容')}: "${String(item.parsed.choices[0].delta.content).substring(0, 20)}..."`} type='primary' />
+              <Badge
+                count={`${t('内容')}: "${String(item.parsed.choices[0].delta.content).substring(0, 20)}..."`}
+                type='primary'
+              />
             )}
             {item.parsed.choices[0].delta?.reasoning_content && (
               <Badge count={t('有 Reasoning')} type='warning' />
             )}
             {item.parsed.choices[0].finish_reason && (
-              <Badge count={`${t('完成')}: ${item.parsed.choices[0].finish_reason}`} type='success' />
+              <Badge
+                count={`${t('完成')}: ${item.parsed.choices[0].finish_reason}`}
+                type='success'
+              />
             )}
             {item.parsed.usage && (
-              <Badge 
-                count={`${t('令牌')}: ${item.parsed.usage.prompt_tokens || 0}/${item.parsed.usage.completion_tokens || 0}`} 
-                type='tertiary' 
+              <Badge
+                count={`${t('令牌')}: ${item.parsed.usage.prompt_tokens || 0}/${item.parsed.usage.completion_tokens || 0}`}
+                type='tertiary'
               />
             )}
           </div>
@@ -194,7 +202,9 @@ const SSEViewer = ({ sseData }) => {
           <Zap size={16} className='text-blue-500' />
           <Typography.Text strong>{t('SSE数据流')}</Typography.Text>
           <Badge count={stats.total} type='primary' />
-          {stats.errors > 0 && <Badge count={`${stats.errors} ${t('错误')}`} type='danger' />}
+          {stats.errors > 0 && (
+            <Badge count={`${stats.errors} ${t('错误')}`} type='danger' />
+          )}
         </div>
 
         <div className='flex items-center gap-2'>
@@ -208,14 +218,28 @@ const SSEViewer = ({ sseData }) => {
               {copied ? t('已复制') : t('复制全部')}
             </Button>
           </Tooltip>
-          <Tooltip content={expandedKeys.length === parsedSSEData.length ? t('全部收起') : t('全部展开')}>
+          <Tooltip
+            content={
+              expandedKeys.length === parsedSSEData.length
+                ? t('全部收起')
+                : t('全部展开')
+            }
+          >
             <Button
-              icon={expandedKeys.length === parsedSSEData.length ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              icon={
+                expandedKeys.length === parsedSSEData.length ? (
+                  <ChevronUp size={14} />
+                ) : (
+                  <ChevronDown size={14} />
+                )
+              }
               size='small'
               onClick={handleToggleAll}
               theme='borderless'
             >
-              {expandedKeys.length === parsedSSEData.length ? t('收起') : t('展开')}
+              {expandedKeys.length === parsedSSEData.length
+                ? t('收起')
+                : t('展开')}
             </Button>
           </Tooltip>
         </div>
@@ -242,11 +266,16 @@ const SSEViewer = ({ sseData }) => {
                   ) : (
                     <>
                       <span className='text-gray-600'>
-                        {item.parsed?.id || item.parsed?.object || t('SSE 事件')}
+                        {item.parsed?.id ||
+                          item.parsed?.object ||
+                          t('SSE 事件')}
                       </span>
                       {item.parsed?.choices?.[0]?.delta && (
                         <span className='text-xs text-gray-400'>
-                          • {Object.keys(item.parsed.choices[0].delta).filter(k => item.parsed.choices[0].delta[k]).join(', ')}
+                          •{' '}
+                          {Object.keys(item.parsed.choices[0].delta)
+                            .filter((k) => item.parsed.choices[0].delta[k])
+                            .join(', ')}
                         </span>
                       )}
                     </>

@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useRef, useEffect, useCallback } from 'react';
 import { Toast } from '@douyinfe/semi-ui';
 import { useTranslation } from 'react-i18next';
@@ -30,64 +11,67 @@ const CustomInputRender = (props) => {
     detailProps;
   const containerRef = useRef(null);
 
-  const handlePaste = useCallback(async (e) => {
-    const items = e.clipboardData?.items;
-    if (!items) return;
+  const handlePaste = useCallback(
+    async (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
 
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i];
-      
-      if (item.type.indexOf('image') !== -1) {
-        e.preventDefault();
-        const file = item.getAsFile();
-        
-        if (file) {
-          try {
-            if (!imageEnabled) {
-              Toast.warning({
-                content: t('请先在设置中启用图片功能'),
-                duration: 3,
-              });
-              return;
-            }
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
 
-            const reader = new FileReader();
-            reader.onload = (event) => {
-              const base64 = event.target.result;
-              
-              if (onPasteImage) {
-                onPasteImage(base64);
-                Toast.success({
-                  content: t('图片已添加'),
-                  duration: 2,
+        if (item.type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const file = item.getAsFile();
+
+          if (file) {
+            try {
+              if (!imageEnabled) {
+                Toast.warning({
+                  content: t('请先在设置中启用图片功能'),
+                  duration: 3,
                 });
-              } else {
-                Toast.error({
-                  content: t('无法添加图片'),
-                  duration: 2,
-                });
+                return;
               }
-            };
-            reader.onerror = () => {
-              console.error('Failed to read image file:', reader.error);
+
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                const base64 = event.target.result;
+
+                if (onPasteImage) {
+                  onPasteImage(base64);
+                  Toast.success({
+                    content: t('图片已添加'),
+                    duration: 2,
+                  });
+                } else {
+                  Toast.error({
+                    content: t('无法添加图片'),
+                    duration: 2,
+                  });
+                }
+              };
+              reader.onerror = () => {
+                console.error('Failed to read image file:', reader.error);
+                Toast.error({
+                  content: t('粘贴图片失败'),
+                  duration: 2,
+                });
+              };
+              reader.readAsDataURL(file);
+            } catch (error) {
+              console.error('Failed to paste image:', error);
               Toast.error({
                 content: t('粘贴图片失败'),
                 duration: 2,
               });
-            };
-            reader.readAsDataURL(file);
-          } catch (error) {
-            console.error('Failed to paste image:', error);
-            Toast.error({
-              content: t('粘贴图片失败'),
-              duration: 2,
-            });
+            }
           }
+          break;
         }
-        break;
       }
-    }
-  }, [onPasteImage, imageEnabled, t]);
+    },
+    [onPasteImage, imageEnabled, t],
+  );
 
   useEffect(() => {
     const container = containerRef.current;

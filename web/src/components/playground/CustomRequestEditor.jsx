@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useState, useEffect } from 'react';
 import {
   TextArea,
@@ -140,7 +121,9 @@ const CustomRequestEditor = ({
           {/* 提示信息 */}
           <Banner
             type='warning'
-            description={t('启用此模式后，将使用您自定义的请求体发送API请求，模型配置面板的参数设置将被忽略。')}
+            description={t(
+              '启用此模式后，将使用您自定义的请求体发送API请求，模型配置面板的参数设置将被忽略。',
+            )}
             icon={<AlertTriangle size={16} />}
             className='!rounded-lg'
             closeIcon={null}
@@ -201,7 +184,9 @@ const CustomRequestEditor = ({
             )}
 
             <Typography.Text className='text-xs text-gray-500 mt-2 block'>
-              {t('请输入有效的JSON格式的请求体。您可以参考预览面板中的默认请求体格式。')}
+              {t(
+                '请输入有效的JSON格式的请求体。您可以参考预览面板中的默认请求体格式。',
+              )}
             </Typography.Text>
           </div>
         </>

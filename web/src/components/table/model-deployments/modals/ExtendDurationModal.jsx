@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Modal,
@@ -130,9 +111,7 @@ const ExtendDurationModal = ({
       ? details.locations
           .map((location) =>
             Number(
-              location?.id ??
-                location?.location_id ??
-                location?.locationId,
+              location?.id ?? location?.location_id ?? location?.locationId,
             ),
           )
           .filter((id) => Number.isInteger(id) && id > 0)
@@ -181,9 +160,7 @@ const ExtendDurationModal = ({
       } else {
         const message = response.data.message || '';
         setPriceEstimation(null);
-        setPriceError(
-          t('价格计算失败') + (message ? `: ${message}` : ''),
-        );
+        setPriceError(t('价格计算失败') + (message ? `: ${message}` : ''));
       }
     } catch (error) {
       if (costRequestIdRef.current !== requestId) {
@@ -192,9 +169,7 @@ const ExtendDurationModal = ({
 
       const message = error?.response?.data?.message || error.message || '';
       setPriceEstimation(null);
-      setPriceError(
-        t('价格计算失败') + (message ? `: ${message}` : ''),
-      );
+      setPriceError(t('价格计算失败') + (message ? `: ${message}` : ''));
     } finally {
       if (costRequestIdRef.current === requestId) {
         setCostLoading(false);
@@ -269,11 +244,8 @@ const ExtendDurationModal = ({
   const newTotalTime = `${currentRemainingTime} + ${durationHours}${t('小时')}`;
 
   const priceData = priceEstimation || {};
-  const breakdown =
-    priceData.price_breakdown || priceData.PriceBreakdown || {};
-  const currencyLabel = (
-    priceData.currency || priceData.Currency || 'USDC'
-  )
+  const breakdown = priceData.price_breakdown || priceData.PriceBreakdown || {};
+  const currencyLabel = (priceData.currency || priceData.Currency || 'USDC')
     .toString()
     .toUpperCase();
 
@@ -316,7 +288,10 @@ const ExtendDurationModal = ({
       confirmLoading={loading}
       okButtonProps={{
         disabled:
-          !deployment?.id || detailsLoading || !durationHours || durationHours < 1,
+          !deployment?.id ||
+          detailsLoading ||
+          !durationHours ||
+          durationHours < 1,
       }}
       width={600}
       className='extend-duration-modal'
@@ -357,9 +332,7 @@ const ExtendDurationModal = ({
               <p>
                 {t('延长容器时长将会产生额外费用，请确认您有足够的账户余额。')}
               </p>
-              <p>
-                {t('延长操作一旦确认无法撤销，费用将立即扣除。')}
-              </p>
+              <p>{t('延长操作一旦确认无法撤销，费用将立即扣除。')}</p>
             </div>
           }
         />
@@ -370,7 +343,9 @@ const ExtendDurationModal = ({
           onValueChange={(values) => {
             if (values.duration_hours !== undefined) {
               const numericValue = Number(values.duration_hours);
-              setDurationHours(Number.isFinite(numericValue) ? numericValue : 0);
+              setDurationHours(
+                Number.isFinite(numericValue) ? numericValue : 0,
+              );
             }
           }}
         >

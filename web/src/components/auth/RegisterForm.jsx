@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -31,7 +12,15 @@ import {
   onDiscordOAuthClicked,
 } from '../../helpers';
 import Turnstile from 'react-turnstile';
-import { Button, Card, Checkbox, Divider, Form, Icon, Modal } from '@douyinfe/semi-ui';
+import {
+  Button,
+  Card,
+  Checkbox,
+  Divider,
+  Form,
+  Icon,
+  Modal,
+} from '@douyinfe/semi-ui';
 import Title from '@douyinfe/semi-ui/lib/es/typography/title';
 import Text from '@douyinfe/semi-ui/lib/es/typography/text';
 import {
@@ -121,7 +110,7 @@ const RegisterForm = () => {
       setTurnstileEnabled(true);
       setTurnstileSiteKey(status.turnstile_site_key);
     }
-    
+
     // 从 status 获取用户协议和隐私政策的启用状态
     setHasUserAgreement(status.user_agreement_enabled || false);
     setHasPrivacyPolicy(status.privacy_policy_enabled || false);
@@ -405,7 +394,15 @@ const RegisterForm = () => {
                     theme='outline'
                     className='w-full h-12 flex items-center justify-center !rounded-full border border-gray-200 hover:bg-gray-50 transition-colors'
                     type='tertiary'
-                    icon={<SiDiscord style={{ color: '#5865F2', width: '20px', height: '20px' }} />}
+                    icon={
+                      <SiDiscord
+                        style={{
+                          color: '#5865F2',
+                          width: '20px',
+                          height: '20px',
+                        }}
+                      />
+                    }
                     onClick={handleDiscordClick}
                     loading={discordLoading}
                   >
@@ -619,7 +616,9 @@ const RegisterForm = () => {
                     htmlType='submit'
                     onClick={handleSubmit}
                     loading={registerLoading}
-                    disabled={(hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms}
+                    disabled={
+                      (hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms
+                    }
                   >
                     {t('注册')}
                   </Button>

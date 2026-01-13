@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Banner,
@@ -378,13 +359,15 @@ const OtherSetting = () => {
               <Form.TextArea
                 label={t('用户协议')}
                 placeholder={t(
-              '在此输入用户协议内容，支持 Markdown & HTML 代码',
+                  '在此输入用户协议内容，支持 Markdown & HTML 代码',
                 )}
                 field={LEGAL_USER_AGREEMENT_KEY}
                 onChange={handleInputChange}
                 style={{ fontFamily: 'JetBrains Mono, Consolas' }}
                 autosize={{ minRows: 6, maxRows: 12 }}
-                helpText={t('填写用户协议内容后，用户注册时将被要求勾选已阅读用户协议')}
+                helpText={t(
+                  '填写用户协议内容后，用户注册时将被要求勾选已阅读用户协议',
+                )}
               />
               <Button
                 onClick={submitUserAgreement}
@@ -401,7 +384,9 @@ const OtherSetting = () => {
                 onChange={handleInputChange}
                 style={{ fontFamily: 'JetBrains Mono, Consolas' }}
                 autosize={{ minRows: 6, maxRows: 12 }}
-                helpText={t('填写隐私政策内容后，用户注册时将被要求勾选已阅读隐私政策')}
+                helpText={t(
+                  '填写隐私政策内容后，用户注册时将被要求勾选已阅读隐私政策',
+                )}
               />
               <Button
                 onClick={submitPrivacyPolicy}

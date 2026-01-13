@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import { Toast, Pagination } from '@douyinfe/semi-ui';
 import { toastConstants } from '../constants';
 import React from 'react';
@@ -217,7 +198,11 @@ export function timestamp2string(timestamp) {
   );
 }
 
-export function timestamp2string1(timestamp, dataExportDefaultTime = 'hour', showYear = false) {
+export function timestamp2string1(
+  timestamp,
+  dataExportDefaultTime = 'hour',
+  showYear = false,
+) {
   let date = new Date(timestamp * 1000);
   let year = date.getFullYear();
   let month = (date.getMonth() + 1).toString();
@@ -248,7 +233,9 @@ export function timestamp2string1(timestamp, dataExportDefaultTime = 'hour', sho
       nextDay = '0' + nextDay;
     }
     // 周视图结束日期也仅在跨年时显示年份
-    let nextStr = showYear ? nextWeekYear + '-' + nextMonth + '-' + nextDay : nextMonth + '-' + nextDay;
+    let nextStr = showYear
+      ? nextWeekYear + '-' + nextMonth + '-' + nextDay
+      : nextMonth + '-' + nextDay;
     str += ' - ' + nextStr;
   }
   return str;
@@ -257,7 +244,9 @@ export function timestamp2string1(timestamp, dataExportDefaultTime = 'hour', sho
 // 检查时间戳数组是否跨年
 export function isDataCrossYear(timestamps) {
   if (!timestamps || timestamps.length === 0) return false;
-  const years = new Set(timestamps.map(ts => new Date(ts * 1000).getFullYear()));
+  const years = new Set(
+    timestamps.map((ts) => new Date(ts * 1000).getFullYear()),
+  );
   return years.size > 1;
 }
 

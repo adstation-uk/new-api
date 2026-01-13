@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import React from 'react';
 import { Progress, Divider, Empty } from '@douyinfe/semi-ui';
 import {
@@ -261,7 +242,7 @@ export const processRawData = (
   };
 
   // 检查数据是否跨年
-  const showYear = isDataCrossYear(data.map(item => item.created_at));
+  const showYear = isDataCrossYear(data.map((item) => item.created_at));
 
   data.forEach((item) => {
     result.uniqueModels.add(item.model_name);
@@ -269,7 +250,11 @@ export const processRawData = (
     result.totalQuota += item.quota;
     result.totalTimes += item.count;
 
-    const timeKey = timestamp2string1(item.created_at, dataExportDefaultTime, showYear);
+    const timeKey = timestamp2string1(
+      item.created_at,
+      dataExportDefaultTime,
+      showYear,
+    );
     if (!result.timePoints.includes(timeKey)) {
       result.timePoints.push(timeKey);
     }
@@ -328,10 +313,14 @@ export const aggregateDataByTimeAndModel = (data, dataExportDefaultTime) => {
   const aggregatedData = new Map();
 
   // 检查数据是否跨年
-  const showYear = isDataCrossYear(data.map(item => item.created_at));
+  const showYear = isDataCrossYear(data.map((item) => item.created_at));
 
   data.forEach((item) => {
-    const timeKey = timestamp2string1(item.created_at, dataExportDefaultTime, showYear);
+    const timeKey = timestamp2string1(
+      item.created_at,
+      dataExportDefaultTime,
+      showYear,
+    );
     const modelKey = item.model_name;
     const key = `${timeKey}-${modelKey}`;
 
@@ -372,7 +361,7 @@ export const generateChartTimePoints = (
     );
     const showYear = isDataCrossYear(generatedTimestamps);
 
-    chartTimePoints = generatedTimestamps.map(ts =>
+    chartTimePoints = generatedTimestamps.map((ts) =>
       timestamp2string1(ts, dataExportDefaultTime, showYear),
     );
   }

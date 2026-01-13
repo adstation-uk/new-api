@@ -1,22 +1,3 @@
-/*
-Copyright (C) 2025 QuantumNous
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program. If not, see <https://www.gnu.org/licenses/>.
-
-For commercial licensing, please contact support@quantumnous.com
-*/
-
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,18 +17,23 @@ import { processIncompleteThinkTags } from '../../helpers';
 
 export const usePlaygroundState = () => {
   const { t } = useTranslation();
-  
+
   // 使用惰性初始化，确保只在组件首次挂载时加载配置和消息
   const [savedConfig] = useState(() => loadConfig());
   const [initialMessages] = useState(() => {
     const loaded = loadMessages();
     // 检查是否是旧的中文默认消息，如果是则清除
-    if (loaded && loaded.length === 2 && loaded[0].id === '2' && loaded[1].id === '3') {
-      const hasOldChinese = 
-        loaded[0].content === '你好' || 
+    if (
+      loaded &&
+      loaded.length === 2 &&
+      loaded[0].id === '2' &&
+      loaded[1].id === '3'
+    ) {
+      const hasOldChinese =
+        loaded[0].content === '你好' ||
         loaded[1].content === '你好，请问有什么可以帮助您的吗？' ||
         loaded[1].content === '你好！很高兴见到你。有什么我可以帮助你的吗？';
-      
+
       if (hasOldChinese) {
         // 清除旧的默认消息
         localStorage.removeItem('playground_messages');
@@ -81,8 +67,10 @@ export const usePlaygroundState = () => {
   const [status, setStatus] = useState({});
 
   // 消息相关状态 - 使用加载的消息或默认消息初始化
-  const [message, setMessage] = useState(() => initialMessages || getDefaultMessages(t));
-  
+  const [message, setMessage] = useState(
+    () => initialMessages || getDefaultMessages(t),
+  );
+
   // 当语言改变时，如果是默认消息则更新
   useEffect(() => {
     // 只在没有保存的消息时才更新默认消息
