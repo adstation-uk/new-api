@@ -19,6 +19,7 @@ const Recharge = () => {
   const [userState] = useContext(UserContext);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paypalLoaded, setPaypalLoaded] = useState(false);
   const [customAmount, setCustomAmount] = useState(5);
 
@@ -73,6 +74,13 @@ const Recharge = () => {
 
   const handleCardClick = (pkg) => {
     setSelectedPackage(pkg);
+  };
+
+  const handlePayClick = () => {
+    if (!selectedPackage) {
+      showError(t('Please select a package'));
+      return;
+    }
     setShowModal(true);
   };
 
@@ -162,8 +170,8 @@ const Recharge = () => {
                   } else if (!orderData.purchase_units) {
                     throw new Error(JSON.stringify(orderData));
                   } else {
-                    showSuccess('Payment successful!');
                     setShowModal(false);
+                    setShowSuccessModal(true);
                   }
                 } catch (err) {
                   console.error('Capture Error:', err);
@@ -195,24 +203,32 @@ const Recharge = () => {
         </div>
       )}
 
-      <div className='w-full flex flex-col lg:flex-row gap-8  rounded-md'>
+      <div className='w-full flex flex-col lg:flex-row gap-4 rounded-md'>
         {/* Left Section: Pricing Packages */}
-        <div className='flex-1 border border-neutral-700 bg-neutral-800 rounded-2xl pt-3 p-2'>
-          <h2 className='text-2xl font-bold mb-4'>Top Up</h2>
+        <div className='flex-1 border border-neutral-700 bg-neutral-800 rounded-2xl pt-3 p-2 space-y-4'>
+          <h2 className='text-2xl font-bold'>Top Up</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {packages.map((pkg, index) => (
               <div
                 key={index}
                 onClick={() => handleCardClick(pkg)}
                 className={`group relative cursor-pointer overflow-hidden rounded-2xl border p-6 transition-all duration-300 hover:shadow-xl ${
-                  pkg.highlight
-                    ? 'border-red-500 bg-red-900/20 ring-1 ring-red-500/30 border-2'
-                    : 'border-neutral-700 bg-neutral-900/50 hover:border-neutral-700'
+                  selectedPackage?.amount === pkg.amount
+                    ? 'border-red-500 bg-red-900/20 ring-1 ring-red-500/30 border'
+                    : 'border-neutral-700 bg-neutral-900/50 hover:border-neutral-600'
                 }`}
               >
-                {pkg.highlight && (
-                  <div className='absolute left-0 top-0 bg-red-600 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-br-lg'>
-                    HOT
+                {(pkg.highlight || selectedPackage?.amount === pkg.amount) && (
+                  <div
+                    className={`absolute left-0 top-0 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white rounded-br-lg ${
+                      selectedPackage?.amount === pkg.amount
+                        ? 'bg-red-500'
+                        : 'bg-red-600'
+                    }`}
+                  >
+                    {selectedPackage?.amount === pkg.amount
+                      ? 'SELECTED'
+                      : 'HOT'}
                   </div>
                 )}
 
@@ -261,6 +277,51 @@ const Recharge = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className='flex justify-end'>
+            <div className='flex items-center gap-4 bg-neutral-900/50 p-4 rounded-2xl border border-neutral-700'>
+              <div className='flex items-center gap-2'>
+                <svg
+                  viewBox='0 0 24 24'
+                  className='w-10 h-10'
+                  fill='none'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path
+                    d='M18.3 5.3c-.2-1-.7-1.8-1.4-2.4C16.2 2.3 15.1 2 13.9 2H6c-.5 0-.9.4-1.1.9l-2.8 17.5c-.1.3 0 .7.3.9.1.1.3.2.5.2h4.5c.4 0 .8-.3 1-.7l.9-5.5c.1-.5.5-.9 1.1-.9h1.1c3.7 0 6.1-1.8 6.9-5.3.4-1.8.3-3.3-.7-4.7z'
+                    fill='#003087'
+                  />
+                  <path
+                    d='M18.3 5.3c-.2-1-.7-1.8-1.4-2.4C16.2 2.3 15.1 2 13.9 2H6c-.5 0-.9.4-1.1.9l-2.8 17.5c-.1.3 0 .7.3.9.1.1.3.2.5.2h4.5c.4 0 .8-.3 1-.7l.9-5.5c.1-.5.5-.9 1.1-.9h1.1c3.7 0 6.1-1.8 6.9-5.3.4-1.8.3-3.3-.7-4.7z'
+                    fill='#002C87'
+                  />
+                  <path
+                    d='M18.3 5.3c-.2-1-.7-1.8-1.4-2.4C16.2 2.3 15.1 2 13.9 2H6c-.5 0-.9.4-1.1.9l-2.8 17.5v-.1c.2-.9.9-1.5 1.8-1.5h4.1l1.1-7.1c.1-.5.5-.9 1.1-.9h1.1c3.7 0 6.1-1.8 6.9-5.3.4-1.8.3-3.3-.7-4.7z'
+                    fill='#003087'
+                  />
+                  <path
+                    d='M12.9 14.4h-1.1c-.6 0-1 .4-1.1.9l-.9 5.5c-.2.4-.6.7-1 .7H4.3c-.2 0-.4-.1-.5-.2-.1-.1-.1-.3-.1-.5l2.8-17.5c.1-.5.6-.9 1.1-.9h7.9c1.2 0 2.3.3 3 .9.7.6 1.2 1.4 1.4 2.4.4 1.8.3 3.3-.7 4.7-1 1.7-2.6 3-4.9 3.8-1.1.4-2.4.6-3.8.6z'
+                    fill='#009CDE'
+                  />
+                </svg>
+                <div className='flex flex-col leading-none'>
+                  <span className='text-[10px] text-neutral-500 italic font-bold uppercase'>
+                    Powered by
+                  </span>
+                  <span className='font-black text-blue-500 italic text-xl'>
+                    PayPal
+                  </span>
+                </div>
+              </div>
+              <div className='w-px h-10 bg-neutral-700' />
+              <button
+                onClick={handlePayClick}
+                className='bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20'
+              >
+                {t('Pay Now')}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -357,6 +418,36 @@ const Recharge = () => {
                 Secure payment via PayPal
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className='fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md'>
+          <div className='relative w-full max-w-sm bg-neutral-900 border border-neutral-700 rounded-3xl shadow-2xl overflow-hidden p-8 text-center'>
+            <div className='flex justify-center mb-6'>
+              <div className='w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center ring-4 ring-green-900/30'>
+                <CheckCircle size={40} className='text-green-500' />
+              </div>
+            </div>
+
+            <h3 className='text-2xl font-bold mb-2'>
+              {t('Payment Successful!')}
+            </h3>
+            <p className='text-neutral-400 mb-8'>
+              {t('Your account balance has been updated.')}
+            </p>
+
+            <button
+              onClick={() => {
+                setShowSuccessModal(false);
+                // window.location.reload(); // Reload to refresh balance
+              }}
+              className='w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-green-600/20'
+            >
+              {t('Continue')}
+            </button>
           </div>
         </div>
       )}
