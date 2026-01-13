@@ -56,6 +56,7 @@ export default function SettingsSidebarModulesAdmin(props) {
     personal: {
       enabled: true,
       topup: true,
+      recharge: true,
       personal: true,
     },
     admin: {
@@ -116,6 +117,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       personal: {
         enabled: true,
         topup: true,
+        recharge: true,
         personal: true,
       },
       admin: {
@@ -185,7 +187,12 @@ export default function SettingsSidebarModulesAdmin(props) {
             midjourney: true,
             task: true,
           },
-          personal: { enabled: true, topup: true, personal: true },
+          personal: {
+            enabled: true,
+            topup: true,
+            recharge: true,
+            personal: true,
+          },
           admin: {
             enabled: true,
             channel: true,
@@ -239,6 +246,11 @@ export default function SettingsSidebarModulesAdmin(props) {
       modules: [
         { key: 'topup', title: t('钱包管理'), description: t('余额充值管理') },
         {
+          key: 'recharge',
+          title: t('充值页面'),
+          description: t('购买充值套餐'),
+        },
+        {
           key: 'personal',
           title: t('个人设置'),
           description: t('个人信息设置'),
@@ -252,7 +264,11 @@ export default function SettingsSidebarModulesAdmin(props) {
       modules: [
         { key: 'channel', title: t('渠道管理'), description: t('API渠道配置') },
         { key: 'models', title: t('模型管理'), description: t('AI模型配置') },
-        { key: 'deployment', title: t('模型部署'), description: t('模型部署管理') },
+        {
+          key: 'deployment',
+          title: t('模型部署'),
+          description: t('模型部署管理'),
+        },
         {
           key: 'redemption',
           title: t('兑换码管理'),

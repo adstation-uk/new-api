@@ -258,16 +258,7 @@ const Home = () => {
       {homePageContentLoaded && homePageContent === '' ? (
         <div className='w-full overflow-x-hidden'>
           {/* Banner 部分 */}
-          <div
-            className='w-full border-b border-semi-color-border min-h-screen relative overflow-x-hidden flex flex-col justify-between pt-20 bg-cover bg-center'
-            style={{
-              backgroundImage: 'url(/背景.jpg)',
-            }}
-          >
-            <div className='absolute inset-0 bg-black/50 z-0' />
-            {/* 背景模糊晕染球 */}
-            <div className='blur-ball blur-ball-indigo opacity-40' />
-            <div className='blur-ball blur-ball-teal opacity-40' />
+          <div className='w-full border-b border-semi-color-border min-h-screen relative overflow-x-hidden flex flex-col justify-between pt-20'>
             <div className='flex items-center justify-center flex-grow px-4 z-10 text-white'>
               {/* 居中内容区 */}
               <div className='flex flex-col items-center justify-center text-center max-w-4xl mx-auto'>
@@ -375,6 +366,13 @@ const Home = () => {
                 -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
               }
             `}</style>
+
+            <div
+              className='absolute inset-0 z-0 bg-cover bg-center brightness-50'
+              style={{
+                backgroundImage: 'url(/背景.gif)',
+              }}
+            ></div>
 
             {/* Section 2: Infinite Scroll (Right to Left) */}
             <div className='w-full py-6 backdrop-blur-md bg-white/10 relative overflow-hidden mt-12 mb-0 z-10 border-t border-white/10'>

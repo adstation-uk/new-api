@@ -35,6 +35,7 @@ const routerMap = {
   channel: '/console/channel',
   token: '/console/token',
   redemption: '/console/redemption',
+  recharge: '/console/recharge',
   topup: '/console/topup',
   user: '/console/user',
   log: '/console/log',
@@ -127,6 +128,11 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         text: t('钱包管理'),
         itemKey: 'topup',
         to: '/topup',
+      },
+      {
+        text: t('充值页面'),
+        itemKey: 'recharge',
+        to: '/recharge',
       },
       {
         text: t('个人设置'),
