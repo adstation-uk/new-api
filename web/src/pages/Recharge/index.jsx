@@ -26,28 +26,31 @@ const Recharge = () => {
   const packages = [
     {
       amount: 5,
-      features: ['50', '5', 'No concurrent tasks.'],
+      features: ['50', '5',],
     },
     {
       amount: 10,
-      features: ['50', '5', 'Gain 3 concurrent tasks'],
+      features: ['50', '5',],
     },
     {
       amount: 20,
-      features: ['100', '10', 'Gain 6 concurrent tasks'],
+      features: ['100', '10',],
       highlight: true,
     },
     {
       amount: 50,
-      features: ['200', '20', 'Gain 12 concurrent tasks'],
+      features: ['200', '20',],
     },
     {
       amount: 100,
-      features: ['500', '60', 'Gain 100 concurrent tasks'],
+      features: ['500', '60',],
     },
     {
       amount: 500,
-      features: ['3,000', '600', 'Gain 2,000 concurrent tasks'],
+      features: [
+        '3,000',
+        '600',
+      ],
     },
   ];
 
@@ -62,7 +65,7 @@ const Recharge = () => {
       };
       script.onerror = () => {
         console.error('Failed to load PayPal SDK');
-        showError('Failed to load PayPal payment module.');
+        showError(t('加载 PayPal 支付模块失败。'));
       };
       document.body.appendChild(script);
     } else {
@@ -78,7 +81,7 @@ const Recharge = () => {
 
   const handlePayClick = () => {
     if (!selectedPackage) {
-      showError(t('Please select a package'));
+      showError(t('请选择一个套餐'));
       return;
     }
     setShowModal(true);
@@ -104,8 +107,8 @@ const Recharge = () => {
                 try {
                   const amount = getAmount();
                   if (amount <= 0) {
-                    showError('Invalid amount');
-                    throw new Error('Invalid amount');
+                    showError(t('无效金额'));
+                    throw new Error(t('无效金额'));
                   }
 
                   const response = await fetch(
@@ -129,16 +132,14 @@ const Recharge = () => {
 
                   if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    throw new Error(
-                      errorData.message || 'Network response was not ok',
-                    );
+                    throw new Error(errorData.message || t('网络响应不正常'));
                   }
 
                   const order = await response.json();
                   return order.id;
                 } catch (err) {
                   console.error('Create Order Error:', err);
-                  showError('Failed to create order: ' + err.message);
+                  showError(t('创建订单失败:') + err.message);
                   throw err;
                 }
               },
@@ -155,7 +156,7 @@ const Recharge = () => {
                   );
 
                   if (!response.ok) {
-                    throw new Error('Capture failed');
+                    throw new Error(t('支付捕获失败:'));
                   }
 
                   const orderData = await response.json();
@@ -175,12 +176,12 @@ const Recharge = () => {
                   }
                 } catch (err) {
                   console.error('Capture Error:', err);
-                  showError('Payment capture failed: ' + err.message);
+                  showError(t('支付捕获失败: ') + err.message);
                 }
               },
               onError: (err) => {
                 console.error('PayPal Error:', err);
-                showError('PayPal encountered an error.');
+                showError(t('PayPal 遇到错误。'));
               },
             })
             .render(`#${containerId}`);
@@ -197,8 +198,9 @@ const Recharge = () => {
         <div className='mb-6 p-4 bg-amber-900/40 border border-amber-500/50 rounded-lg flex items-center gap-3 text-amber-200'>
           <AlertCircle size={20} />
           <p>
-            Please configure your PayPal Client ID in the code for the payment
-            buttons to appear correctly.
+            {t(
+              '请在代码中配置您的 PayPal Client ID，以便更准确地显示支付按钮。',
+            )}
           </p>
         </div>
       )}
@@ -206,7 +208,7 @@ const Recharge = () => {
       <div className='w-full flex flex-col lg:flex-row gap-4 rounded-md'>
         {/* Left Section: Pricing Packages */}
         <div className='flex-1 border border-neutral-700 bg-neutral-800 rounded-2xl pt-3 p-2 space-y-4'>
-          <h2 className='text-2xl font-bold'>Top Up</h2>
+          <h2 className='text-2xl font-bold'>{t('充值')}</h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {packages.map((pkg, index) => (
               <div
@@ -227,8 +229,8 @@ const Recharge = () => {
                     }`}
                   >
                     {selectedPackage?.amount === pkg.amount
-                      ? 'SELECTED'
-                      : 'HOT'}
+                      ? t('已选择')
+                      : t('热门')}
                   </div>
                 )}
 
@@ -245,10 +247,10 @@ const Recharge = () => {
                           className='mt-0.5 text-red-500 shrink-0'
                         />
                         <span>
+                          {t('实付')}{' '}
                           <strong className='text-red-400'>
                             {pkg.features[0]}
-                          </strong>{' '}
-                          images per minute
+                          </strong>
                         </span>
                       </div>
                       <div className='flex items-start gap-2 text-sm text-neutral-400'>
@@ -257,21 +259,12 @@ const Recharge = () => {
                           className='mt-0.5 text-red-500 shrink-0'
                         />
                         <span>
+                          {t('节省')}{' '}
                           <strong className='text-red-400'>
                             {pkg.features[1]}
-                          </strong>{' '}
-                          videos per minute
+                          </strong>
                         </span>
                       </div>
-                      {pkg.features[2] && (
-                        <div className='flex items-start gap-2 text-sm text-neutral-400'>
-                          <CheckCircle
-                            size={14}
-                            className='mt-0.5 text-red-500 shrink-0'
-                          />
-                          <span>{pkg.features[2]}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -307,7 +300,7 @@ const Recharge = () => {
                 </svg>
                 <div className='flex flex-col leading-none'>
                   <span className='text-[10px] text-neutral-500 italic font-bold uppercase'>
-                    Powered by
+                    {t('技术支持')}
                   </span>
                   <span className='font-black text-blue-500 italic text-xl'>
                     PayPal
@@ -319,7 +312,7 @@ const Recharge = () => {
                 onClick={handlePayClick}
                 className='bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20'
               >
-                {t('Pay Now')}
+                {t('立即支付')}
               </button>
             </div>
           </div>
@@ -327,7 +320,7 @@ const Recharge = () => {
 
         {/* Right Section: Account Summary */}
         <div className='lg:w-80 w-full shrink-0  border border-neutral-700 bg-neutral-800 rounded-2xl pt-3 p-2 flex flex-col'>
-          <h2 className='text-2xl font-bold mb-4'>My Account</h2>
+          <h2 className='text-2xl font-bold mb-4'>{t('我的账户')}</h2>
           <div className='flex-1 rounded-2xl bg-neutral-900/80 border border-neutral-700 p-8 flex flex-col items-center text-center shadow-lg'>
             <div
               className='w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold mb-4 border-2 border-neutral-700 ring-4 ring-neutral-900 shadow-inner'
@@ -352,7 +345,7 @@ const Recharge = () => {
                   <Coins size={18} className='text-yellow-500' />
                 </div>
                 <span className='font-medium text-neutral-300 uppercase text-xs tracking-wider'>
-                  Balance
+                  {t('余额')}
                 </span>
               </div>
               <span className='text-lg font-bold text-red-400'>
@@ -368,7 +361,7 @@ const Recharge = () => {
         <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm'>
           <div className='relative w-full max-w-md bg-neutral-900 border border-neutral-700 rounded-2xl shadow-2xl overflow-hidden'>
             <div className='flex items-center justify-between p-6 border-b border-neutral-700'>
-              <h3 className='text-xl font-bold font-sans'>Confirm Recharge</h3>
+              <h3 className='text-xl font-bold font-sans'>{t('确认充值')}</h3>
               <button
                 onClick={() => setShowModal(false)}
                 className='text-neutral-500 hover:text-white transition-colors'
@@ -379,7 +372,7 @@ const Recharge = () => {
 
             <div className='p-8'>
               <div className='mb-8 text-center'>
-                <p className='text-neutral-400 mb-2'>Selected Plan</p>
+                <p className='text-neutral-400 mb-2'>{t('已选方案')}</p>
                 <div className='text-4xl font-black'>
                   ${selectedPackage?.amount}
                 </div>
@@ -388,7 +381,7 @@ const Recharge = () => {
               {selectedPackage?.isCustom && (
                 <div className='mb-6'>
                   <label className='block text-sm font-medium text-neutral-400 mb-2'>
-                    Enter Amount ($)
+                    {t('输入金额 ($)')}
                   </label>
                   <input
                     type='number'
@@ -406,16 +399,11 @@ const Recharge = () => {
                 {!paypalLoaded ? (
                   <div className='flex flex-col items-center gap-3 text-neutral-500'>
                     <div className='w-8 h-8 border-4 border-neutral-600 border-t-red-500 rounded-full animate-spin' />
-                    <p>Loading Payment Options...</p>
+                    <p>{t('加载支付选项..')}</p>
                   </div>
                 ) : (
                   <div id='paypal-button-container' className='w-full' />
                 )}
-              </div>
-
-              <div className='mt-6 flex items-center justify-center gap-2 text-xs text-neutral-500 font-medium'>
-                <CheckCircle size={12} />
-                Secure payment via PayPal
               </div>
             </div>
           </div>
@@ -432,12 +420,8 @@ const Recharge = () => {
               </div>
             </div>
 
-            <h3 className='text-2xl font-bold mb-2'>
-              {t('Payment Successful!')}
-            </h3>
-            <p className='text-neutral-400 mb-8'>
-              {t('Your account balance has been updated.')}
-            </p>
+            <h3 className='text-2xl font-bold mb-2'>{t('支付成功！')}</h3>
+            <p className='text-neutral-400 mb-8'>{t('您的账户余额已更新。')}</p>
 
             <button
               onClick={() => {
@@ -446,7 +430,7 @@ const Recharge = () => {
               }}
               className='w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-green-600/20'
             >
-              {t('Continue')}
+              {t('继续')}
             </button>
           </div>
         </div>

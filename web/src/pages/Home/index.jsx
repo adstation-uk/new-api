@@ -106,10 +106,10 @@ const Home = () => {
   ];
 
   const statsData = [
-    { label: t('推理速度'), value: '3.5x', desc: t('Faster Inference') },
-    { label: t('训练速度'), value: '2.3x', desc: t('Faster Training') },
-    { label: t('成本节约'), value: '20%', desc: t('Lower Cost') },
-    { label: t('网络压缩'), value: '117x', desc: t('Network Compression') },
+    { label: t('推理速度'), value: '3.5x', desc: t('更快的推理速率') },
+    { label: t('训练速度'), value: '2.3x', desc: t('更高的训练效率') },
+    { label: t('成本节约'), value: '20%', desc: t('更低的支出成本') },
+    { label: t('网络压缩'), value: '117x', desc: t('更佳的网络压缩') },
   ];
 
   const modelGroupsItems = [
@@ -186,7 +186,6 @@ const Home = () => {
       }
     } else {
       showError(message);
-      setHomePageContent('加载首页内容失败...');
     }
     setHomePageContentLoaded(true);
   };
@@ -348,12 +347,15 @@ const Home = () => {
               }
             `}</style>
 
-            <div
-              className='absolute inset-0 z-0 bg-cover bg-center brightness-50'
-              style={{
-                backgroundImage: 'url(/背景.gif)',
-              }}
-            ></div>
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className='absolute inset-0 z-0 w-full h-full object-cover'
+            >
+              <source src='/背景.mp4' type='video/mp4' />
+            </video>
 
             {/* Section 2: Infinite Scroll (Right to Left) */}
             <div className='w-full py-6 backdrop-blur-md bg-white/10 relative overflow-hidden mt-12 mb-0 z-10 border-t border-white/10'>
@@ -426,11 +428,11 @@ const Home = () => {
             <div className='container mx-auto px-4 py-24 relative z-10'>
               <div className='text-center mb-16'>
                 <h2 className='text-3xl md:text-5xl font-bold mb-4 text-[var(--semi-color-text-0)]'>
-                  {t('Advantage')}
+                  {t('优势')}
                 </h2>
                 <div className='w-24 h-1 bg-blue-500 mx-auto rounded-full mb-6' />
                 <p className='text-xl text-[var(--semi-color-text-1)]'>
-                  {t('Why Choose Us')}
+                  {t('为什么选择我们')}
                 </p>
               </div>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
@@ -456,7 +458,7 @@ const Home = () => {
               {/* Added AI Icons List beneath Advantages */}
               <div className='mt-24 pt-12 border-t border-[var(--semi-color-border)]/50'>
                 <p className='text-center text-[var(--semi-color-text-2)] mb-10 font-medium tracking-widest uppercase text-sm'>
-                  {t('Empowering with Leading AI Technologies')}
+                  {t('采用领先的 AI 技术赋能')}
                 </p>
                 <div className='flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-700 bg-[var(--semi-color-bg-2)]/30 py-10 px-8 rounded-3xl'>
                   <OpenAI size={40} />
@@ -511,12 +513,10 @@ const Home = () => {
             <div className='container mx-auto px-4 relative z-10'>
               <div className='text-center mb-20'>
                 <h2 className='text-3xl md:text-5xl font-bold mb-6 text-[var(--semi-color-text-0)]'>
-                  {t('Proven results')}
+                  {t('卓越成效')}
                 </h2>
                 <p className='text-xl text-[var(--semi-color-text-1)] max-w-2xl mx-auto'>
-                  {t(
-                    'Get to market faster and save costs with breakthrough innovations',
-                  )}
+                  {t('通过突破性创新更快进入市场并降低成本')}
                 </p>
               </div>
               <div className='grid grid-cols-2 md:grid-cols-4 gap-6'>
@@ -548,10 +548,10 @@ const Home = () => {
             <div className='container mx-auto relative z-10'>
               <div className='flex flex-col items-center mb-20 text-center px-4'>
                 <h2 className='text-3xl md:text-5xl font-bold mb-6 text-[var(--semi-color-text-0)]'>
-                  {t('model group')}
+                  {t('模型群组')}
                 </h2>
                 <p className='text-xl text-[var(--semi-color-text-1)] mb-8'>
-                  {t('Supported Models')}
+                  {t('支持的模型')}
                 </p>
               </div>
 
@@ -622,7 +622,7 @@ const Home = () => {
                     size='large'
                     className='!rounded-full !px-10 !py-6 !text-lg !font-bold'
                   >
-                    {t('View All Models')}
+                    {t('查看所有模型')}
                   </Button>
                 </Link>
               </div>
@@ -636,29 +636,27 @@ const Home = () => {
               <div className='flex flex-col lg:flex-row items-center gap-12'>
                 <div className='lg:w-1/2'>
                   <h2 className='text-3xl md:text-5xl font-bold mb-6 text-[var(--semi-color-text-0)]'>
-                    {t('Simple Integration')}
+                    {t('简单集成')}
                   </h2>
                   <p className='text-xl text-[var(--semi-color-text-1)] mb-8 leading-relaxed'>
                     {t(
-                      'Compatible with OpenAI SDK, switch your base URL and start using our high-performance API in seconds.',
+                      '兼容 OpenAI SDK，只需切换您的基础 URL，即可在几秒钟内开始使用我们的高性能 API。',
                     )}
                   </p>
                   <ul className='space-y-4'>
-                    {[
-                      'Standard OpenAI Protocol',
-                      'High Concurrency Support',
-                      'Real-time Usage Tracking',
-                    ].map((item, i) => (
-                      <li
-                        key={i}
-                        className='flex items-center gap-3 text-[var(--semi-color-text-0)] font-medium'
-                      >
-                        <div className='w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center'>
-                          <Zap size={14} className='text-green-500' />
-                        </div>
-                        {t(item)}
-                      </li>
-                    ))}
+                    {['标准 OpenAI 协议', '高并发支持', '实时用量追踪'].map(
+                      (item, i) => (
+                        <li
+                          key={i}
+                          className='flex items-center gap-3 text-[var(--semi-color-text-0)] font-medium'
+                        >
+                          <div className='w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center'>
+                            <Zap size={14} className='text-green-500' />
+                          </div>
+                          {t(item)}
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </div>
                 <div className='lg:w-1/2 w-full'>
@@ -694,7 +692,7 @@ print(response.choices[0].message.content)`}</code>
             <div className='absolute inset-0 opacity-[0.05] dark:opacity-[0.1] bg-[repeating-linear-gradient(45deg,var(--semi-color-primary),var(--semi-color-primary)_2px,transparent_2px,transparent_30px)]' />
             <div className='container mx-auto px-4 text-center relative z-10'>
               <h2 className='text-3xl md:text-5xl font-bold mb-8 text-[var(--semi-color-text-0)]'>
-                {t('Ready to start?')}
+                {t('准备好开始了吗？')}
               </h2>
               <div className='flex flex-col md:flex-row justify-center gap-4 items-center'>
                 <Link to='/console'>
@@ -704,7 +702,7 @@ print(response.choices[0].message.content)`}</code>
                     size='large'
                     className='!rounded-full px-12 !text-lg !h-14 font-bold shadow-lg shadow-blue-500/30'
                   >
-                    {t('Get Started Now')}
+                    {t('立即开始')}
                   </Button>
                 </Link>
                 {isDemoSiteMode && statusState?.status?.version ? (
