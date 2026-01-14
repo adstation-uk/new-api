@@ -72,13 +72,13 @@ const SearchActions = memo(
             <Divider layout='vertical' margin='8px' />
 
             {/* 充值价格显示开关 */}
-            <div className='flex items-center gap-2'>
+            {/* <div className='flex items-center gap-2'>
               <span className='text-sm text-gray-600'>{t('充值价格显示')}</span>
               <Switch
                 checked={showWithRecharge}
                 onChange={setShowWithRecharge}
               />
-            </div>
+            </div> */}
 
             {/* 货币单位选择 */}
             {showWithRecharge && (
