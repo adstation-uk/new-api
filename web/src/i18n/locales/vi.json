@@ -3250,6 +3250,8 @@
     "网络响应不正常": "Phản hồi của mạng là bất thường",
     "无效金额": "Số tiền không hợp lệ",
     "请选择一个套餐": "Vui lòng chọn một gói",
-    "加载 PayPal 支付模块失败。": "Không tải được mô-đun thanh toán PayPal."
+    "加载 PayPal 支付模块失败。": "Không tải được mô-đun thanh toán PayPal.",
+    "前往在线充值": "Tới phần nạp tiền trực tuyến",
+    "支持 PayPal 支付，即时到账": "Hỗ trợ thanh toán PayPal, thanh toán ngay lập tức"
   }
 }

@@ -2662,6 +2662,8 @@
     "PayPal 遇到错误。": "PayPal a rencontré une erreur.",
     "创建订单失败:": "Échec de la création de la commande :",
     "网络响应不正常": "La réponse du réseau est anormale",
-    "加载 PayPal 支付模块失败。": "Échec du chargement du module de paiement PayPal."
+    "加载 PayPal 支付模块失败。": "Échec du chargement du module de paiement PayPal.",
+    "前往在线充值": "Accédez à la recharge en ligne",
+    "支持 PayPal 支付，即时到账": "Prise en charge du paiement PayPal, paiement instantané"
   }
 }

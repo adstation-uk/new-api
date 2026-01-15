@@ -263,10 +263,10 @@ const Home = () => {
                     <Input
                       readonly
                       value={serverAddress}
-                      className='flex-1 !rounded-full !bg-white/90 !text-black !border-none'
+                      className='flex-1 !rounded-full !bg-white/50 !text-black !border-none'
                       size={isMobile ? 'default' : 'large'}
                       suffix={
-                        <div className='flex items-center gap-2'>
+                        <div className='flex items-center gap-2 px-1'>
                           <ScrollList
                             bodyHeight={32}
                             style={{ border: 'unset', boxShadow: 'unset' }}
@@ -283,7 +283,7 @@ const Home = () => {
                             type='primary'
                             onClick={handleCopyBaseURL}
                             icon={<IconCopy />}
-                            className='!rounded-full'
+                            className='!rounded-full !bg-white/50 '
                           />
                         </div>
                       }
@@ -666,20 +666,19 @@ const Home = () => {
                       <div className='w-3 h-3 rounded-full bg-yellow-500/50' />
                       <div className='w-3 h-3 rounded-full bg-green-500/50' />
                     </div>
-                    <pre className='p-6 overflow-x-auto text-sm md:text-base font-mono leading-relaxed text-blue-300'>
-                      <code>{`import openai
-
-client = openai.OpenAI(
-    api_key="your-api-key",
-    base_url="${serverAddress}/v1"
-)
-
-response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[{"role": "user", "content": "Hello!"}]
-)
-
-print(response.choices[0].message.content)`}</code>
+                    <pre className='p-6 overflow-x-auto text-sm md:text-base font-mono leading-relaxed text-gray-300'>
+                      <code>
+                        <span className="text-purple-400">import</span> openai{'\n\n'}
+                        client = openai.<span className="text-blue-400">OpenAI</span>({'\n'}
+                        {'    '}<span className="text-orange-400">api_key</span>=<span className="text-green-400">"your-api-key"</span>,{'\n'}
+                        {'    '}<span className="text-orange-400">base_url</span>=<span className="text-green-400">"{serverAddress}/v1"</span>{'\n'}
+                        ){'\n\n'}
+                        response = client.chat.completions.<span className="text-blue-400">create</span>({'\n'}
+                        {'    '}<span className="text-orange-400">model</span>=<span className="text-green-400">"gpt-4o"</span>,{'\n'}
+                        {'    '}<span className="text-orange-400">messages</span>=[{'{'}<span className="text-green-400">"role"</span>: <span className="text-green-400">"user"</span>, <span className="text-green-400">"content"</span>: <span className="text-green-400">"Hello!"</span>{'}'}]{'\n'}
+                        ){'\n\n'}
+                        <span className="text-purple-400">print</span>(response.choices[0].message.content)
+                      </code>
                     </pre>
                   </div>
                 </div>

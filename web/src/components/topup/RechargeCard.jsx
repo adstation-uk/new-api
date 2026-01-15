@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Typography,
@@ -65,6 +66,7 @@ const RechargeCard = ({
   topupInfo,
   onOpenHistory,
 }) => {
+  const navigate = useNavigate();
   const onlineFormApiRef = useRef(null);
   const redeemFormApiRef = useRef(null);
   const showAmountSkeleton = useMinimumLoadingTime(amountLoading);
@@ -500,14 +502,33 @@ const RechargeCard = ({
               </div>
             </Form>
           ) : (
-            <Banner
-              type='info'
-              description={t(
-                '管理员未开启在线充值功能，请联系管理员开启或使用兑换码充值。',
-              )}
-              className='!rounded-xl'
-              closeIcon={null}
-            />
+            <>
+              {/* <Banner
+                type='info'
+                description={t(
+                  '管理员未开启在线充值功能，请联系管理员开启或使用兑换码充值。',
+                )}
+                className='!rounded-xl'
+                closeIcon={null}
+              /> */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/console/recharge');
+                }}
+                className='w-full py-4 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3'
+              >
+                <div className='p-2 bg-white/20 rounded-lg'>
+                  <CreditCard size={20} />
+                </div>
+                <div className='text-left'>
+                  <div className='text-lg leading-tight'>{t('前往在线充值')}</div>
+                  <div className='text-xs font-normal opacity-80'>
+                    {t('支持 PayPal 支付，即时到账')}
+                  </div>
+                </div>
+              </button>
+            </>
           )}
         </Card>
 

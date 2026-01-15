@@ -216,10 +216,10 @@ export const getPricingTableColumns = ({
       if (priceData.isPerToken) {
         return (
           <div className='space-y-1'>
-            <div className='text-gray-700'>
+            <div className=''>
               {t('输入')} {priceData.inputPrice} / 1{priceData.unitLabel} tokens
             </div>
-            <div className='text-gray-700'>
+            <div className=''>
               {t('输出')} {priceData.completionPrice} / 1{priceData.unitLabel}{' '}
               tokens
             </div>
@@ -227,7 +227,7 @@ export const getPricingTableColumns = ({
         );
       } else {
         return (
-          <div className='text-gray-700'>
+          <div className=''>
             {t('模型价格')}：{priceData.price}
           </div>
         );

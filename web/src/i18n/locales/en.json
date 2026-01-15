@@ -2648,6 +2648,8 @@
     "PayPal 遇到错误。": "PayPal encountered an error.",
     "创建订单失败:": "Failed to create order:",
     "网络响应不正常": "Network response is abnormal",
-    "加载 PayPal 支付模块失败。": "Failed to load PayPal payment module."
+    "加载 PayPal 支付模块失败。": "Failed to load PayPal payment module.",
+    "前往在线充值": "Go to online recharge",
+    "支持 PayPal 支付，即时到账": "Support PayPal payment, instant payment"
   }
 }

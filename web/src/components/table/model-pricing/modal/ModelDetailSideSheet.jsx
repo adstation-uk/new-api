@@ -58,7 +58,7 @@ const ModelDetailSideSheet = ({
           </div>
         )}
         {modelData && (
-          <>
+          <div className='flex-col flex gap-2'>
             <ModelBasicInfo
               modelData={modelData}
               vendorsMap={vendorsMap}
@@ -80,7 +80,7 @@ const ModelDetailSideSheet = ({
               autoGroups={autoGroups}
               t={t}
             />
-          </>
+          </div>
         )}
       </div>
     </SideSheet>

@@ -79,7 +79,7 @@ const PricingSidebar = ({
           theme='outline'
           type='tertiary'
           onClick={handleResetFilters}
-          className='text-gray-500 hover:text-gray-700'
+          className='text-gray-500'
         >
           {t('重置')}
         </Button>
