@@ -1,58 +1,58 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  API,
   showSuccess,
   showError,
   renderQuota,
   stringToColor,
+  renderQuotaWithAmount,
+  getCurrencyConfig,
+  convertUSDToCurrency,
+  renderQuotaWithPrompt,
 } from '../../helpers';
 import { UserContext } from '../../context/User';
+import { StatusContext } from '../../context/Status';
+import { useDashboardData } from '../../hooks/dashboard/useDashboardData';
 import { Coins, CheckCircle, X, AlertCircle } from 'lucide-react';
 
-// PLEASE REPLACE WITH YOUR ACTUAL PAYPAL CLIENT ID
+const QUOTA_PER_UNIT = 500000;
 const PAYPAL_CLIENT_ID =
   'AZp0F12FiE7f_U8W341aZjsHPnrfT24khK8Jt8uKt8rOqcZ_qDku9UAAmEoWR7u2H6aPUUlZqTffzjM5';
 const API_BASE = 'http://170.64.198.229:5000';
 
+const packages = [
+  { amount: 5 },
+  { amount: 10 },
+  { amount: 20, highlight: true },
+  { amount: 50 },
+  { amount: 100 },
+  { amount: 500 },
+];
+
 const Recharge = () => {
   const { t } = useTranslation();
-  const [userState] = useContext(UserContext);
+  const [userState, userDispatch] = useContext(UserContext);
+  const [statusState] = useContext(StatusContext);
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [paypalLoaded, setPaypalLoaded] = useState(false);
-  const [customAmount, setCustomAmount] = useState(5);
 
-  const packages = [
-    {
-      amount: 5,
-      features: ['50', '5',],
-    },
-    {
-      amount: 10,
-      features: ['50', '5',],
-    },
-    {
-      amount: 20,
-      features: ['100', '10',],
-      highlight: true,
-    },
-    {
-      amount: 50,
-      features: ['200', '20',],
-    },
-    {
-      amount: 100,
-      features: ['500', '60',],
-    },
-    {
-      amount: 500,
-      features: [
-        '3,000',
-        '600',
-      ],
-    },
-  ];
+  const { getUserData } = useDashboardData(
+    userState,
+    userDispatch,
+    statusState,
+  );
+
+  const quota_per_unit =
+    localStorage.getItem('quota_per_unit') || QUOTA_PER_UNIT;
+
+  useEffect(() => {
+    // Select default package
+    const defaultPkg = packages.find((p) => p.highlight) || packages[0];
+    setSelectedPackage(defaultPkg);
+  }, []);
 
   useEffect(() => {
     // Load PayPal SDK if not already loaded
@@ -90,6 +90,11 @@ const Recharge = () => {
   const getAmount = () => {
     if (!selectedPackage) return 0;
     return selectedPackage.amount;
+  };
+
+  const getWorthAmount = () => {
+    const amount = getAmount();
+    return amount;
   };
 
   useEffect(() => {
@@ -173,6 +178,7 @@ const Recharge = () => {
                   } else {
                     setShowModal(false);
                     setShowSuccessModal(true);
+                    getUserData();
                   }
                 } catch (err) {
                   console.error('Capture Error:', err);
@@ -236,9 +242,8 @@ const Recharge = () => {
 
                 <div className='flex flex-col h-full justify-between gap-4'>
                   <div className='flex items-center justify-between'>
-                    <div className='text-5xl font-black mb-2'>
-                      <span className='text-sm align-top mr-1'>$</span>
-                      {pkg.amount.toLocaleString()}
+                    <div className='text-4xl font-black mb-2'>
+                      {renderQuota(pkg.amount * quota_per_unit)}
                     </div>
                     <div className='space-y-2'>
                       <div className='flex items-start gap-2 text-sm text-neutral-400'>
@@ -247,21 +252,8 @@ const Recharge = () => {
                           className='mt-0.5 text-red-500 shrink-0'
                         />
                         <span>
-                          {t('实付')}{' '}
                           <strong className='text-red-400'>
-                            {pkg.features[0]}
-                          </strong>
-                        </span>
-                      </div>
-                      <div className='flex items-start gap-2 text-sm text-neutral-400'>
-                        <CheckCircle
-                          size={14}
-                          className='mt-0.5 text-red-500 shrink-0'
-                        />
-                        <span>
-                          {t('节省')}{' '}
-                          <strong className='text-red-400'>
-                            {pkg.features[1]}
+                            {t('支付')} {pkg.amount} USD
                           </strong>
                         </span>
                       </div>
@@ -372,28 +364,14 @@ const Recharge = () => {
 
             <div className='p-8'>
               <div className='mb-8 text-center'>
-                <p className='text-neutral-400 mb-2'>{t('已选方案')}</p>
+                <p className='text-neutral-400 mb-2'>{t('支付确认')}</p>
                 <div className='text-4xl font-black'>
-                  ${selectedPackage?.amount}
+                  {renderQuota(getAmount() * quota_per_unit)}
+                </div>
+                <div className='text-sm text-neutral-500 mt-2'>
+                  {t('应付金额')}: {convertUSDToCurrency(getAmount())}
                 </div>
               </div>
-
-              {selectedPackage?.isCustom && (
-                <div className='mb-6'>
-                  <label className='block text-sm font-medium text-neutral-400 mb-2'>
-                    {t('输入金额 ($)')}
-                  </label>
-                  <input
-                    type='number'
-                    min={5}
-                    value={customAmount}
-                    onChange={(e) =>
-                      setCustomAmount(parseFloat(e.target.value))
-                    }
-                    className='w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all font-bold text-xl'
-                  />
-                </div>
-              )}
 
               <div className='bg-neutral-800/80 rounded-xl p-6 min-h-[150px] flex flex-col items-center justify-center border border-neutral-700/50'>
                 {!paypalLoaded ? (
@@ -426,7 +404,6 @@ const Recharge = () => {
             <button
               onClick={() => {
                 setShowSuccessModal(false);
-                // window.location.reload(); // Reload to refresh balance
               }}
               className='w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-green-600/20'
             >
