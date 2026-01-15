@@ -59,7 +59,7 @@ const PricingSidebar = ({
     resetPricingFilters({
       handleChange,
       setShowWithRecharge,
-      setCurrency,
+      // setCurrency,
       setShowRatio,
       setViewMode,
       setFilterGroup,
