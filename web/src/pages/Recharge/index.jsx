@@ -18,8 +18,8 @@ import { Coins, CheckCircle, X, AlertCircle } from 'lucide-react';
 
 const QUOTA_PER_UNIT = 500000;
 const PAYPAL_CLIENT_ID =
-  'AZp0F12FiE7f_U8W341aZjsHPnrfT24khK8Jt8uKt8rOqcZ_qDku9UAAmEoWR7u2H6aPUUlZqTffzjM5';
-const API_BASE = 'http://170.64.198.229:5000';
+  'ARZHtnqotObgNjK7RXfvlGf39QY5NDupFJbEqjyIMkRL0LQYjX9vTF8UXoxW_xj9Z8PwV_IprsCVUQMY';
+const API_BASE = 'https://aiapi.tnt-pub.com';
 
 const packages = [
   { amount: 5 },
@@ -369,7 +369,7 @@ const Recharge = () => {
                   {renderQuota(getAmount() * quota_per_unit)}
                 </div>
                 <div className='text-sm text-neutral-500 mt-2'>
-                  {t('应付金额')}: {convertUSDToCurrency(getAmount())}
+                  {t('应付金额')}: {getAmount()} USD
                 </div>
               </div>
 

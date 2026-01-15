@@ -115,14 +115,14 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route
+        {/* <Route
           path='/console/playground'
           element={
             <PrivateRoute>
               <Playground />
             </PrivateRoute>
           }
-        />
+        /> */}
         <Route
           path='/console/redemption'
           element={
@@ -304,14 +304,14 @@ function App() {
             )
           }
         />
-        <Route
+        {/* <Route
           path='/about'
           element={
             <Suspense fallback={<Loading></Loading>} key={location.pathname}>
               <About />
             </Suspense>
           }
-        />
+        /> */}
         <Route
           path='/user-agreement'
           element={
@@ -328,14 +328,14 @@ function App() {
             </Suspense>
           }
         />
-        <Route
+        {/* <Route
           path='/console/chat/:id?'
           element={
             <Suspense fallback={<Loading></Loading>} key={location.pathname}>
               <Chat />
             </Suspense>
           }
-        />
+        /> */}
         {/* 方便使用chat2link直接跳转聊天... */}
         <Route
           path='/chat2link'
