@@ -140,7 +140,7 @@ const EditUserModal = (props) => {
         visible={props.visible}
         width={isMobile ? '100%' : 600}
         footer={
-          <div className='flex justify-end bg-white'>
+          <div className='flex justify-end'>
             <Space>
               <Button
                 theme='solid'
@@ -171,7 +171,7 @@ const EditUserModal = (props) => {
             onSubmit={submit}
           >
             {({ values }) => (
-              <div className='p-2'>
+              <div className='p-2 gap-2 flex flex-col'>
                 {/* 基本信息 */}
                 <Card className='!rounded-2xl shadow-sm border-0'>
                   <div className='flex items-center mb-2'>
