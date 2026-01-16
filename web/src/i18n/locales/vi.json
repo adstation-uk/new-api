@@ -3203,10 +3203,10 @@
     "Real-time Usage Tracking": "Real-time Usage Tracking",
     "Ready to start?": "Ready to start?",
     "Get Started Now": "Get Started Now",
-    "价格更低": "Lower price",
-    "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。": "Compared to official pricing, our price is more competitive, saving you every penny.",
-    "服务稳定": "Stable service",
-    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "High availability architecture design ensures that the service is online 24/7 and responds to your requests at any time.",
+    "价格更低": "giá thấp hơn",
+    "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。": "So với giá chính thức, giá của chúng tôi cạnh tranh hơn, giúp bạn tiết kiệm từng xu.",
+    "服务稳定": "Dịch vụ ổn định",
+    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "Thiết kế kiến ​​trúc có tính sẵn sàng cao đảm bảo rằng dịch vụ trực tuyến suốt ngày đêm và có thể đáp ứng yêu cầu của bạn bất cứ lúc nào.",
     "Payment Successful!": "Payment Successful!",
     "Your account balance has been updated.": "Your account balance has been updated.",
     "加载首页内容失败...": "Failed to load home page content...",
@@ -3252,6 +3252,11 @@
     "请选择一个套餐": "Vui lòng chọn một gói",
     "加载 PayPal 支付模块失败。": "Không tải được mô-đun thanh toán PayPal.",
     "前往在线充值": "Tới phần nạp tiền trực tuyến",
-    "支持 PayPal 支付，即时到账": "Hỗ trợ thanh toán PayPal, thanh toán ngay lập tức"
+    "支持 PayPal 支付，即时到账": "Hỗ trợ thanh toán PayPal, thanh toán ngay lập tức",
+    "标准 OpenAI 协议": "Giao thức OpenAI tiêu chuẩn",
+    "高并发支持": "Hỗ trợ đồng thời cao",
+    "实时用量追踪": "Theo dõi sử dụng theo thời gian thực",
+    "兼容 OpenAI SDK，只需切换您的基础 URL，即可在几秒钟内开始使用我们的高性能 API。": "Tương thích với OpenAI SDK, chỉ cần chuyển đổi URL cơ sở của bạn và bắt đầu sử dụng API hiệu suất cao của chúng tôi sau vài giây.",
+    "充值页面": "Trang nạp tiền"
   }
 }

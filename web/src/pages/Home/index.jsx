@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import {
   Button,
   Typography,
@@ -79,12 +79,12 @@ const Home = () => {
 
   const modelScrollData = [
     { name: 'GPT-4o', price: '$2.50', discount: '-50%' },
-    { name: 'Claude 3.5', price: '$1.50', discount: '-50%' },
-    { name: 'Gemini 1.5', price: '$0.50', discount: '-70%' },
-    { name: 'Llama 3.1', price: '$0.10', discount: '-90%' },
-    { name: 'Mixtral', price: '$0.20', discount: '-60%' },
-    { name: 'Qwen 2.5', price: '$0.05', discount: '-80%' },
-    { name: 'DeepSeek', price: '$0.10', discount: '-80%' },
+    { name: 'GPT-5', price: '$1.25', discount: '-50%' },
+    { name: 'Gemini 3 Flash', price: '$5.0', discount: '-70%' },
+    { name: 'Gemini 3 Pro', price: '$2.00', discount: '-60%' },
+    { name: 'GPT-4o-mini', price: '$1.5', discount: '-90%' },
+    { name: 'Gemini 2.0 Flash', price: '$1.0', discount: '-80%' },
+    { name: 'Veo 3.1', price: '$5.0', discount: '-50%' },
   ];
 
   const advantages = [
@@ -113,7 +113,7 @@ const Home = () => {
   ];
 
   const modelGroupsItems = [
-    { name: 'OpenAI', icon: <OpenAI size={24} />, desc: 'GPT-4o, DALL-E 3' },
+    { name: 'OpenAI', icon: <OpenAI size={24} />, desc: 'GPT-4o, GPT-5' },
     {
       name: 'Anthropic',
       icon: <Claude.Color size={24} />,
@@ -122,14 +122,29 @@ const Home = () => {
     {
       name: 'Google',
       icon: <Gemini.Color size={24} />,
-      desc: 'Gemini 1.5 Pro',
+      desc: 'Gemini 3 Pro, Gemini 3 Flash',
+    },
+    {
+      name: 'Moonshot',
+      icon: <Moonshot size={24} />,
+      desc: 'Kimi-latest',
+    },
+    {
+      name: 'Zhipu',
+      icon: <Zhipu size={24} />,
+      desc: 'GLM-4 Plus',
+    },
+    {
+      name: 'Volcengine',
+      icon: <Volcengine size={24} />,
+      desc: 'Doubao-pro',
     },
     {
       name: 'Midjourney',
       icon: <Midjourney size={24} />,
       desc: 'Image Gen V6',
     },
-    { name: 'X.AI', icon: <XAI size={24} />, desc: 'Grok Beta' },
+    { name: 'X.AI', icon: <XAI size={24} />, desc: 'Grok-2' },
     { name: 'Aliyun', icon: <Qwen.Color size={24} />, desc: 'Qwen 2.5 72B' },
     {
       name: 'DeepSeek',
@@ -137,7 +152,22 @@ const Home = () => {
       desc: 'DeepSeek V3',
     },
     { name: 'Baidu', icon: <Wenxin.Color size={24} />, desc: 'Ernie Bot 4.0' },
+    { name: 'Minimax', icon: <Minimax size={24} />, desc: 'abab 6.5s' },
+    { name: 'Suno', icon: <Suno size={24} />, desc: 'Suno V3.5' },
+    { name: 'iFlytek', icon: <Spark size={24} />, desc: 'Spark 4.0 Ultra' },
+    { name: 'Tencent', icon: <Hunyuan size={24} />, desc: 'Hunyuan-Turbo' },
   ];
+
+  const shuffledRows = useMemo(() => {
+    return [0, 1, 2, 3, 4].map(() => {
+      const items = [...modelGroupsItems];
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      return [...items, ...items, ...items];
+    });
+  }, [modelGroupsItems]);
 
   // Randomly activate models Effect
   useEffect(() => {
@@ -565,11 +595,7 @@ const Home = () => {
                       animationDuration: `${30 + rowIndex * 5}s`,
                     }}
                   >
-                    {[
-                      ...modelGroupsItems,
-                      ...modelGroupsItems,
-                      ...modelGroupsItems,
-                    ].map((group, colIndex) => {
+                    {shuffledRows[rowIndex].map((group, colIndex) => {
                       const uniqueId = `row${rowIndex}-${colIndex}`;
                       // Check if this specific item is active in the Set
                       const isActive = activeModelIndices.has(uniqueId);

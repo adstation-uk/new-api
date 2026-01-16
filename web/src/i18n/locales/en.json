@@ -2615,7 +2615,7 @@
     "价格更低": "Lower price",
     "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。": "Compared to official pricing, our prices are more competitive, saving you every penny.",
     "服务稳定": "Stable service",
-    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "High availability architecture design ensures that the service is online 24/7 and responds to your requests at any time.",
+    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "High-availability architecture design ensures that the service is online around the clock and can respond to your requests at any time.",
     "没有繁琐的请求限制，释放您的创造力，尽情探索 AI 的可能性。": "No tedious request limits, unleash your creativity and explore the possibilities of AI to your heart's content.",
     "推理速度": "Inference speed",
     "更快的推理速率": "Faster inference rate",
@@ -2650,6 +2650,7 @@
     "网络响应不正常": "Network response is abnormal",
     "加载 PayPal 支付模块失败。": "Failed to load PayPal payment module.",
     "前往在线充值": "Go to online recharge",
-    "支持 PayPal 支付，即时到账": "Support PayPal payment, instant payment"
+    "支持 PayPal 支付，即时到账": "Support PayPal payment, instant payment",
+    "充值页面": "Recharge page"
   }
 }

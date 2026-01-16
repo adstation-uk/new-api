@@ -121,7 +121,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('邮箱')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -158,7 +158,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('微信')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -199,7 +199,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('GitHub')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -240,7 +240,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('Discord')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -281,7 +281,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('OIDC')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -324,7 +324,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('Telegram')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>
@@ -399,7 +399,7 @@ const AccountManagement = ({
                       />
                     </div>
                     <div className='flex-1 min-w-0'>
-                      <div className='font-medium text-gray-900'>
+                      <div className='font-medium '>
                         {t('LinuxDO')}
                       </div>
                       <div className='text-sm text-gray-500 truncate'>

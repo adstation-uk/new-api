@@ -2601,9 +2601,9 @@
     "说明：本页测试为非流式请求；若渠道仅支持流式返回，可能出现测试失败，请以实际使用为准。": "Remarque : les tests sur cette page utilisent des requêtes non-streaming. Si un canal ne prend en charge que les réponses en streaming, les tests peuvent échouer. Veuillez vous référer à l’usage réel.",
     "提示：端点映射仅用于模型广场展示，不会影响模型真实调用。如需配置真实调用，请前往「渠道管理」。": "Remarque : la correspondance des endpoints sert uniquement à l’affichage dans la place de marché des modèles et n’affecte pas l’invocation réelle. Pour configurer l’invocation réelle, veuillez aller dans « Gestion des canaux ».",
     "价格更低": "Lower price",
-    "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。": "Compared to official pricing, our price is more competitive, saving you every penny.",
-    "服务稳定": "Stable service",
-    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "High availability architecture design ensures that the service is online 24/7 and responds to your requests at any time.",
+    "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。": "Par rapport aux prix officiels, nos prix sont plus compétitifs, vous permettant d'économiser chaque centime.",
+    "服务稳定": "Service stable",
+    "高可用架构设计，确保服务全天候在线，随时响应您的请求。": "La conception de l'architecture à haute disponibilité garantit que le service est en ligne 24 heures sur 24 et peut répondre à vos demandes à tout moment.",
     "Payment Successful!": "Payment Successful!",
     "Your account balance has been updated.": "Your account balance has been updated.",
     "加载首页内容失败...": "Échec du chargement du contenu de la page d'accueil...",
@@ -2664,6 +2664,7 @@
     "网络响应不正常": "La réponse du réseau est anormale",
     "加载 PayPal 支付模块失败。": "Échec du chargement du module de paiement PayPal.",
     "前往在线充值": "Accédez à la recharge en ligne",
-    "支持 PayPal 支付，即时到账": "Prise en charge du paiement PayPal, paiement instantané"
+    "支持 PayPal 支付，即时到账": "Prise en charge du paiement PayPal, paiement instantané",
+    "充值页面": "Page de recharge"
   }
 }
