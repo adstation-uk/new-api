@@ -2665,6 +2665,9 @@
     "加载 PayPal 支付模块失败。": "Échec du chargement du module de paiement PayPal.",
     "前往在线充值": "Accédez à la recharge en ligne",
     "支持 PayPal 支付，即时到账": "Prise en charge du paiement PayPal, paiement instantané",
-    "充值页面": "Page de recharge"
+    "充值页面": "Page de recharge",
+    "额外积分": "points supplémentaires",
+    "支付确认": "Confirmation de paiement",
+    "应付金额": "Montant à payer"
   }
 }

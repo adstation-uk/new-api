@@ -2651,6 +2651,9 @@
     "加载 PayPal 支付模块失败。": "Failed to load PayPal payment module.",
     "前往在线充值": "Go to online recharge",
     "支持 PayPal 支付，即时到账": "Support PayPal payment, instant payment",
-    "充值页面": "Recharge page"
+    "充值页面": "Recharge page",
+    "额外积分": "extra points",
+    "支付确认": "Payment confirmation",
+    "应付金额": "Amount payable"
   }
 }

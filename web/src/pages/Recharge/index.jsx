@@ -26,8 +26,8 @@ const packages = [
   { amount: 10 },
   { amount: 20, highlight: true },
   { amount: 50 },
-  { amount: 100 },
-  { amount: 500 },
+  { amount: 100, bonus: 0.05 },
+  { amount: 500, bonus: 0.1 },
 ];
 
 const Recharge = () => {
@@ -241,11 +241,15 @@ const Recharge = () => {
                 )}
 
                 <div className='flex flex-col h-full justify-between gap-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='text-4xl font-black mb-2'>
-                      {renderQuota(pkg.amount * quota_per_unit)}
+                  <div className='flex items-center justify-between font-sans'>
+                    <div>
+                      <div className='text-4xl font-black mb-2 shadow-sm'>
+                        {renderQuota(
+                          pkg.amount * quota_per_unit * (1 + (pkg.bonus || 0)),
+                        )}
+                      </div>
                     </div>
-                    <div className='space-y-2'>
+                    <div className='flex flex-col items-end gap-2'>
                       <div className='flex items-start gap-2 text-sm text-neutral-400'>
                         <CheckCircle
                           size={14}
@@ -257,6 +261,15 @@ const Recharge = () => {
                           </strong>
                         </span>
                       </div>
+                      {pkg.bonus && (
+                        <div className='inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[10px] font-bold text-red-400 uppercase tracking-tight'>
+                          <span className='relative flex h-1.5 w-1.5'>
+                            <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75'></span>
+                            <span className='relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500'></span>
+                          </span>
+                          {pkg.bonus * 100}% {t('额外积分')}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -365,11 +378,22 @@ const Recharge = () => {
             <div className='p-8'>
               <div className='mb-8 text-center'>
                 <p className='text-neutral-400 mb-2'>{t('支付确认')}</p>
-                <div className='text-4xl font-black'>
-                  {renderQuota(getAmount() * quota_per_unit)}
+                <div className='text-4xl font-black font-sans'>
+                  {renderQuota(
+                    getAmount() *
+                      quota_per_unit *
+                      (1 + (selectedPackage?.bonus || 0)),
+                  )}
                 </div>
-                <div className='text-sm text-neutral-500 mt-2'>
-                  {t('应付金额')}: {getAmount()} USD
+                <div className='flex items-center justify-center gap-3 mt-3'>
+                  <div className='text-sm text-neutral-500'>
+                    {t('应付金额')}: {getAmount()} USD
+                  </div>
+                  {selectedPackage?.bonus && (
+                    <div className='inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 border border-red-500/20 text-[11px] font-bold text-red-400 uppercase tracking-tight'>
+                      {selectedPackage.bonus * 100}% {t('额外赠送')}
+                    </div>
+                  )}
                 </div>
               </div>
 
