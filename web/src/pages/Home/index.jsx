@@ -56,6 +56,62 @@ import {
 
 const { Text } = Typography;
 
+const MODEL_SCROLL_DATA = [
+  { name: 'GPT-4o', price: '$2.50', discount: '-50%' },
+  { name: 'GPT-5', price: '$1.25', discount: '-50%' },
+  { name: 'Gemini 3 Flash', price: '$5.0', discount: '-70%' },
+  { name: 'Gemini 3 Pro', price: '$2.00', discount: '-60%' },
+  { name: 'GPT-4o-mini', price: '$1.5', discount: '-90%' },
+  { name: 'Gemini 2.0 Flash', price: '$1.0', discount: '-80%' },
+  { name: 'Veo 3.1', price: '$5.0', discount: '-50%' },
+];
+
+const MODEL_GROUPS_ITEMS = [
+  { name: 'OpenAI', icon: <OpenAI size={24} />, desc: 'GPT-4o, GPT-5' },
+  {
+    name: 'Anthropic',
+    icon: <Claude.Color size={24} />,
+    desc: 'Claude 3.5 Sonnet',
+  },
+  {
+    name: 'Google',
+    icon: <Gemini.Color size={24} />,
+    desc: 'Gemini 3 Pro, Gemini 3 Flash',
+  },
+  {
+    name: 'Moonshot',
+    icon: <Moonshot size={24} />,
+    desc: 'Kimi-latest',
+  },
+  {
+    name: 'Zhipu',
+    icon: <Zhipu size={24} />,
+    desc: 'GLM-4 Plus',
+  },
+  {
+    name: 'Volcengine',
+    icon: <Volcengine size={24} />,
+    desc: 'Doubao-pro',
+  },
+  {
+    name: 'Midjourney',
+    icon: <Midjourney size={24} />,
+    desc: 'Image Gen V6',
+  },
+  { name: 'X.AI', icon: <XAI size={24} />, desc: 'Grok-2' },
+  { name: 'Aliyun', icon: <Qwen.Color size={24} />, desc: 'Qwen 2.5 72B' },
+  {
+    name: 'DeepSeek',
+    icon: <DeepSeek.Color size={24} />,
+    desc: 'DeepSeek V3',
+  },
+  { name: 'Baidu', icon: <Wenxin.Color size={24} />, desc: 'Ernie Bot 4.0' },
+  { name: 'Minimax', icon: <Minimax size={24} />, desc: 'abab 6.5s' },
+  { name: 'Suno', icon: <Suno size={24} />, desc: 'Suno V3.5' },
+  { name: 'iFlytek', icon: <Spark size={24} />, desc: 'Spark 4.0 Ultra' },
+  { name: 'Tencent', icon: <Hunyuan size={24} />, desc: 'Hunyuan-Turbo' },
+];
+
 const Home = () => {
   const { t, i18n } = useTranslation();
   const [statusState] = useContext(StatusContext);
@@ -68,7 +124,10 @@ const Home = () => {
   const docsLink = statusState?.status?.docs_link || '';
   const serverAddress =
     statusState?.status?.server_address || `${window.location.origin}`;
-  const endpointItems = API_ENDPOINTS.map((e) => ({ value: e }));
+  const endpointItems = useMemo(
+    () => API_ENDPOINTS.map((e) => ({ value: e })),
+    [],
+  );
   const [endpointIndex, setEndpointIndex] = useState(0);
   const isChinese = i18n.language.startsWith('zh');
 
@@ -77,97 +136,47 @@ const Home = () => {
   const [activeModelIndices, setActiveModelIndices] = useState(new Set());
   const [isHoveringModels, setIsHoveringModels] = useState(false);
 
-  const modelScrollData = [
-    { name: 'GPT-4o', price: '$2.50', discount: '-50%' },
-    { name: 'GPT-5', price: '$1.25', discount: '-50%' },
-    { name: 'Gemini 3 Flash', price: '$5.0', discount: '-70%' },
-    { name: 'Gemini 3 Pro', price: '$2.00', discount: '-60%' },
-    { name: 'GPT-4o-mini', price: '$1.5', discount: '-90%' },
-    { name: 'Gemini 2.0 Flash', price: '$1.0', discount: '-80%' },
-    { name: 'Veo 3.1', price: '$5.0', discount: '-50%' },
-  ];
+  const advantages = useMemo(
+    () => [
+      {
+        title: t('价格更低'),
+        desc: t('相比官方定价，我们的价格更具竞争力，为您节省每一分钱。'),
+        icon: <Coins size={32} className='text-blue-500' />,
+      },
+      {
+        title: t('服务稳定'),
+        desc: t('高可用架构设计，确保服务全天候在线，随时响应您的请求。'),
+        icon: <Shield size={32} className='text-green-500' />,
+      },
+      {
+        title: t('无限制'),
+        desc: t('没有繁琐的请求限制，释放您的创造力，尽情探索 AI 的可能性。'),
+        icon: <Unlock size={32} className='text-purple-500' />,
+      },
+    ],
+    [t],
+  );
 
-  const advantages = [
-    {
-      title: t('价格更低'),
-      desc: t('相比官方定价，我们的价格更具竞争力，为您节省每一分钱。'),
-      icon: <Coins size={32} className='text-blue-500' />,
-    },
-    {
-      title: t('服务稳定'),
-      desc: t('高可用架构设计，确保服务全天候在线，随时响应您的请求。'),
-      icon: <Shield size={32} className='text-green-500' />,
-    },
-    {
-      title: t('无限制'),
-      desc: t('没有繁琐的请求限制，释放您的创造力，尽情探索 AI 的可能性。'),
-      icon: <Unlock size={32} className='text-purple-500' />,
-    },
-  ];
-
-  const statsData = [
-    { label: t('推理速度'), value: '3.5x', desc: t('更快的推理速率') },
-    { label: t('训练速度'), value: '2.3x', desc: t('更高的训练效率') },
-    { label: t('成本节约'), value: '20%', desc: t('更低的支出成本') },
-    { label: t('网络压缩'), value: '117x', desc: t('更佳的网络压缩') },
-  ];
-
-  const modelGroupsItems = [
-    { name: 'OpenAI', icon: <OpenAI size={24} />, desc: 'GPT-4o, GPT-5' },
-    {
-      name: 'Anthropic',
-      icon: <Claude.Color size={24} />,
-      desc: 'Claude 3.5 Sonnet',
-    },
-    {
-      name: 'Google',
-      icon: <Gemini.Color size={24} />,
-      desc: 'Gemini 3 Pro, Gemini 3 Flash',
-    },
-    {
-      name: 'Moonshot',
-      icon: <Moonshot size={24} />,
-      desc: 'Kimi-latest',
-    },
-    {
-      name: 'Zhipu',
-      icon: <Zhipu size={24} />,
-      desc: 'GLM-4 Plus',
-    },
-    {
-      name: 'Volcengine',
-      icon: <Volcengine size={24} />,
-      desc: 'Doubao-pro',
-    },
-    {
-      name: 'Midjourney',
-      icon: <Midjourney size={24} />,
-      desc: 'Image Gen V6',
-    },
-    { name: 'X.AI', icon: <XAI size={24} />, desc: 'Grok-2' },
-    { name: 'Aliyun', icon: <Qwen.Color size={24} />, desc: 'Qwen 2.5 72B' },
-    {
-      name: 'DeepSeek',
-      icon: <DeepSeek.Color size={24} />,
-      desc: 'DeepSeek V3',
-    },
-    { name: 'Baidu', icon: <Wenxin.Color size={24} />, desc: 'Ernie Bot 4.0' },
-    { name: 'Minimax', icon: <Minimax size={24} />, desc: 'abab 6.5s' },
-    { name: 'Suno', icon: <Suno size={24} />, desc: 'Suno V3.5' },
-    { name: 'iFlytek', icon: <Spark size={24} />, desc: 'Spark 4.0 Ultra' },
-    { name: 'Tencent', icon: <Hunyuan size={24} />, desc: 'Hunyuan-Turbo' },
-  ];
+  const statsData = useMemo(
+    () => [
+      { label: t('推理速度'), value: '3.5x', desc: t('更快的推理速率') },
+      { label: t('训练速度'), value: '2.3x', desc: t('更高的训练效率') },
+      { label: t('成本节约'), value: '20%', desc: t('更低的支出成本') },
+      { label: t('网络压缩'), value: '117x', desc: t('更佳的网络压缩') },
+    ],
+    [t],
+  );
 
   const shuffledRows = useMemo(() => {
     return [0, 1, 2, 3, 4].map(() => {
-      const items = [...modelGroupsItems];
+      const items = [...MODEL_GROUPS_ITEMS];
       for (let i = items.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [items[i], items[j]] = [items[j], items[i]];
       }
       return [...items, ...items, ...items];
     });
-  }, [modelGroupsItems]);
+  }, []);
 
   // Randomly activate models Effect
   useEffect(() => {
@@ -181,16 +190,18 @@ const Home = () => {
 
       for (let i = 0; i < numActive; i++) {
         const row = Math.floor(Math.random() * 5); // 5 rows
-        const itemsLen = modelGroupsItems.length;
-        // In mobile/small screens, narrow the range to the absolute center of the viewport
-        const col = itemsLen + Math.floor(Math.random() * itemsLen);
+        const itemsLen = MODEL_GROUPS_ITEMS.length;
+        // Target items that are visually central during the scroll cycle.
+        // For a 3-repeat list scrolling from 0 to -33%, the visible window shifts from block 1 to block 2.
+        // Picking col around the itemsLen boundary ensures items appear centrally.
+        const col = Math.floor(itemsLen * 0.4) + Math.floor(Math.random() * itemsLen);
         newActive.add(`row${row}-${col}`);
       }
       setActiveModelIndices(newActive);
     }, 2500);
 
     return () => clearInterval(interval);
-  }, [isHoveringModels, modelGroupsItems.length, isMobile]);
+  }, [isHoveringModels, isMobile]);
 
   const displayHomePageContent = async () => {
     setHomePageContent(localStorage.getItem('home_page_content') || '');
@@ -365,8 +376,8 @@ const Home = () => {
             </div>
 
             <style>{`
-              @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-25%); } }
-              @keyframes scroll-right { from { transform: translateX(-25%); } to { transform: translateX(0); } }
+              @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+              @keyframes scroll-right { from { transform: translateX(-33.333%); } to { transform: translateX(0); } }
               .animate-scroll-left { animation: scroll-left 30s linear infinite; }
               .animate-scroll-left-slower { animation: scroll-left 45s linear infinite; }
               .animate-scroll-right { animation: scroll-right 40s linear infinite; }
@@ -391,10 +402,10 @@ const Home = () => {
             <div className='w-full py-6 backdrop-blur-md bg-white/10 relative overflow-hidden mt-12 mb-0 z-10 border-t border-white/10'>
               <div className='flex animate-scroll-left w-max hover:[animation-play-state:paused]'>
                 {[
-                  ...modelScrollData,
-                  ...modelScrollData,
-                  ...modelScrollData,
-                  ...modelScrollData,
+                  ...MODEL_SCROLL_DATA,
+                  ...MODEL_SCROLL_DATA,
+                  ...MODEL_SCROLL_DATA,
+                  ...MODEL_SCROLL_DATA,
                 ].map((item, idx) => (
                   <div
                     key={idx}
@@ -420,10 +431,10 @@ const Home = () => {
                   style={{ animationDuration: '70s' }}
                 >
                   {[
-                    ...modelScrollData,
-                    ...modelScrollData,
-                    ...modelScrollData,
-                    ...modelScrollData,
+                    ...MODEL_SCROLL_DATA,
+                    ...MODEL_SCROLL_DATA,
+                    ...MODEL_SCROLL_DATA,
+                    ...MODEL_SCROLL_DATA,
                   ]
                     .reverse()
                     .map((item, idx) => (
@@ -512,10 +523,10 @@ const Home = () => {
             <div className='absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--semi-color-bg-1)] to-transparent z-10 pointer-events-none' />
             <div className='flex animate-scroll-right w-max hover:[animation-play-state:paused]'>
               {[
-                ...modelScrollData,
-                ...modelScrollData,
-                ...modelScrollData,
-                ...modelScrollData,
+                ...MODEL_SCROLL_DATA,
+                ...MODEL_SCROLL_DATA,
+                ...MODEL_SCROLL_DATA,
+                ...MODEL_SCROLL_DATA,
               ].map((item, idx) => (
                 <div
                   key={idx}

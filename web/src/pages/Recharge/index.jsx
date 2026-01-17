@@ -176,6 +176,9 @@ const Recharge = () => {
                   } else if (!orderData.purchase_units) {
                     throw new Error(JSON.stringify(orderData));
                   } else {
+                    if (typeof window.gtag_report_conversion === 'function') {
+                      window.gtag_report_conversion(getAmount(), data.orderID);
+                    }
                     setShowModal(false);
                     setShowSuccessModal(true);
                     getUserData();

@@ -195,22 +195,42 @@ func InjectUmamiAnalytics() {
 
 func InjectGoogleAnalytics() {
 	analyticsInjectBuilder := &strings.Builder{}
-	if os.Getenv("GOOGLE_ANALYTICS_ID") != "" {
-		gaID := os.Getenv("GOOGLE_ANALYTICS_ID")
-		// Google Analytics 4 (gtag.js)
-		analyticsInjectBuilder.WriteString("<script async src=\"https://www.googletagmanager.com/gtag/js?id=")
-		analyticsInjectBuilder.WriteString(gaID)
-		analyticsInjectBuilder.WriteString("\"></script>")
-		analyticsInjectBuilder.WriteString("<script>")
-		analyticsInjectBuilder.WriteString("window.dataLayer = window.dataLayer || [];")
-		analyticsInjectBuilder.WriteString("function gtag(){dataLayer.push(arguments);}")
-		analyticsInjectBuilder.WriteString("gtag('js', new Date());")
-		analyticsInjectBuilder.WriteString("gtag('config', '")
-		analyticsInjectBuilder.WriteString(gaID)
-		analyticsInjectBuilder.WriteString("');")
-		analyticsInjectBuilder.WriteString("</script>")
+	gaID := os.Getenv("GOOGLE_ANALYTICS_ID")
+	adsID := os.Getenv("GOOGLE_ADS_ID")
+	adsLabel := os.Getenv("GOOGLE_ADS_LABEL")
+
+	if gaID != "" || adsID != "" {
+		mainID := gaID
+		if mainID == "" {
+			mainID = adsID
+		}
+		analyticsInjectBuilder.WriteString(fmt.Sprintf("<script async src=\"https://www.googletagmanager.com/gtag/js?id=%s\"></script>\n", mainID))
+		analyticsInjectBuilder.WriteString("<script>\n")
+		analyticsInjectBuilder.WriteString("  window.dataLayer = window.dataLayer || [];\n")
+		analyticsInjectBuilder.WriteString("  function gtag(){dataLayer.push(arguments);}\n")
+		analyticsInjectBuilder.WriteString("  gtag('js', new Date());\n")
+
+		if gaID != "" {
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("  gtag('config', '%s');\n", gaID))
+		}
+		if adsID != "" {
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("  gtag('config', '%s');\n", adsID))
+		}
+
+		if adsID != "" && adsLabel != "" {
+			analyticsInjectBuilder.WriteString("  function gtag_report_conversion(amount, transaction_id) {\n")
+			analyticsInjectBuilder.WriteString("    gtag('event', 'conversion', {\n")
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("      'send_to': '%s/%s',\n", adsID, adsLabel))
+			analyticsInjectBuilder.WriteString("      'value': amount || 1.0,\n")
+			analyticsInjectBuilder.WriteString("      'currency': 'USD',\n")
+			analyticsInjectBuilder.WriteString("      'transaction_id': transaction_id || ''\n")
+			analyticsInjectBuilder.WriteString("    });\n")
+			analyticsInjectBuilder.WriteString("    return false;\n")
+			analyticsInjectBuilder.WriteString("  }\n")
+		}
+		analyticsInjectBuilder.WriteString("</script>\n")
 	}
-	analyticsInjectBuilder.WriteString("<!--Google Analytics QuantumNous-->\n")
+	analyticsInjectBuilder.WriteString("<!--Google Analytics & Ads QuantumNous-->\n")
 	analyticsInject := analyticsInjectBuilder.String()
 	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--Google Analytics-->\n"), []byte(analyticsInject))
 }
