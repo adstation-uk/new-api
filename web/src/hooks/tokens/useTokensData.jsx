@@ -155,7 +155,7 @@ export const useTokensData = (openFluentNotification) => {
     }
     const { success, message } = res.data;
     if (success) {
-      showSuccess('操作成功完成！');
+      showSuccess(t('操作成功完成！'));
       let token = res.data.data;
       let newTokens = [...tokens];
       if (action !== 'delete') {
