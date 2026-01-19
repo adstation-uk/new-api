@@ -155,6 +155,10 @@ func main() {
 	})
 	server.Use(sessions.Sessions("session", store))
 
+	// InjectUmamiAnalytics()
+	// InjectGoogleAnalytics()
+	// InjectClarity()
+
 	// 设置路由
 	router.SetRouter(server, buildFS, indexPage)
 	var port = os.Getenv("PORT")
@@ -169,6 +173,85 @@ func main() {
 	if err != nil {
 		common.FatalLog("failed to start HTTP server: " + err.Error())
 	}
+}
+
+func InjectUmamiAnalytics() {
+	analyticsInjectBuilder := &strings.Builder{}
+	if os.Getenv("UMAMI_WEBSITE_ID") != "" {
+		umamiSiteID := os.Getenv("UMAMI_WEBSITE_ID")
+		umamiScriptURL := os.Getenv("UMAMI_SCRIPT_URL")
+		if umamiScriptURL == "" {
+			umamiScriptURL = "https://analytics.umami.is/script.js"
+		}
+		analyticsInjectBuilder.WriteString("<script defer src=\"")
+		analyticsInjectBuilder.WriteString(umamiScriptURL)
+		analyticsInjectBuilder.WriteString("\" data-website-id=\"")
+		analyticsInjectBuilder.WriteString(umamiSiteID)
+		analyticsInjectBuilder.WriteString("\"></script>")
+	}
+	analyticsInjectBuilder.WriteString("<!--Umami QuantumNous-->\n")
+	analyticsInject := analyticsInjectBuilder.String()
+	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--umami-->\n"), []byte(analyticsInject))
+}
+
+func InjectGoogleAnalytics() {
+	analyticsInjectBuilder := &strings.Builder{}
+	gaID := os.Getenv("GOOGLE_ANALYTICS_ID")
+	adsID := os.Getenv("GOOGLE_ADS_ID")
+	adsLabel := os.Getenv("GOOGLE_ADS_LABEL")
+
+	if gaID != "" || adsID != "" {
+		mainID := gaID
+		if mainID == "" {
+			mainID = adsID
+		}
+		analyticsInjectBuilder.WriteString(fmt.Sprintf("<script async src=\"https://www.googletagmanager.com/gtag/js?id=%s\"></script>\n", mainID))
+		analyticsInjectBuilder.WriteString("<script>\n")
+		analyticsInjectBuilder.WriteString("  window.dataLayer = window.dataLayer || [];\n")
+		analyticsInjectBuilder.WriteString("  function gtag(){dataLayer.push(arguments);}\n")
+		analyticsInjectBuilder.WriteString("  gtag('js', new Date());\n")
+
+		if gaID != "" {
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("  gtag('config', '%s');\n", gaID))
+		}
+		if adsID != "" {
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("  gtag('config', '%s');\n", adsID))
+		}
+
+		if adsID != "" && adsLabel != "" {
+			analyticsInjectBuilder.WriteString("  function gtag_report_conversion(amount, transaction_id) {\n")
+			analyticsInjectBuilder.WriteString("    gtag('event', 'conversion', {\n")
+			analyticsInjectBuilder.WriteString(fmt.Sprintf("      'send_to': '%s/%s',\n", adsID, adsLabel))
+			analyticsInjectBuilder.WriteString("      'value': amount || 1.0,\n")
+			analyticsInjectBuilder.WriteString("      'currency': 'USD',\n")
+			analyticsInjectBuilder.WriteString("      'transaction_id': transaction_id || ''\n")
+			analyticsInjectBuilder.WriteString("    });\n")
+			analyticsInjectBuilder.WriteString("    return false;\n")
+			analyticsInjectBuilder.WriteString("  }\n")
+		}
+		analyticsInjectBuilder.WriteString("</script>\n")
+	}
+	analyticsInjectBuilder.WriteString("<!--Google Analytics & Ads QuantumNous-->\n")
+	analyticsInject := analyticsInjectBuilder.String()
+	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--Google Analytics-->\n"), []byte(analyticsInject))
+}
+
+func InjectClarity() {
+	clarityID := os.Getenv("CLARITY_ID")
+	if clarityID == "" {
+		return
+	}
+	clarityInject := fmt.Sprintf(`
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "%s");
+</script>
+<!--Clarity QuantumNous-->
+`, clarityID)
+	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--clarity-->\n"), []byte(clarityInject))
 }
 
 func InitResources() error {
