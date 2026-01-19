@@ -157,6 +157,7 @@ func main() {
 
 	InjectUmamiAnalytics()
 	InjectGoogleAnalytics()
+	InjectClarity()
 
 	// 设置路由
 	router.SetRouter(server, buildFS, indexPage)
@@ -233,6 +234,24 @@ func InjectGoogleAnalytics() {
 	analyticsInjectBuilder.WriteString("<!--Google Analytics & Ads QuantumNous-->\n")
 	analyticsInject := analyticsInjectBuilder.String()
 	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--Google Analytics-->\n"), []byte(analyticsInject))
+}
+
+func InjectClarity() {
+	clarityID := os.Getenv("CLARITY_ID")
+	if clarityID == "" {
+		return
+	}
+	clarityInject := fmt.Sprintf(`
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "%s");
+</script>
+<!--Clarity QuantumNous-->
+`, clarityID)
+	indexPage = bytes.ReplaceAll(indexPage, []byte("<!--clarity-->\n"), []byte(clarityInject))
 }
 
 func InitResources() error {
