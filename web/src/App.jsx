@@ -41,6 +41,14 @@ function App() {
   const location = useLocation();
   const [statusState] = useContext(StatusContext);
 
+  React.useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', {
+        page_path: location.pathname,
+      });
+    }
+  }, [location.pathname]);
+
   // 获取模型广场权限配置
   const pricingRequireAuth = useMemo(() => {
     const headerNavModulesConfig = statusState?.status?.HeaderNavModules;

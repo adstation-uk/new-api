@@ -100,6 +100,16 @@ const RegisterForm = () => {
     return savedStatus ? JSON.parse(savedStatus) : {};
   });
 
+  useEffect(() => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+        value: 1.0,
+        currency: 'USD',
+      });
+    }
+  }, []);
+
   const [showEmailVerification, setShowEmailVerification] = useState(() => {
     return status.email_verification ?? false;
   });
@@ -155,6 +165,11 @@ const RegisterForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+          });
+        }
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         setUserData(data);
@@ -327,6 +342,11 @@ const RegisterForm = () => {
       const res = await API.get(`/api/oauth/telegram/login`, { params });
       const { success, message, data } = res.data;
       if (success) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+          });
+        }
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         showSuccess('登录成功！');
@@ -493,9 +513,7 @@ const RegisterForm = () => {
         <div className='w-full max-w-md'>
           <div className='flex items-center justify-center mb-6 gap-2'>
             <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3}>
-              {systemName}
-            </Title>
+            <Title heading={3}>{systemName}</Title>
           </div>
 
           <Card className='border-0 !rounded-2xl overflow-hidden'>

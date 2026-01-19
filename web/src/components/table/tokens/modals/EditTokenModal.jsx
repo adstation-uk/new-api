@@ -249,6 +249,13 @@ const EditTokenModal = (props) => {
         }
       }
       if (successCount > 0) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/XzsNCLaMmegbEKOEw9pA',
+            value: 1.0,
+            currency: 'USD',
+          });
+        }
         showSuccess(t('令牌创建成功，请在列表页面点击复制获取令牌！'));
         props.refresh();
         props.handleClose();

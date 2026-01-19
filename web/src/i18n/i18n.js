@@ -22,7 +22,7 @@ i18n
       ja: jaTranslation,
       vi: viTranslation,
     },
-    fallbackLng: 'zh',
+    fallbackLng: 'en',
     nsSeparator: false,
     interpolation: {
       escapeValue: false,

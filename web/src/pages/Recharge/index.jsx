@@ -84,6 +84,15 @@ const Recharge = () => {
       showError(t('请选择一个套餐'));
       return;
     }
+
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17369711139/XsEZCJSPlugbEKOEw9pA',
+        value: 1.0,
+        currency: 'USD',
+      });
+    }
+
     setShowModal(true);
   };
 
@@ -176,8 +185,13 @@ const Recharge = () => {
                   } else if (!orderData.purchase_units) {
                     throw new Error(JSON.stringify(orderData));
                   } else {
-                    if (typeof window.gtag_report_conversion === 'function') {
-                      window.gtag_report_conversion(getAmount(), data.orderID);
+                    if (typeof window.gtag === 'function') {
+                      window.gtag('event', 'conversion', {
+                        send_to: 'AW-17369711139/WmDvCO3Rwt8bEKOEw9pA',
+                        value: getAmount(),
+                        currency: 'USD',
+                        transaction_id: data.orderID,
+                      });
                     }
                     setShowModal(false);
                     setShowSuccessModal(true);

@@ -1,18 +1,83 @@
 <!doctype html>
-<html lang="zh">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Broadscene" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="author" content="Broadscene" />
+    <meta name="robots" content="index, follow" />
     <meta
       name="description"
-      content="OpenAI 接口聚合管理，支持多种渠道包括 Azure，可用于二次分发管理 key，仅单可执行文件，已打包好 Docker 镜像，一键部署，开箱即用"
+      content="Broadscene - OpenAI API Aggregation & Management System. Supports OpenAI, Azure, Claude, Gemini, DeepSeek, and more. Features multi-channel management, token distribution, quota control, and easy Docker deployment."
     />
-    <title>New API</title>
-    <!--umami-->
-    <!--Google Analytics-->
-    <!--clarity-->
+    <meta
+      name="keywords"
+      content="Broadscene, OpenAI Aggregation, API Management, API Proxy, Azure OpenAI, Anthropic Claude, Google Gemini, DeepSeek, Ollama, GPT-4o, GPT-4 Turbo, GPT-3.5, Quota Control, API Gateway, Docker, Open Source API"
+    />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/" />
+    <meta
+      property="og:title"
+      content="Broadscene - OpenAI API Aggregation & Management System"
+    />
+    <meta
+      property="og:description"
+      content="High-performance API gateway for multi-model LLMs. Manage channels, distribute tokens, and control quotas with ease. One-click deployment with Docker."
+    />
+    <meta property="og:image" content="/logo.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="/" />
+    <meta
+      property="twitter:title"
+      content="Broadscene - OpenAI API Aggregation & Management System"
+    />
+    <meta
+      property="twitter:description"
+      content="Support for OpenAI, Azure, Claude, Gemini and more. Efficient API proxy and management solution with user quota control."
+    />
+    <meta property="twitter:image" content="/logo.png" />
+
+    <link rel="canonical" href="/" />
+    <title>Broadscene - OpenAI API Aggregation & Management System</title>
+    <!-- Clarity -->
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = 'https://www.clarity.ms/tag/' + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, 'clarity', 'script', 'v3o9u2yjsu');
+    </script>
+    <!-- Google Analytics & Ads -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-BCNF8H64BL"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-BCNF8H64BL');
+      gtag('config', 'AW-17369711139');
+    </script>
   </head>
 
   <body>

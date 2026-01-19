@@ -153,6 +153,11 @@ const LoginForm = () => {
       );
       const { success, message, data } = res.data;
       if (success) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+          });
+        }
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         setUserData(data);
@@ -201,6 +206,12 @@ const LoginForm = () => {
             setShowTwoFA(true);
             setLoginLoading(false);
             return;
+          }
+
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'conversion', {
+              send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+            });
           }
 
           userDispatch({ type: 'login', payload: data });
@@ -254,6 +265,11 @@ const LoginForm = () => {
       const res = await API.get(`/api/oauth/telegram/login`, { params });
       const { success, message, data } = res.data;
       if (success) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+          });
+        }
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         showSuccess('登录成功！');
@@ -429,6 +445,11 @@ const LoginForm = () => {
 
   // 2FA验证成功处理
   const handle2FASuccess = (data) => {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'conversion', {
+        send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+      });
+    }
     userDispatch({ type: 'login', payload: data });
     setUserData(data);
     updateAPI();

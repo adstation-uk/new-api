@@ -57,13 +57,20 @@ import {
 const { Text } = Typography;
 
 const MODEL_SCROLL_DATA = [
-  { name: 'GPT-4o', price: '$2.50', discount: '-50%' },
-  { name: 'GPT-5', price: '$1.25', discount: '-50%' },
-  { name: 'Gemini 3 Flash', price: '$5.0', discount: '-70%' },
-  { name: 'Gemini 3 Pro', price: '$2.00', discount: '-60%' },
-  { name: 'GPT-4o-mini', price: '$1.5', discount: '-90%' },
-  { name: 'Gemini 2.0 Flash', price: '$1.0', discount: '-80%' },
-  { name: 'Veo 3.1', price: '$5.0', discount: '-50%' },
+  { name: 'GPT-4o', price: '$10', discount: '-25%' },
+  { name: 'GPT-4o-mini', price: '$0.60', discount: '-25%' },
+  { name: 'GPT-5', price: '$10', discount: '-25%' },
+  { name: 'GPT-5-mini', price: '$2', discount: '-25%' },
+  { name: 'Gemini 2.0 Flash', price: '$0.4', discount: '-25%' },
+  { name: 'Gemini 2.5 Flash', price: '$2.5', discount: '-25%' },
+  { name: 'Gemini 2.5 Flash lite', price: '$0.4', discount: '-25%' },
+  { name: 'Nano Banana', price: '$1.0', discount: '-25%' },
+  { name: 'Gemini 3 Flash', price: '$5.0', discount: '-25%' },
+  { name: 'Gemini 3 Pro', price: '$2.00', discount: '-25%' },
+  { name: 'Nano Banana Pro', price: '$2.00', discount: '-25%' },
+  { name: 'Veo 3.1', price: '$5.0', discount: '-25%' },
+  { name: 'Suno lyrics', price: '$8.0', discount: '-25%' },
+  { name: 'Suno music', price: '$8.0', discount: '-25%' },
 ];
 
 const MODEL_GROUPS_ITEMS = [
@@ -518,7 +525,7 @@ const Home = () => {
           </div>
 
           {/* Section 4: Scroll Reverse */}
-          <div className='w-full py-16 bg-[var(--semi-color-bg-1)] border-b border-[var(--semi-color-border)] overflow-hidden relative'>
+          <div className='w-full py-4 bg-[var(--semi-color-bg-1)] border-b border-[var(--semi-color-border)] overflow-hidden relative'>
             <div className='absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[var(--semi-color-bg-1)] to-transparent z-10 pointer-events-none' />
             <div className='absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[var(--semi-color-bg-1)] to-transparent z-10 pointer-events-none' />
             <div className='flex animate-scroll-right w-max hover:[animation-play-state:paused]'>

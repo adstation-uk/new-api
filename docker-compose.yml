@@ -1,6 +1,6 @@
 services:
   ai-api:
-    image: ai-api:9
+    image: ai-api:10
     container_name: ai-api
     restart: always
     command: --log-dir /app/logs
@@ -15,10 +15,6 @@ services:
       - TZ=Asia/Shanghai
       - ERROR_LOG_ENABLED=true
       - BATCH_UPDATE_ENABLED=true
-      - GOOGLE_ANALYTICS_ID=G-BCNF8H64BL
-      - GOOGLE_ADS_ID=AW-17369711139
-      - GOOGLE_ADS_LABEL=WmDvCO3Rwt8bEKOEw9pA
-      - CLARITY_ID=v3o9u2yjsu
 
     depends_on:
       - redis

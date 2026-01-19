@@ -36,6 +36,11 @@ const OAuth2Callback = (props) => {
         showSuccess(t('绑定成功！'));
         navigate('/console/personal');
       } else {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
+          });
+        }
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         setUserData(data);

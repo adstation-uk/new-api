@@ -360,6 +360,11 @@ const PersonalSetting = () => {
     );
     const { success, message } = res.data;
     if (success) {
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'conversion', {
+          send_to: 'AW-17369711139/D_RoCLrAmegbEKOEw9pA',
+        });
+      }
       showSuccess(t('邮箱账户绑定成功！'));
       setShowEmailBindModal(false);
       userState.user.email = inputs.email;
@@ -435,7 +440,7 @@ const PersonalSetting = () => {
               <CheckinCalendar
                 t={t}
                 status={status}
-                turnstileEnabled={turnstileEnabled}   
+                turnstileEnabled={turnstileEnabled}
                 turnstileSiteKey={turnstileSiteKey}
               />
             </div>
