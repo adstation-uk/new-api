@@ -3,8 +3,6 @@ import {
   Button,
   Typography,
   Input,
-  ScrollList,
-  ScrollItem,
 } from '@douyinfe/semi-ui';
 import { API, showError, copy, showSuccess } from '../../helpers';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
@@ -57,20 +55,64 @@ import {
 const { Text } = Typography;
 
 const MODEL_SCROLL_DATA = [
-  { name: 'GPT-4o', price: '$10', discount: '-25%' },
-  { name: 'GPT-4o-mini', price: '$0.60', discount: '-25%' },
-  { name: 'GPT-5', price: '$10', discount: '-25%' },
-  { name: 'GPT-5-mini', price: '$2', discount: '-25%' },
-  { name: 'Gemini 2.0 Flash', price: '$0.4', discount: '-25%' },
-  { name: 'Gemini 2.5 Flash', price: '$2.5', discount: '-25%' },
+  { name: 'GPT-4o', price: '$10', discount: '-33%' },
+  { name: 'GPT-4o-mini', price: '$0.60', discount: '-40%' },
+  { name: 'GPT-5', price: '$12', discount: '-40%' },
+  { name: 'GPT-5-mini', price: '$3', discount: '-25%' },
+  { name: 'Gemini 2.0 Flash', price: '$0.5', discount: '-45%' },
+  { name: 'Gemini 2.5 Flash', price: '$2.5', discount: '-33%' },
   { name: 'Gemini 2.5 Flash lite', price: '$0.4', discount: '-25%' },
-  { name: 'Nano Banana', price: '$1.0', discount: '-25%' },
+  { name: 'Nano Banana', price: '$1.0', discount: '-33%' },
   { name: 'Gemini 3 Flash', price: '$5.0', discount: '-25%' },
-  { name: 'Gemini 3 Pro', price: '$2.00', discount: '-25%' },
-  { name: 'Nano Banana Pro', price: '$2.00', discount: '-25%' },
-  { name: 'Veo 3.1', price: '$5.0', discount: '-25%' },
+  { name: 'Gemini 3 Pro', price: '$2.0', discount: '-33%' },
+  { name: 'Nano Banana Pro', price: '$2.0', discount: '-33%' },
+  { name: 'Veo 3.1', price: '$2.0', discount: '-60%' },
   { name: 'Suno lyrics', price: '$8.0', discount: '-25%' },
-  { name: 'Suno music', price: '$8.0', discount: '-25%' },
+  { name: 'Suno music', price: '$1.0', discount: '-87.5%' },
+];
+
+const HERO_MODELS_DATA = [
+  {
+    name: 'Suno music',
+    price: '$1.0',
+    original: '$8.0',
+    discount: '-87.5% MEGA SALE',
+    icon: (size) => <Suno size={size} />,
+    pos: '-translate-x-32 -translate-y-36 rotate-[-6deg]',
+  },
+  {
+    name: 'Gemini 3 Pro',
+    price: '$6.0',
+    original: '$12.0',
+    discount: 'BEST VALUE',
+    icon: (size) => <Gemini.Color size={size} />,
+    pos: 'translate-x-4 -translate-y-8',
+    featured: true,
+  },
+  {
+    name: 'GPT-5',
+    price: '$6',
+    original: '$10',
+    discount: '-40% OFF',
+    icon: (size) => <OpenAI size={size} />,
+    pos: 'translate-x-40 -translate-y-44 rotate-[4deg]',
+  },
+  {
+    name: 'Veo 3.1',
+    price: '$2.0',
+    original: '$5.0',
+    discount: '-60% DISCOUNT',
+    icon: (size) => <Gemini.Color size={size} />,
+    pos: '-translate-x-20 translate-y-32 rotate-[-2deg]',
+  },
+  {
+    name: 'Gemini 2.5 Flash',
+    price: '$1.5',
+    original: '$2.5',
+    discount: '-44% DISCOUNT',
+    icon: (size) => <Gemini.Color size={size} />,
+    pos: 'translate-x-36 translate-y-24 rotate-[5deg]',
+  },
 ];
 
 const MODEL_GROUPS_ITEMS = [
@@ -286,98 +328,155 @@ const Home = () => {
       {homePageContentLoaded && homePageContent === '' ? (
         <div className='w-full overflow-x-hidden'>
           {/* Banner 部分 */}
-          <div className='w-full border-b border-semi-color-border min-h-screen relative overflow-x-hidden flex flex-col justify-between pt-20'>
-            <div className='flex items-center justify-center flex-grow px-4 z-10 text-white'>
-              {/* 居中内容区 */}
-              <div className='flex flex-col items-center justify-center text-center max-w-4xl mx-auto'>
-                <div className='flex flex-col items-center justify-center mb-6 md:mb-8'>
+          <div className='w-full border-b border-semi-color-border min-h-screen lg:h-[calc(100vh-60px)] relative overflow-hidden flex flex-col justify-center pt-20 bg-slate-950'>
+            {/* 动态背景装饰 */}
+            <div className="absolute inset-0 z-0">
+               <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_20%,rgba(15,23,42,1),rgba(2,6,23,1))]" />
+               <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/10 blur-[120px]" />
+               <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-600/10 blur-[120px]" />
+               <div className='absolute inset-0 opacity-[0.1] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:32px_32px]'></div>
+            </div>
+
+            <div className='container mx-auto px-6 z-10 text-white h-full flex items-center'>
+              <div className='flex flex-col lg:flex-row items-center justify-between gap-12 w-full'>
+                {/* 左侧内容区 */}
+                <div className='flex flex-col items-start text-left max-w-2xl w-full lg:w-1/2'>
+                  <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-6'>
+                    <Zap size={14} />
+                    <span>{t('下一代 API 网关')}</span>
+                  </div>
                   <h1
-                    className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-4 ${isChinese ? 'tracking-wide md:tracking-wider' : ''}`}
-                    style={{ textShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
+                    className={`text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-white mb-6 ${isChinese ? 'tracking-wide' : ''}`}
+                    style={{ textShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
                   >
-                    <>
-                      {t('统一的')}
-                      <br />
-                      <span className='text-blue-300'>
-                        {t('大模型接口网关')}
-                      </span>
-                    </>
+                    {t('统一的')}
+                    <br />
+                    <span className='text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300'>
+                      {t('大模型接口网关')}
+                    </span>
                   </h1>
-                  <p className='text-base md:text-lg lg:text-xl text-gray-200 mt-4 md:mt-6 max-w-xl'>
+                  <p className='text-lg md:text-xl text-gray-400 mb-8 max-w-xl leading-relaxed'>
                     {t('更好的价格，更好的稳定性，只需要将模型基址替换为：')}
                   </p>
-                  {/* BASE URL 与端点选择 */}
-                  <div className='flex flex-col md:flex-row items-center justify-center gap-4 w-full mt-4 md:mt-6 max-w-md'>
+                  
+                  {/* BASE URL */}
+                  <div className='w-full max-w-md mb-10'>
                     <Input
                       readonly
                       value={serverAddress}
-                      className='flex-1 !rounded-full !bg-white/50 !text-black !border-none'
-                      size={isMobile ? 'default' : 'large'}
+                      className='!rounded-xl !bg-white/5 !text-gray-200 !border-white/10 hover:!border-blue-500/50 transition-colors'
+                      size='large'
                       suffix={
                         <div className='flex items-center gap-2 px-1'>
-                          <ScrollList
-                            bodyHeight={32}
-                            style={{ border: 'unset', boxShadow: 'unset' }}
-                          >
-                            <ScrollItem
-                              mode='wheel'
-                              cycled={true}
-                              list={endpointItems}
-                              selectedIndex={endpointIndex}
-                              onSelect={({ index }) => setEndpointIndex(index)}
-                            />
-                          </ScrollList>
                           <Button
                             type='primary'
                             onClick={handleCopyBaseURL}
                             icon={<IconCopy />}
-                            className='!rounded-full !bg-white/50 '
+                            className='!rounded-lg !bg-blue-500 hover:!bg-blue-600 !border-none'
                           />
                         </div>
                       }
                     />
                   </div>
+
+                  {/* 操作按钮 */}
+                  <div className='flex flex-wrap gap-4 items-center'>
+                    <Link to='/login'>
+                      <Button
+                        theme='solid'
+                        type='primary'
+                        size='large'
+                        className='!rounded-xl px-10 !h-14 !text-lg !font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-105 transition-transform shadow-lg shadow-blue-500/25'
+                        icon={<ArrowRight />}
+                      >
+                        {t('立即免费开始')}
+                      </Button>
+                    </Link>
+                    {isDemoSiteMode && statusState?.status?.version ? (
+                      <Button
+                        size='large'
+                        className='flex items-center !rounded-xl px-6 !h-14 !bg-white/5 !text-white hover:!bg-white/10 !border-white/10'
+                        icon={<IconGithubLogo />}
+                        onClick={() =>
+                          window.open(
+                            'https://github.com/QuantumNous/new-api',
+                            '_blank',
+                          )
+                        }
+                      >
+                        {statusState.status.version}
+                      </Button>
+                    ) : (
+                      docsLink && (
+                        <Button
+                          size='large'
+                          className='flex items-center !rounded-xl px-6 !h-14 !bg-white/5 !text-white hover:!bg-white/10 !border-white/10'
+                          icon={<IconFile />}
+                          onClick={() => window.open(docsLink, '_blank')}
+                        >
+                          {t('查看文档')}
+                        </Button>
+                      )
+                    )}
+                  </div>
                 </div>
 
-                {/* 操作按钮 */}
-                <div className='flex flex-row gap-4 justify-center items-center'>
-                  <Link to='/console'>
-                    <Button
-                      theme='solid'
-                      type='primary'
-                      size={isMobile ? 'default' : 'large'}
-                      className='!rounded-3xl px-8 py-2 !font-bold'
-                      icon={<IconPlay />}
-                    >
-                      {t('获取密钥')}
-                    </Button>
-                  </Link>
-                  {isDemoSiteMode && statusState?.status?.version ? (
-                    <Button
-                      size={isMobile ? 'default' : 'large'}
-                      className='flex items-center !rounded-3xl px-6 py-2 !bg-white/20 !text-white hover:!bg-white/30 !border-white/20'
-                      icon={<IconGithubLogo />}
-                      onClick={() =>
-                        window.open(
-                          'https://github.com/QuantumNous/new-api',
-                          '_blank',
-                        )
-                      }
-                    >
-                      {statusState.status.version}
-                    </Button>
-                  ) : (
-                    docsLink && (
-                      <Button
-                        size={isMobile ? 'default' : 'large'}
-                        className='flex items-center !rounded-3xl px-6 py-2 !bg-white/20 !text-white hover:!bg-white/30 !border-white/20'
-                        icon={<IconFile />}
-                        onClick={() => window.open(docsLink, '_blank')}
+                {/* 右侧展示区 - 错落卡片 */}
+                <div className='relative lg:w-1/2 w-full hidden md:flex justify-center items-center h-[600px]'>
+                   {HERO_MODELS_DATA.map((item, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`absolute transform ${item.pos} z-${item.featured ? '40' : '20'} transition-all hover:scale-105 hover:z-50`}
                       >
-                        {t('文档')}
-                      </Button>
-                    )
-                  )}
+                         <div className={`w-${item.featured ? '80' : '72'} p-8 rounded-3xl border shadow-2xl backdrop-blur-xl ${
+                           item.featured 
+                            ? 'bg-gradient-to-br from-blue-600 to-indigo-700 border-white/20 shadow-[0_20px_50px_rgba(37,99,235,0.3)]' 
+                            : 'bg-slate-900/80 border-white/10'
+                         }`}>
+                           <div className='flex items-center gap-4 mb-5'>
+                              {item.icon(item.featured ? 48 : 40)}
+                              <span className={`font-bold tracking-tight ${item.featured ? 'text-2xl text-white' : 'text-xl'}`}>
+                                {item.name}
+                              </span>
+                           </div>
+                           <div className='space-y-3'>
+                              <div className='flex items-baseline gap-2'>
+                                 <span className='text-4xl font-black text-white'>
+                                   {item.price}<span className={`text-lg font-normal ${item.featured ? 'text-blue-100' : 'text-gray-400'}`}>/M</span>
+                                 </span>
+                                 <span className={`text-sm line-through ${item.featured ? 'text-blue-200/60' : 'text-gray-500'}`}>
+                                   {item.original}/M
+                                 </span>
+                              </div>
+                              <div className={`inline-flex px-3 py-1 rounded-full text-xs font-bold border ${
+                                item.featured 
+                                  ? 'bg-white/20 text-white border-white/10' 
+                                  : 'bg-green-500/10 text-green-400 border-green-500/20'
+                              }`}>
+                                 {t(item.discount)}
+                              </div>
+                           </div>
+                         </div>
+                      </div>
+                   ))}
+                </div>
+
+                {/* 移动端展示 */}
+                <div className='lg:hidden grid grid-cols-1 gap-4 w-full mb-12'>
+                   {HERO_MODELS_DATA.map((item, idx) => (
+                      <div key={idx} className={`p-5 rounded-2xl border ${item.featured ? 'bg-blue-600/20 border-blue-500/30' : 'bg-slate-900/50 border-white/10'} flex items-center justify-between`}>
+                         <div className='flex items-center gap-3'>
+                            {item.icon(24)}
+                            <span className='font-bold text-lg'>{item.name}</span>
+                         </div>
+                         <div className='text-right'>
+                            <span className='text-2xl font-black'>{item.price}</span>
+                            <span className='text-xs font-bold text-green-400 ml-2 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20'>
+                               {t(item.discount)}
+                            </span>
+                         </div>
+                      </div>
+                   ))}
                 </div>
               </div>
             </div>
@@ -394,77 +493,6 @@ const Home = () => {
                 -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
               }
             `}</style>
-
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              className='absolute inset-0 z-0 w-full h-full object-cover'
-            >
-              <source src='/背景.mp4' type='video/mp4' />
-            </video>
-
-            {/* Section 2: Infinite Scroll (Right to Left) */}
-            <div className='w-full py-6 backdrop-blur-md bg-white/10 relative overflow-hidden mt-12 mb-0 z-10 border-t border-white/10'>
-              <div className='flex animate-scroll-left w-max hover:[animation-play-state:paused]'>
-                {[
-                  ...MODEL_SCROLL_DATA,
-                  ...MODEL_SCROLL_DATA,
-                  ...MODEL_SCROLL_DATA,
-                  ...MODEL_SCROLL_DATA,
-                ].map((item, idx) => (
-                  <div
-                    key={idx}
-                    className='flex-shrink-0 mx-4 w-64 p-4 rounded-xl border border-white/30 bg-black/70 backdrop-blur-md flex items-center justify-between shadow-lg'
-                  >
-                    <div className='font-bold text-lg text-white'>
-                      {item.name}
-                    </div>
-                    <div className='flex flex-col items-end'>
-                      <span className='text-gray-400 line-through text-xs'>
-                        {item.price}
-                      </span>
-                      <span className='text-yellow-400 font-bold'>
-                        {item.discount}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {isMobile && (
-                <div
-                  className='flex animate-scroll-left w-max hover:[animation-play-state:paused] mt-4'
-                  style={{ animationDuration: '70s' }}
-                >
-                  {[
-                    ...MODEL_SCROLL_DATA,
-                    ...MODEL_SCROLL_DATA,
-                    ...MODEL_SCROLL_DATA,
-                    ...MODEL_SCROLL_DATA,
-                  ]
-                    .reverse()
-                    .map((item, idx) => (
-                      <div
-                        key={idx}
-                        className='flex-shrink-0 mx-4 w-64 p-4 rounded-xl border border-white/30 bg-black/70 backdrop-blur-md flex items-center justify-between shadow-lg'
-                      >
-                        <div className='font-bold text-lg text-white'>
-                          {item.name}
-                        </div>
-                        <div className='flex flex-col items-end'>
-                          <span className='text-gray-400 line-through text-xs'>
-                            {item.price}
-                          </span>
-                          <span className='text-yellow-400 font-bold'>
-                            {item.discount}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Section 3: Advantages */}

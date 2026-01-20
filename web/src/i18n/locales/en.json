@@ -2680,6 +2680,8 @@
     "验证码必须是6位数字": "Verification code must be 6 digits",
     "备用码必须是8位": "The backup code must be 8 digits",
     "聊天数据解析失败": "Chat data parsing failed",
-    "当前没有可用的启用令牌，请确认是否有令牌处于启用状态！": "There are currently no enablement tokens available, please confirm if one is enabled!"
+    "当前没有可用的启用令牌，请确认是否有令牌处于启用状态！": "There are currently no enablement tokens available, please confirm if one is enabled!",
+    "下一代 API 网关": "Next generation API gateway",
+    "立即免费开始": "Start now for free"
   }
 }
