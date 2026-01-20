@@ -52,7 +52,7 @@ func UpdateOption(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": "Invalid parameters",
 		})
 		return
 	}
@@ -71,7 +71,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && common.GitHubClientId == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 GitHub OAuth，请先填入 GitHub Client Id 以及 GitHub Client Secret！",
+				"message": "Unable to enable GitHub OAuth, please fill in GitHub Client Id and GitHub Client Secret first!",
 			})
 			return
 		}
@@ -79,7 +79,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && system_setting.GetDiscordSettings().ClientId == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 Discord OAuth，请先填入 Discord Client Id 以及 Discord Client Secret！",
+				"message": "Unable to enable Discord OAuth, please fill in Discord Client Id and Discord Client Secret first!",
 			})
 			return
 		}
@@ -87,7 +87,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && system_setting.GetOIDCSettings().ClientId == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 OIDC 登录，请先填入 OIDC Client Id 以及 OIDC Client Secret！",
+				"message": "Unable to enable OIDC login, please fill in OIDC Client Id and OIDC Client Secret first!",
 			})
 			return
 		}
@@ -95,7 +95,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && common.LinuxDOClientId == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 LinuxDO OAuth，请先填入 LinuxDO Client Id 以及 LinuxDO Client Secret！",
+				"message": "Unable to enable LinuxDO OAuth, please fill in LinuxDO Client Id and LinuxDO Client Secret first!",
 			})
 			return
 		}
@@ -103,7 +103,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && len(common.EmailDomainWhitelist) == 0 {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用邮箱域名限制，请先填入限制的邮箱域名！",
+				"message": "Unable to enable email domain restriction, please fill in the restricted email domains first!",
 			})
 			return
 		}
@@ -111,7 +111,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && common.WeChatServerAddress == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用微信登录，请先填入微信登录相关配置信息！",
+				"message": "Unable to enable WeChat login, please fill in WeChat login configuration information first!",
 			})
 			return
 		}
@@ -119,7 +119,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && common.TurnstileSiteKey == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 Turnstile 校验，请先填入 Turnstile 校验相关配置信息！",
+				"message": "Unable to enable Turnstile verification, please fill in Turnstile verification configuration information first!",
 			})
 
 			return
@@ -128,7 +128,7 @@ func UpdateOption(c *gin.Context) {
 		if option.Value == "true" && common.TelegramBotToken == "" {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "无法启用 Telegram OAuth，请先填入 Telegram Bot Token！",
+				"message": "Unable to enable Telegram OAuth, please fill in Telegram Bot Token first!",
 			})
 			return
 		}
@@ -146,7 +146,7 @@ func UpdateOption(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "图片倍率设置失败: " + err.Error(),
+				"message": "Image ratio setting failed: " + err.Error(),
 			})
 			return
 		}
@@ -155,7 +155,7 @@ func UpdateOption(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "音频倍率设置失败: " + err.Error(),
+				"message": "Audio ratio setting failed: " + err.Error(),
 			})
 			return
 		}
@@ -164,7 +164,7 @@ func UpdateOption(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "音频补全倍率设置失败: " + err.Error(),
+				"message": "Audio completion ratio setting failed: " + err.Error(),
 			})
 			return
 		}

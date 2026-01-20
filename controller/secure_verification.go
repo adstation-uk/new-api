@@ -22,7 +22,7 @@ const (
 )
 
 type UniversalVerifyRequest struct {
-	Method string `json:"method"` // "2fa" 或 "passkey"
+	Method string `json:"method"` // "2fa" or "passkey"
 	Code   string `json:"code,omitempty"`
 }
 
@@ -38,26 +38,26 @@ func UniversalVerify(c *gin.Context) {
 	if userId == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "未登录",
+			"message": "Not logged in",
 		})
 		return
 	}
 
 	var req UniversalVerifyRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		common.ApiError(c, fmt.Errorf("参数错误: %v", err))
+		common.ApiError(c, fmt.Errorf("Parameter error: %v", err))
 		return
 	}
 
 	// 获取用户信息
 	user := &model.User{Id: userId}
 	if err := user.FillUserById(); err != nil {
-		common.ApiError(c, fmt.Errorf("获取用户信息失败: %v", err))
+		common.ApiError(c, fmt.Errorf("Failed to get user information: %v", err))
 		return
 	}
 
 	if user.Status != common.UserStatusEnabled {
-		common.ApiError(c, fmt.Errorf("该用户已被禁用"))
+		common.ApiError(c, fmt.Errorf("This user has been disabled"))
 		return
 	}
 
@@ -69,7 +69,7 @@ func UniversalVerify(c *gin.Context) {
 	hasPasskey := passkeyErr == nil && passkey != nil
 
 	if !has2FA && !hasPasskey {
-		common.ApiError(c, fmt.Errorf("用户未启用2FA或Passkey"))
+		common.ApiError(c, fmt.Errorf("User has not enabled 2FA or Passkey"))
 		return
 	}
 
@@ -80,11 +80,11 @@ func UniversalVerify(c *gin.Context) {
 	switch req.Method {
 	case "2fa":
 		if !has2FA {
-			common.ApiError(c, fmt.Errorf("用户未启用2FA"))
+			common.ApiError(c, fmt.Errorf("User has not enabled 2FA"))
 			return
 		}
 		if req.Code == "" {
-			common.ApiError(c, fmt.Errorf("验证码不能为空"))
+			common.ApiError(c, fmt.Errorf("Verification code cannot be empty"))
 			return
 		}
 		verified = validateTwoFactorAuth(twoFA, req.Code)
@@ -92,7 +92,7 @@ func UniversalVerify(c *gin.Context) {
 
 	case "passkey":
 		if !hasPasskey {
-			common.ApiError(c, fmt.Errorf("用户未启用Passkey"))
+			common.ApiError(c, fmt.Errorf("User has not enabled Passkey"))
 			return
 		}
 		// Passkey 验证需要先调用 PasskeyVerifyBegin 和 PasskeyVerifyFinish
@@ -102,12 +102,12 @@ func UniversalVerify(c *gin.Context) {
 		verifyMethod = "Passkey"
 
 	default:
-		common.ApiError(c, fmt.Errorf("不支持的验证方式: %s", req.Method))
+		common.ApiError(c, fmt.Errorf("Unsupported verification method: %s", req.Method))
 		return
 	}
 
 	if !verified {
-		common.ApiError(c, fmt.Errorf("验证失败，请检查验证码"))
+		common.ApiError(c, fmt.Errorf("Verification failed, please check the verification code"))
 		return
 	}
 
@@ -116,16 +116,16 @@ func UniversalVerify(c *gin.Context) {
 	now := time.Now().Unix()
 	session.Set(SecureVerificationSessionKey, now)
 	if err := session.Save(); err != nil {
-		common.ApiError(c, fmt.Errorf("保存验证状态失败: %v", err))
+		common.ApiError(c, fmt.Errorf("Failed to save verification status: %v", err))
 		return
 	}
 
 	// 记录日志
-	model.RecordLog(userId, model.LogTypeSystem, fmt.Sprintf("通用安全验证成功 (验证方式: %s)", verifyMethod))
+	model.RecordLog(userId, model.LogTypeSystem, fmt.Sprintf("Universal security verification successful (verification method: %s)", verifyMethod))
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "验证成功",
+		"message": "Verification successful",
 		"data": gin.H{
 			"verified":   true,
 			"expires_at": now + SecureVerificationTimeout,
@@ -139,7 +139,7 @@ func GetVerificationStatus(c *gin.Context) {
 	if userId == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "未登录",
+			"message": "Not logged in",
 		})
 		return
 	}
@@ -236,7 +236,7 @@ func PasskeyVerifyForSecure(c *gin.Context) {
 	if !system_setting.GetPasskeySettings().Enabled {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "管理员未启用 Passkey 登录",
+			"message": "Administrator has not enabled Passkey login",
 		})
 		return
 	}
@@ -245,19 +245,19 @@ func PasskeyVerifyForSecure(c *gin.Context) {
 	if userId == 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"success": false,
-			"message": "未登录",
+			"message": "Not logged in",
 		})
 		return
 	}
 
 	user := &model.User{Id: userId}
 	if err := user.FillUserById(); err != nil {
-		common.ApiError(c, fmt.Errorf("获取用户信息失败: %v", err))
+		common.ApiError(c, fmt.Errorf("Failed to get user information: %v", err))
 		return
 	}
 
 	if user.Status != common.UserStatusEnabled {
-		common.ApiError(c, fmt.Errorf("该用户已被禁用"))
+		common.ApiError(c, fmt.Errorf("This user has been disabled"))
 		return
 	}
 
@@ -265,7 +265,7 @@ func PasskeyVerifyForSecure(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "该用户尚未绑定 Passkey",
+			"message": "This user has not bound Passkey yet",
 		})
 		return
 	}
@@ -301,11 +301,11 @@ func PasskeyVerifyForSecure(c *gin.Context) {
 	PasskeyVerifyAndSetSession(c)
 
 	// 记录日志
-	model.RecordLog(userId, model.LogTypeSystem, "Passkey 安全验证成功")
+	model.RecordLog(userId, model.LogTypeSystem, "Passkey security verification successful")
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
-		"message": "Passkey 验证成功",
+		"message": "Passkey verification successful",
 		"data": gin.H{
 			"verified":   true,
 			"expires_at": time.Now().Unix() + SecureVerificationTimeout,

@@ -23,7 +23,7 @@ func TestStatus(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"success": false,
-			"message": "数据库连接失败",
+			"message": "Database connection failed",
 		})
 		return
 	}
@@ -203,7 +203,7 @@ func SendEmailVerification(c *gin.Context) {
 	if err := common.Validate.Var(email, "required,email"); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": "Invalid parameters",
 		})
 		return
 	}
@@ -211,7 +211,7 @@ func SendEmailVerification(c *gin.Context) {
 	if len(parts) != 2 {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的邮箱地址",
+			"message": "Invalid email address",
 		})
 		return
 	}
@@ -238,7 +238,7 @@ func SendEmailVerification(c *gin.Context) {
 		if containsSpecialSymbols {
 			c.JSON(http.StatusOK, gin.H{
 				"success": false,
-				"message": "管理员已启用邮箱地址别名限制，您的邮箱地址由于包含特殊符号而被拒绝。",
+				"message": "Administrator has enabled email alias restriction, your email address is rejected due to containing special symbols.",
 			})
 			return
 		}
@@ -247,7 +247,7 @@ func SendEmailVerification(c *gin.Context) {
 	if model.IsEmailAlreadyTaken(email) {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "邮箱地址已被占用",
+			"message": "Email address is already taken",
 		})
 		return
 	}
@@ -274,14 +274,14 @@ func SendPasswordResetEmail(c *gin.Context) {
 	if err := common.Validate.Var(email, "required,email"); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": "Invalid parameters",
 		})
 		return
 	}
 	if !model.IsEmailAlreadyTaken(email) {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "该邮箱地址未注册",
+			"message": "This email address is not registered",
 		})
 		return
 	}
@@ -316,14 +316,14 @@ func ResetPassword(c *gin.Context) {
 	if req.Email == "" || req.Token == "" {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "无效的参数",
+			"message": "Invalid parameters",
 		})
 		return
 	}
 	if !common.VerifyCodeWithKey(req.Email, req.Token, common.PasswordResetPurpose) {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "重置链接非法或已过期",
+			"message": "Reset link is invalid or expired",
 		})
 		return
 	}
