@@ -2614,7 +2614,7 @@
     "请输入状态页面的Slug，如：my-status": "Vui lòng nhập Slug của trang trạng thái, như: my-status",
     "请输入生成数量": "Vui lòng nhập số lượng tạo",
     "请输入用户 ID": "Vui lòng nhập ID người dùng",
-    "请输入用户名": "Vui lòng nhập tên người dùng",
+    "请输入用户名": "Vui lòng nhập tên người dùng, tối đa 20 ký tự",
     "请输入用户名或邮箱": "Vui lòng nhập tên người dùng hoặc email",
     "请输入登录密码": "Vui lòng nhập mật khẩu đăng nhập",
     "请输入确认密码": "Vui lòng nhập mật khẩu xác nhận",
@@ -3287,6 +3287,7 @@
     "聊天数据解析失败": "Phân tích dữ liệu trò chuyện không thành công",
     "当前没有可用的启用令牌，请确认是否有令牌处于启用状态！": "Hiện tại không có mã thông báo kích hoạt nào, vui lòng xác nhận xem mã thông báo kích hoạt có được bật hay không!",
     "下一代 API 网关": "Cổng API thế hệ tiếp theo",
-    "立即免费开始": "Bắt đầu miễn phí ngay bây giờ"
+    "立即免费开始": "Bắt đầu miễn phí ngay bây giờ",
+    "注册即送 $1": "Đăng ký và nhận $1,00"
   }
 }

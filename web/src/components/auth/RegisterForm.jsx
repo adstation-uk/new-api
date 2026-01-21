@@ -42,6 +42,7 @@ import TelegramLoginButton from 'react-telegram-login/src';
 import { UserContext } from '../../context/User';
 import { useTranslation } from 'react-i18next';
 import { SiDiscord } from 'react-icons/si';
+import { Gift } from 'lucide-react';
 
 const RegisterForm = () => {
   let navigate = useNavigate();
@@ -367,7 +368,7 @@ const RegisterForm = () => {
         <div className='w-full max-w-md'>
           <div className='flex items-center justify-center mb-6 gap-2'>
             <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3} className='!text-gray-800'>
+            <Title heading={3}>
               {systemName}
             </Title>
           </div>
@@ -377,6 +378,10 @@ const RegisterForm = () => {
               <Title heading={3} className='text-gray-800 dark:text-gray-200'>
                 {t('注 册')}
               </Title>
+            </div>
+            <div className='flex items-center justify-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
+              <Gift size={16} />
+                <span>{t('注册即送 $1')}</span>
             </div>
             <div className='px-2 py-8'>
               <div className='space-y-3'>
@@ -521,6 +526,10 @@ const RegisterForm = () => {
               <Title heading={3} className='text-gray-800 dark:text-gray-200'>
                 {t('注 册')}
               </Title>
+            </div>
+            <div className='flex items-center justify-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
+                <Gift size={16} />
+                <span>{t('注册即送 $1')}</span>
             </div>
             <div className='px-2 py-8'>
               <Form className='space-y-3'>

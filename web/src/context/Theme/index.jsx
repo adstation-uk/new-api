@@ -28,21 +28,21 @@ const getSystemTheme = () => {
 export const ThemeProvider = ({ children }) => {
   // 读取本地存储的主题设置
   //  2026-1-9 修改默认主题为 dark 且不可改动
-  //  const [theme, _setTheme] = useState(() => {
-  //    try {
-  //      return localStorage.getItem('theme-mode') || 'auto';
-  //    } catch {
-  //      return 'auto';
-  //    }
-  //  });
-  const [theme, _setTheme] = useState('dark');
+   const [theme, _setTheme] = useState(() => {
+     try {
+       return localStorage.getItem('theme-mode') || 'auto';
+     } catch {
+       return 'auto';
+     }
+   });
+  // const [theme, _setTheme] = useState('dark');
 
   const [systemTheme, setSystemTheme] = useState(getSystemTheme());
 
   // 计算实际应用的主题
   //  2026-1-9 修改默认主题为 dark 且不可改动
-  // const actualTheme = theme === 'auto' ? systemTheme : theme;
-  const actualTheme = 'dark';
+  const actualTheme = theme === 'auto' ? systemTheme : theme;
+  // const actualTheme = 'light';
 
   // 监听系统主题变化
   useEffect(() => {

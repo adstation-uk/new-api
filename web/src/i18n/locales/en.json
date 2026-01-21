@@ -2185,7 +2185,7 @@
     "请输入状态页面Slug": "Please enter the status page Slug",
     "请输入状态页面的Slug，如：my-status": "Please enter the slug for the status page, such as: my-status",
     "请输入生成数量": "Please enter the quantity to generate",
-    "请输入用户名": "Please enter username",
+    "请输入用户名": "Please enter username, up to 20 characters",
     "请输入私有部署地址，格式为：https://fastgpt.run/api/openapi": "Please enter private deployment address, format: https://fastgpt.run/api/openapi",
     "请输入管理员密码": "Please enter the admin password",
     "请输入管理员用户名": "Please enter the admin username",
@@ -2682,6 +2682,7 @@
     "聊天数据解析失败": "Chat data parsing failed",
     "当前没有可用的启用令牌，请确认是否有令牌处于启用状态！": "There are currently no enablement tokens available, please confirm if one is enabled!",
     "下一代 API 网关": "Next generation API gateway",
-    "立即免费开始": "Start now for free"
+    "立即免费开始": "Start now for free",
+    "注册即送 $1": "Sign up and get $1.00"
   }
 }
