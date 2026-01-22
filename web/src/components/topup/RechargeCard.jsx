@@ -91,13 +91,13 @@ const RechargeCard = ({
             <div className='text-xs'>{t('多种充值方式，安全便捷')}</div>
           </div>
         </div>
-        <Button
+        {/* <Button
           icon={<Receipt size={16} />}
           theme='solid'
           onClick={onOpenHistory}
         >
           {t('账单')}
-        </Button>
+        </Button> */}
       </div>
 
       <Space vertical style={{ width: '100%' }}>
