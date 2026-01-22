@@ -101,16 +101,6 @@ const RegisterForm = () => {
     return savedStatus ? JSON.parse(savedStatus) : {};
   });
 
-  useEffect(() => {
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'conversion', {
-        send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
-        value: 1.0,
-        currency: 'USD',
-      });
-    }
-  }, []);
-
   const [showEmailVerification, setShowEmailVerification] = useState(() => {
     return status.email_verification ?? false;
   });
@@ -218,6 +208,13 @@ const RegisterForm = () => {
         );
         const { success, message } = res.data;
         if (success) {
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'conversion', {
+              send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+              value: 1.0,
+              currency: 'USD',
+            });
+          }
           navigate('/login');
           showSuccess(t('注册成功！'));
         } else {

@@ -67,42 +67,47 @@ const MODEL_SCROLL_DATA = [
 const HERO_MODELS_DATA = [
   {
     name: 'Suno music',
-    price: '$1.0',
-    original: '$8.0',
-    discount: '-87.5% MEGA SALE',
+    price: '$0.075',
+    original: '$0.12',
+    discount: '-37.5% OFF',
+    unit: '/req',
     icon: (size) => <Suno size={size} />,
     pos: '-translate-x-32 -translate-y-36 rotate-[-6deg]',
   },
   {
     name: 'Gemini 3 Pro',
-    price: '$6.0',
+    price: '$9.0',
     original: '$12.0',
     discount: 'BEST VALUE',
+    unit: '/M',
     icon: (size) => <Gemini size={size} />,
     pos: 'translate-x-4 -translate-y-8',
     featured: true,
   },
   {
     name: 'GPT-5',
-    price: '$6',
+    price: '$7.5',
     original: '$10',
-    discount: '-40% OFF',
+    discount: '-25% OFF',
+    unit: '/M',
     icon: (size) => <OpenAI size={size} />,
     pos: 'translate-x-40 -translate-y-44 rotate-[4deg]',
   },
   {
     name: 'Veo 3.1',
-    price: '$2.0',
-    original: '$5.0',
-    discount: '-60% DISCOUNT',
+    price: '$3.0',
+    original: '$4.38',
+    discount: '-31% OFF',
+    unit: '/req',
     icon: (size) => <Gemini size={size} />,
     pos: '-translate-x-20 translate-y-32 rotate-[-2deg]',
   },
   {
     name: 'Gemini 2.5 Flash',
-    price: '$1.5',
+    price: '$1.8',
     original: '$2.5',
-    discount: '-44% DISCOUNT',
+    discount: '-28% OFF',
+    unit: '/M',
     icon: (size) => <Gemini size={size} />,
     pos: 'translate-x-40 translate-y-24 rotate-[5deg]',
   },
@@ -387,9 +392,15 @@ const Home = () => {
                       <span>{t('立即免费开始')}</span>
                       <ArrowRight size={20} />
                     </Link>
-                    <div className='flex items-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
-                        <Gift size={16} />
-                        <span>{t('注册即送 $1')}</span>
+                    <div className='flex flex-col gap-1'>
+                      <div className='flex items-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
+                          <Gift size={16} />
+                          <span>{t('注册即送 $1')}</span>
+                      </div>
+                      <div className='flex items-center gap-2 px-2 text-sm font-medium text-blue-600 dark:text-blue-400'>
+                          <Zap size={14} className="fill-current" />
+                          <span>{t('全场模型 75 折起')}</span>
+                      </div>
                     </div>
                     {isDemoSiteMode && statusState?.status?.version ? (
                       <button
@@ -433,7 +444,7 @@ const Home = () => {
                            'p-8 rounded-3xl border shadow-2xl backdrop-blur-xl',
                            item.featured 
                              ? 'w-80 bg-gradient-to-br from-blue-600 to-indigo-700 border-white/20 shadow-[0_20px_50px_rgba(37,99,235,0.3)]' 
-                             : 'w-64 bg-white/80 dark:bg-slate-900/80 border-slate-200/50 dark:border-white/10'
+                             : 'w-72 bg-white/80 dark:bg-slate-900/80 border-slate-200/50 dark:border-white/10'
                          )}>
                            <div className='flex items-center gap-4 mb-5'>
                               {item.icon(item.featured ? 48 : 40)}
@@ -453,13 +464,13 @@ const Home = () => {
                                    {item.price}<span className={cn(
                                      'text-lg font-normal',
                                      item.featured ? 'text-blue-100' : 'text-slate-500 dark:text-gray-400'
-                                   )}>/M</span>
+                                   )}>{t(item.unit || '/M')}</span>
                                  </span>
                                  <span className={cn(
                                    'text-sm line-through',
                                    item.featured ? 'text-blue-200/60' : 'text-slate-400 dark:text-gray-500'
                                  )}>
-                                   {item.original}/M
+                                   {item.original}{t(item.unit || '/M')}
                                  </span>
                               </div>
                               <div className={cn(
@@ -493,7 +504,10 @@ const Home = () => {
                             <span className='font-bold text-lg text-slate-900 dark:text-white'>{item.name}</span>
                          </div>
                          <div className='text-right flex flex-col items-end gap-2'>
-                            <span className='text-2xl font-black text-slate-900 dark:text-white'>{item.price}</span>
+                            <div className='flex items-baseline gap-1'>
+                               <span className='text-2xl font-black text-slate-900 dark:text-white'>{item.price}</span>
+                               <span className='text-xs text-slate-500 dark:text-slate-400'>{t(item.unit || '/M')}</span>
+                            </div>
                             <span className='text-xs font-bold text-green-600 dark:text-green-400 ml-2 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20'>
                                {t(item.discount)}
                             </span>
