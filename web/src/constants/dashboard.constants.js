@@ -104,13 +104,13 @@ export const ANNOUNCEMENT_LEGEND_DATA = [
   { color: 'blue', label: '进行中', type: 'ongoing' },
   { color: 'green', label: '成功', type: 'success' },
   { color: 'orange', label: '警告', type: 'warning' },
-  { color: 'red', label: '异常', type: 'error' },
+  { color: 'red', label: 'error', type: 'error' },
 ];
 
 // ========== Uptime 状态映射 ==========
 export const UPTIME_STATUS_MAP = {
   1: { color: '#10b981', label: '正常', text: '可用率' }, // UP
-  0: { color: '#ef4444', label: '异常', text: '有异常' }, // DOWN
+  0: { color: '#ef4444', label: 'error', text: '有异常' }, // DOWN
   2: { color: '#f59e0b', label: '高延迟', text: '高延迟' }, // PENDING
   3: { color: '#3b82f6', label: '维护中', text: '维护中' }, // MAINTENANCE
 };

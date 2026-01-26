@@ -3,19 +3,19 @@
 生成
 
 ```bash
-docker build . -t ai-api:15  --platform linux/amd64
+docker build . -t ai-api:16  --platform linux/amd64
 ```
 
 导出
 
 ```bash
-docker save ai-api:15 -o ai-api:15.tar
+docker save ai-api:16 -o ai-api:16.tar
 ```
 
 删除本地镜像
 
 ```bash
-docker rmi ai-api:15
+docker rmi ai-api:16
 ```
 
 ## 服务器
@@ -27,7 +27,7 @@ cd /home/admin/ai-api
 上传镜像文件到服务器
 
 ```bash
-sudo docker load -i ai-api:15.tar
+sudo docker load -i ai-api:16.tar
 ```
 
 修改 docker-compose.yml 中 版本
@@ -35,4 +35,3 @@ sudo docker load -i ai-api:15.tar
 ```bash
 sudo docker compose up -d
 ```
-
