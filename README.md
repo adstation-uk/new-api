@@ -1,4 +1,4 @@
-# Build
+## Build
 
 生成
 
@@ -17,3 +17,22 @@ docker save ai-api:15 -o ai-api:15.tar
 ```bash
 docker rmi ai-api:15
 ```
+
+## 服务器
+
+```bash
+cd /home/admin/ai-api
+```
+
+上传镜像文件到服务器
+
+```bash
+sudo docker load -i ai-api:15.tar
+```
+
+修改 docker-compose.yml 中 版本
+
+```bash
+sudo docker compose up -d
+```
+
