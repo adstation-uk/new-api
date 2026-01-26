@@ -2770,7 +2770,7 @@
     "输入倍率": "Tỷ lệ đầu vào",
     "输入域名后回车": "Nhập tên miền và nhấn Enter",
     "输入域名后回车，如：example.com": "Nhập tên miền và nhấn Enter, ví dụ: example.com",
-    "输入密码，最短 8 位，最长 20 位": "Nhập mật khẩu, tối thiểu 8 ký tự, tối đa 20 ký tự",
+    "输入密码，最短 8 位，最长 20 位": "Nhập mật khẩu, 8 đến 20 ký tự",
     "输入数字": "Nhập số",
     "输入新密码": "Nhập mật khẩu mới",
     "输入旧密码": "Nhập mật khẩu cũ",
@@ -3289,6 +3289,10 @@
     "下一代 API 网关": "Cổng API thế hệ tiếp theo",
     "立即免费开始": "Bắt đầu miễn phí ngay bây giờ",
     "注册即送 $1": "Đăng ký và nhận 50.000 Token!",
-    "全场模型 75 折起": "Giảm tới 25% tất cả các mẫu"
+    "全场模型 75 折起": "Giảm tới 25% tất cả các mẫu",
+    "注册失败，请重试": "Đăng ký không thành công, vui lòng thử lại",
+    "密码长度不得超过 20 位": "Độ dài mật khẩu không được vượt quá 20 ký tự",
+    "请确认密码": "Vui lòng xác nhận mật khẩu",
+    "邮箱长度不得超过 50 位": "Độ dài email không thể vượt quá 50 ký tự"
   }
 }

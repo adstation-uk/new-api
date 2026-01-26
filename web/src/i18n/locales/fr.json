@@ -2301,7 +2301,7 @@
     "输入你的账户名{{username}}以确认删除": "Saisissez votre nom de compte{{username}}pour confirmer la suppression",
     "输入域名后回车": "Saisissez le domaine et appuyez sur Entrée",
     "输入域名后回车，如：example.com": "Saisissez le domaine et appuyez sur Entrée, par exemple : example.com",
-    "输入密码，最短 8 位，最长 20 位": "Saisissez un mot de passe, d'au moins 8 caractères et jusqu'à 20 caractères",
+    "输入密码，最短 8 位，最长 20 位": "Entrez le mot de passe, 8 à 20 caractères",
     "输入数字": "Saisir un nombre",
     "输入标签或使用\",\"分隔多个标签": "Saisissez des étiquettes ou utilisez \",\" pour séparer plusieurs étiquettes",
     "输入模型倍率": "Saisir le ratio de modèle",
@@ -2697,6 +2697,10 @@
     "下一代 API 网关": "Passerelle API nouvelle génération",
     "立即免费开始": "Commencez maintenant gratuitement",
     "注册即送 $1": "Inscrivez-vous et obtenez 50 000 jetons !",
-    "全场模型 75 折起": "Jusqu'à 25% de réduction sur tous les modèles"
+    "全场模型 75 折起": "Jusqu'à 25% de réduction sur tous les modèles",
+    "注册失败，请重试": "L'inscription a échoué, veuillez réessayer",
+    "密码长度不得超过 20 位": "La longueur du mot de passe ne doit pas dépasser 20 caractères",
+    "请确认密码": "Veuillez confirmer le mot de passe",
+    "邮箱长度不得超过 50 位": "La longueur de l'e-mail ne peut pas dépasser 50 caractères"
   }
 }

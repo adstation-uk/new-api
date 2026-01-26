@@ -469,9 +469,7 @@ const LoginForm = () => {
         <div className='w-full max-w-md'>
           <div className='flex items-center justify-center mb-6 gap-2'>
             <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3}>
-              {systemName}
-            </Title>
+            <Title heading={3}>{systemName}</Title>
           </div>
 
           <Card className='border-0 !rounded-2xl overflow-hidden'>
@@ -698,6 +696,7 @@ const LoginForm = () => {
                   name='username'
                   onChange={(value) => handleChange('username', value)}
                   prefix={<IconMail />}
+                  rules={[{ required: true, message: t('请输入用户名') }]}
                 />
 
                 <Form.Input
@@ -708,6 +707,11 @@ const LoginForm = () => {
                   mode='password'
                   onChange={(value) => handleChange('password', value)}
                   prefix={<IconLock />}
+                  rules={[
+                    { required: true, message: t('请输入密码') },
+                    { min: 8, message: t('密码长度不得小于 8 位！') },
+                    { max: 20, message: t('密码长度不得超过 20 位') },
+                  ]}
                 />
 
                 {(hasUserAgreement || hasPrivacyPolicy) && (

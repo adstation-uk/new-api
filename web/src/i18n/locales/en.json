@@ -2289,7 +2289,7 @@
     "输入你的账户名{{username}}以确认删除": "Enter your account name{{username}} to confirm deletion",
     "输入域名后回车": "Enter domain and press Enter",
     "输入域名后回车，如：example.com": "Enter domain and press Enter, e.g.: example.com",
-    "输入密码，最短 8 位，最长 20 位": "Enter password, at least 8 characters and up to 20 characters",
+    "输入密码，最短 8 位，最长 20 位": "Enter password, 8 to 20 characters",
     "输入数字": "Enter Number",
     "输入标签或使用\",\"分隔多个标签": "Enter tags or use \",\" to separate multiple tags",
     "输入模型倍率": "Enter model ratio",
@@ -2684,6 +2684,10 @@
     "下一代 API 网关": "Next generation API gateway",
     "立即免费开始": "Start now for free",
     "注册即送 $1": "Sign up and get 50,0000 Tokens!",
-    "全场模型 75 折起": "All models starting from 25% off"
+    "全场模型 75 折起": "All models starting from 25% off",
+    "注册失败，请重试": "Registration failed, please try again",
+    "密码长度不得超过 20 位": "Password length must not exceed 20 characters",
+    "请确认密码": "Please confirm password",
+    "邮箱长度不得超过 50 位": "Email length cannot exceed 50 characters"
   }
 }

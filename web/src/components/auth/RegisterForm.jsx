@@ -182,49 +182,39 @@ const RegisterForm = () => {
     setInputs((inputs) => ({ ...inputs, [name]: value }));
   }
 
-  async function handleSubmit(e) {
-    if (password.length < 8) {
-      showInfo(t('密码长度不得小于 8 位！'));
+  async function handleSubmit(values) {
+    if (turnstileEnabled && turnstileToken === '') {
+      showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
       return;
     }
-    if (password !== password2) {
-      showInfo(t('两次输入的密码不一致'));
-      return;
-    }
-    if (username && password) {
-      if (turnstileEnabled && turnstileToken === '') {
-        showInfo(t('请稍后几秒重试，Turnstile 正在检查用户环境！'));
-        return;
+    setRegisterLoading(true);
+    try {
+      if (!affCode) {
+        affCode = localStorage.getItem('aff');
       }
-      setRegisterLoading(true);
-      try {
-        if (!affCode) {
-          affCode = localStorage.getItem('aff');
+      const data = { ...inputs, ...values, aff_code: affCode };
+      const res = await API.post(
+        `/api/user/register?turnstile=${turnstileToken}`,
+        data,
+      );
+      const { success, message } = res.data;
+      if (success) {
+        if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+            value: 1.0,
+            currency: 'USD',
+          });
         }
-        inputs.aff_code = affCode;
-        const res = await API.post(
-          `/api/user/register?turnstile=${turnstileToken}`,
-          inputs,
-        );
-        const { success, message } = res.data;
-        if (success) {
-          if (typeof window.gtag === 'function') {
-            window.gtag('event', 'conversion', {
-              send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
-              value: 1.0,
-              currency: 'USD',
-            });
-          }
-          navigate('/login');
-          showSuccess(t('注册成功！'));
-        } else {
-          showError(message);
-        }
-      } catch (error) {
-        showError(t('注册失败，请重试'));
-      } finally {
-        setRegisterLoading(false);
+        navigate('/login');
+        showSuccess(t('注册成功！'));
+      } else {
+        showError(message);
       }
+    } catch (error) {
+      showError(t('注册失败，请重试'));
+    } finally {
+      setRegisterLoading(false);
     }
   }
 
@@ -365,9 +355,7 @@ const RegisterForm = () => {
         <div className='w-full max-w-md'>
           <div className='flex items-center justify-center mb-6 gap-2'>
             <img src={logo} alt='Logo' className='h-10 rounded-full' />
-            <Title heading={3}>
-              {systemName}
-            </Title>
+            <Title heading={3}>{systemName}</Title>
           </div>
 
           <Card className='border-0 !rounded-2xl overflow-hidden'>
@@ -378,7 +366,7 @@ const RegisterForm = () => {
             </div>
             <div className='flex items-center justify-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
               <Gift size={16} />
-                <span>{t('注册即送 $1')}</span>
+              <span>{t('注册即送 $1')}</span>
             </div>
             <div className='px-2 py-8'>
               <div className='space-y-3'>
@@ -525,11 +513,11 @@ const RegisterForm = () => {
               </Title>
             </div>
             <div className='flex items-center justify-center gap-2 px-2 text-sm font-medium text-red-600 dark:text-red-400 animate-pulse'>
-                <Gift size={16} />
-                <span>{t('注册即送 $1')}</span>
+              <Gift size={16} />
+              <span>{t('注册即送 $1')}</span>
             </div>
             <div className='px-2 py-8'>
-              <Form className='space-y-3'>
+              <Form className='space-y-3' onSubmit={handleSubmit}>
                 <Form.Input
                   field='username'
                   label={t('用户名')}
@@ -537,6 +525,10 @@ const RegisterForm = () => {
                   name='username'
                   onChange={(value) => handleChange('username', value)}
                   prefix={<IconUser />}
+                  rules={[
+                    { required: true, message: t('请输入用户名') },
+                    { max: 20, message: t('用户名长度不得超过 20 位') },
+                  ]}
                 />
 
                 <Form.Input
@@ -547,6 +539,11 @@ const RegisterForm = () => {
                   mode='password'
                   onChange={(value) => handleChange('password', value)}
                   prefix={<IconLock />}
+                  rules={[
+                    { required: true, message: t('请输入密码') },
+                    { min: 8, message: t('密码长度不得小于 8 位！') },
+                    { max: 20, message: t('密码长度不得超过 20 位') },
+                  ]}
                 />
 
                 <Form.Input
@@ -557,6 +554,13 @@ const RegisterForm = () => {
                   mode='password'
                   onChange={(value) => handleChange('password2', value)}
                   prefix={<IconLock />}
+                  rules={[
+                    { required: true, message: t('请确认密码') },
+                    {
+                      validator: (rule, value) => value === inputs.password,
+                      message: t('两次输入的密码不一致'),
+                    },
+                  ]}
                 />
 
                 {showEmailVerification && (
@@ -580,6 +584,10 @@ const RegisterForm = () => {
                             : t('获取验证码')}
                         </Button>
                       }
+                      rules={[
+                        { required: true, message: t('请输入邮箱地址') },
+                        { max: 50, message: t('邮箱长度不得超过 50 位') },
+                      ]}
                     />
                     <Form.Input
                       field='verification_code'
@@ -590,6 +598,7 @@ const RegisterForm = () => {
                         handleChange('verification_code', value)
                       }
                       prefix={<IconKey />}
+                      rules={[{ required: true, message: t('请输入验证码') }]}
                     />
                   </>
                 )}
@@ -638,7 +647,6 @@ const RegisterForm = () => {
                     className='w-full !rounded-full'
                     type='primary'
                     htmlType='submit'
-                    onClick={handleSubmit}
                     loading={registerLoading}
                     disabled={
                       (hasUserAgreement || hasPrivacyPolicy) && !agreedToTerms
