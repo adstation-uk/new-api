@@ -37,7 +37,11 @@ const PageLayout = () => {
     '/console/token',
     '/console/midjourney',
     '/console/task',
+    '/console/topup',
+    '/console/recharge',
+    '/console/personal',
     '/console/models',
+    '/console',
     '/pricing',
   ];
 
@@ -175,7 +179,7 @@ const PageLayout = () => {
           >
             <App />
           </Content>
-          {/* {!shouldHideFooter && (
+          {!shouldHideFooter && (
             <Layout.Footer
               style={{
                 flex: '0 0 auto',
@@ -184,7 +188,7 @@ const PageLayout = () => {
             >
               <FooterBar />
             </Layout.Footer>
-          )} */}
+          )}
         </Layout>
       </Layout>
       <ToastContainer />

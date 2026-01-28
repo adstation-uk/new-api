@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Typography } from '@douyinfe/semi-ui';
 import { getFooterHTML, getLogo, getSystemName } from '../../helpers';
@@ -51,7 +52,6 @@ const FooterBar = () => {
                   >
                     {t('关于项目')}
                   </a>
-                  a{' '}
                   <a
                     href='https://docs.newapi.pro/support/community-interaction/'
                     target='_blank'
@@ -60,6 +60,12 @@ const FooterBar = () => {
                   >
                     {t('联系我们')}
                   </a>
+                  <Link to='/user-agreement' className='!text-semi-color-text-1'>
+                    {t('用户协议')}
+                  </Link>
+                  <Link to='/privacy-policy' className='!text-semi-color-text-1'>
+                    {t('隐私政策')}
+                  </Link>
                   <a
                     href='https://docs.newapi.pro/wiki/features-introduction/'
                     target='_blank'
@@ -170,14 +176,26 @@ const FooterBar = () => {
           </div>
         )}
 
-        {/* <div className='flex flex-col md:flex-row items-center justify-between w-full max-w-[1110px] gap-6'>
-          <div className='flex flex-wrap items-center gap-2'>
-            <Typography.Text className='text-sm !text-semi-color-text-1'>
+        <div className='flex flex-col md:flex-row items-center justify-between w-full max-w-[1110px] gap-6'>
+          <div className='flex flex-wrap items-center gap-4'>
+            {/* <Typography.Text className='text-sm !text-semi-color-text-1'>
               © {currentYear} {systemName}. {t('版权所有')}
-            </Typography.Text>
+            </Typography.Text> */}
+            <Link
+              to='/user-agreement'
+              className='text-sm !text-semi-color-text-1 hover:!text-semi-color-primary transition-colors'
+            >
+              {t('用户协议')}
+            </Link>
+            <Link
+              to='/privacy-policy'
+              className='text-sm !text-semi-color-text-1 hover:!text-semi-color-primary transition-colors'
+            >
+              {t('隐私政策')}
+            </Link>
           </div>
 
-          <div className='text-sm'>
+          {/* <div className='text-sm'>
             <span className='!text-semi-color-text-1'>
               {t('设计与开发由')}{' '}
             </span>
@@ -185,12 +203,12 @@ const FooterBar = () => {
               href='https://github.com/QuantumNous/new-api'
               target='_blank'
               rel='noopener noreferrer'
-              className='!text-semi-color-primary font-medium'
+              className='!text-semi-color-primary font-medium transition-colors'
             >
               New API
             </a>
-          </div>
-        </div> */}
+          </div> */}
+        </div>
       </footer>
     ),
     [logo, systemName, t, currentYear, isDemoSiteMode],
@@ -208,17 +226,31 @@ const FooterBar = () => {
             className='custom-footer'
             dangerouslySetInnerHTML={{ __html: footer }}
           ></div>
-          {/* <div className='absolute bottom-2 right-4 text-xs !text-semi-color-text-2 opacity-70'>
-            <span>{t('设计与开发由')} </span>
-            <a
-              href='https://github.com/QuantumNous/new-api'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='!text-semi-color-primary font-medium'
+          <div className='absolute bottom-2 right-4 text-xs !text-semi-color-text-2 opacity-70 flex gap-4'>
+            <Link
+              to='/user-agreement'
+              className='hover:!text-semi-color-primary transition-colors'
             >
-              New API
-            </a>
-          </div> */}
+              {t('用户协议')}
+            </Link>
+            <Link
+              to='/privacy-policy'
+              className='hover:!text-semi-color-primary transition-colors'
+            >
+              {t('隐私政策')}
+            </Link>
+            {/* <div>
+              <span>{t('设计与开发由')} </span>
+              <a
+                href='https://github.com/QuantumNous/new-api'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='!text-semi-color-primary font-medium transition-colors'
+              >
+                New API
+              </a>
+            </div> */}
+          </div>
         </div>
       ) : (
         customFooter
