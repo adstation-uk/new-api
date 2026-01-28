@@ -134,7 +134,7 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 显示加载状态
   if (loading) {
     return (
-      <div className='flex justify-center items-center min-h-screen'>
+      <div className='flex justify-center items-center min-h-screen dark:bg-transparent'>
         <Spin size='large' />
       </div>
     );
@@ -143,7 +143,7 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果没有内容，显示空状态
   if (!content || content.trim() === '') {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50'>
+      <div className='flex justify-center items-center min-h-screen bg-gray-50 dark:bg-transparent'>
         <Empty
           title={t('管理员未设置' + title + '内容')}
           image={
@@ -161,13 +161,13 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果是 URL，显示链接卡片
   if (isUrl(content)) {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50 p-4'>
-        <Card className='max-w-md w-full'>
+      <div className='flex justify-center items-center min-h-screen bg-gray-50 dark:bg-transparent p-4'>
+        <Card className='max-w-md w-full dark:bg-zinc-900/50 dark:border-white/10'>
           <div className='text-center'>
             <Title heading={4} className='mb-4'>
               {title}
             </Title>
-            <p className='text-gray-600 mb-4'>
+            <p className='text-gray-600 dark:text-gray-400 mb-4'>
               {t('管理员设置了外部链接，点击下方按钮访问')}
             </p>
             <a
@@ -198,14 +198,14 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
     }, [content, styles, htmlStyles]);
 
     return (
-      <div className='min-h-screen bg-gray-50'>
+      <div className='min-h-screen bg-gray-50 dark:bg-transparent'>
         <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-          <div className='bg-white rounded-lg shadow-sm p-8'>
+          <div className='bg-white dark:bg-zinc-900/50 dark:border dark:border-white/10 rounded-lg shadow-sm p-8'>
             <Title heading={2} className='text-center mb-8'>
               {title}
             </Title>
             <div
-              className='prose prose-lg max-w-none'
+              className='prose prose-lg max-w-none dark:prose-invert'
               dangerouslySetInnerHTML={{ __html: htmlContent }}
             />
           </div>
@@ -216,13 +216,13 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
 
   // 其他内容统一使用 Markdown 渲染器
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-        <div className='bg-white rounded-lg shadow-sm p-8'>
+    <div className='min-h-screen bg-gray-50 dark:bg-transparent pt-12'>
+      <div className='max-w-4xl  mx-auto py-12 px-4 sm:px-6 lg:px-8'>
+        <div className='bg-white dark:bg-zinc-900/50 dark:border dark:border-white/10 rounded-lg shadow-sm p-8'>
           <Title heading={2} className='text-center mb-8'>
             {title}
           </Title>
-          <div className='prose prose-lg max-w-none'>
+          <div className='prose prose-lg max-w-none dark:prose-invert'>
             <MarkdownRenderer content={content} />
           </div>
         </div>
