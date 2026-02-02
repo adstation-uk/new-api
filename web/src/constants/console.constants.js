@@ -8,6 +8,11 @@ export const DATE_RANGE_PRESETS = [
     end: () => dayjs().endOf('day').toDate(),
   },
   {
+    text: '昨天',
+    start: () => dayjs().subtract(1, 'day').startOf('day').toDate(),
+    end: () => dayjs().subtract(1, 'day').endOf('day').toDate(),
+  },
+  {
     text: '近 7 天',
     start: () => dayjs().subtract(6, 'day').startOf('day').toDate(),
     end: () => dayjs().endOf('day').toDate(),
