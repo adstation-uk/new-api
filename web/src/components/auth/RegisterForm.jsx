@@ -158,6 +158,11 @@ const RegisterForm = () => {
       if (success) {
         if (typeof window.gtag === 'function') {
           window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+            value: 1.0,
+            currency: 'USD',
+          });
+          window.gtag('event', 'conversion', {
             send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
           });
         }
@@ -259,6 +264,7 @@ const RegisterForm = () => {
       setGithubButtonDisabled(true);
     }, 20000);
     try {
+      localStorage.setItem('oauth_source', 'register');
       onGitHubOAuthClicked(status.github_client_id, { shouldLogout: true });
     } finally {
       setTimeout(() => setGithubLoading(false), 3000);
@@ -268,6 +274,7 @@ const RegisterForm = () => {
   const handleDiscordClick = () => {
     setDiscordLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'register');
       onDiscordOAuthClicked(status.discord_client_id, { shouldLogout: true });
     } finally {
       setTimeout(() => setDiscordLoading(false), 3000);
@@ -277,6 +284,7 @@ const RegisterForm = () => {
   const handleOIDCClick = () => {
     setOidcLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'register');
       onOIDCClicked(
         status.oidc_authorization_endpoint,
         status.oidc_client_id,
@@ -291,6 +299,7 @@ const RegisterForm = () => {
   const handleLinuxDOClick = () => {
     setLinuxdoLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'register');
       onLinuxDOOAuthClicked(status.linuxdo_client_id, { shouldLogout: true });
     } finally {
       setTimeout(() => setLinuxdoLoading(false), 3000);
@@ -331,6 +340,11 @@ const RegisterForm = () => {
       const { success, message, data } = res.data;
       if (success) {
         if (typeof window.gtag === 'function') {
+          window.gtag('event', 'conversion', {
+            send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+            value: 1.0,
+            currency: 'USD',
+          });
           window.gtag('event', 'conversion', {
             send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
           });

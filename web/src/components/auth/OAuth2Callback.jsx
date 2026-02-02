@@ -34,13 +34,23 @@ const OAuth2Callback = (props) => {
 
       if (message === 'bind') {
         showSuccess(t('绑定成功！'));
+        localStorage.removeItem('oauth_source');
         navigate('/console/personal');
       } else {
         if (typeof window.gtag === 'function') {
+          const oauthSource = localStorage.getItem('oauth_source');
+          if (oauthSource === 'register') {
+            window.gtag('event', 'conversion', {
+              send_to: 'AW-17369711139/prEvCKzZlegbEKOEw9pA',
+              value: 1.0,
+              currency: 'USD',
+            });
+          }
           window.gtag('event', 'conversion', {
             send_to: 'AW-17369711139/qDrkCP2wlugbEKOEw9pA',
           });
         }
+        localStorage.removeItem('oauth_source');
         userDispatch({ type: 'login', payload: data });
         localStorage.setItem('user', JSON.stringify(data));
         setUserData(data);
@@ -57,6 +67,7 @@ const OAuth2Callback = (props) => {
 
       // 重试次数耗尽，提示错误并返回设置页面
       showError(error.message || t('授权失败'));
+      localStorage.removeItem('oauth_source');
       navigate('/console/personal');
     }
   };

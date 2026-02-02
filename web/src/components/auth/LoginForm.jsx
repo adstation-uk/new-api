@@ -305,6 +305,7 @@ const LoginForm = () => {
       setGithubButtonDisabled(true);
     }, 20000);
     try {
+      localStorage.setItem('oauth_source', 'login');
       onGitHubOAuthClicked(status.github_client_id, { shouldLogout: true });
     } finally {
       // 由于重定向，这里不会执行到，但为了完整性添加
@@ -320,6 +321,7 @@ const LoginForm = () => {
     }
     setDiscordLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'login');
       onDiscordOAuthClicked(status.discord_client_id, { shouldLogout: true });
     } finally {
       // 由于重定向，这里不会执行到，但为了完整性添加
@@ -335,6 +337,7 @@ const LoginForm = () => {
     }
     setOidcLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'login');
       onOIDCClicked(
         status.oidc_authorization_endpoint,
         status.oidc_client_id,
@@ -355,6 +358,7 @@ const LoginForm = () => {
     }
     setLinuxdoLoading(true);
     try {
+      localStorage.setItem('oauth_source', 'login');
       onLinuxDOOAuthClicked(status.linuxdo_client_id, { shouldLogout: true });
     } finally {
       // 由于重定向，这里不会执行到，但为了完整性添加
