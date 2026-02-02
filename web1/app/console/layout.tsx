@@ -1,13 +1,19 @@
-import { getUserInfo } from "@/lib/user";
+"use client";
 
-export default async function ConsoleLayout({
+import { ConsoleSidebar } from "@/components/console-sidebar";
+import { useState } from "react";
+
+export default function ConsoleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // 统一在布局层进行基础鑑权
-  // 如果未登录，getUserInfo 内部会自动重定向到 /login
-  await getUserInfo();
-
-  return <>{children}</>;
+  return (
+    <div className="flex pt-16 min-h-screen bg-slate-50 dark:bg-slate-900">
+      <ConsoleSidebar />
+      <main className="flex-1 transition-all duration-300 ml-64 overflow-x-hidden">
+        <div className="p-6 md:p-8 max-w-7xl mx-auto">{children}</div>
+      </main>
+    </div>
+  );
 }

@@ -9,7 +9,10 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/mj") ||
-    pathname.startsWith("/pg")
+    pathname.startsWith("/pg") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/logout")
   ) {
     const url = request.nextUrl.clone();
     url.protocol = "http:";
