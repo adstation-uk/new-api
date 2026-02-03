@@ -12,12 +12,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { api } from "@/lib/api"; // Helper if used client side, but we use server actions or fetch
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Coins, CreditCard, Ticket } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, renderQuota } from "@/lib/utils";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 // Re-define interfaces or import if shared
 interface Log {
@@ -43,6 +52,12 @@ interface TopupClientProps {
   initialLogs: Log[];
 }
 
+const redemptionSchema = z.object({
+  redemptionCode: z.string().min(1, "请输入兑换码"),
+});
+
+type RedemptionFormValues = z.infer<typeof redemptionSchema>;
+
 export function TopupClient({
   user,
   topupInfo,
@@ -50,30 +65,30 @@ export function TopupClient({
 }: TopupClientProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"online" | "code">("code");
-  const [redemptionCode, setRedemptionCode] = useState("");
-  const [amount, setAmount] = useState<number>(topupInfo?.min_topup || 10); // Default amount
+  const [amount, setAmount] = useState<number>(topupInfo?.min_topup || 10);
   const [isPending, setIsPending] = useState(false);
 
-  const renderQuota = (quota: number) => {
-    return `$${(quota / 500000).toFixed(6)}`;
-  };
+  const form = useForm<RedemptionFormValues>({
+    resolver: zodResolver(redemptionSchema),
+    mode: "onChange",
+    defaultValues: {
+      redemptionCode: "",
+    },
+  });
 
-  const handleRedemption = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!redemptionCode.trim()) return;
-
+  async function onSubmit(values: RedemptionFormValues) {
     setIsPending(true);
     try {
       const res = await fetch("/api/user/topup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key: redemptionCode }),
+        body: JSON.stringify({ key: values.redemptionCode }),
       });
       const data = await res.json();
       if (data.success) {
         toast.success("兑换成功");
-        setRedemptionCode("");
-        router.refresh(); // Refresh to update balance and logs
+        form.reset();
+        router.refresh();
       } else {
         toast.error(data.message || "兑换失败");
       }
@@ -82,7 +97,7 @@ export function TopupClient({
     } finally {
       setIsPending(false);
     }
-  };
+  }
 
   const handleOnlinePay = async (paymentMethod: string) => {
     // This is complex. It usually redirects to Epay or Stripe.
@@ -183,31 +198,40 @@ export function TopupClient({
           </div>
 
           {activeTab === "code" && (
-            <form onSubmit={handleRedemption} className="space-y-4 max-w-md">
-              <div className="space-y-2">
-                <Label htmlFor="code">兑换码</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="code"
-                    placeholder="请输入您的兑换码"
-                    value={redemptionCode}
-                    onChange={(e) => setRedemptionCode(e.target.value)}
-                  />
-                  <Button type="submit" disabled={isPending}>
-                    {isPending ? "兑换中..." : "兑换"}
-                  </Button>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                输入您获得的兑换码以增加账户额度。
-              </p>
-            </form>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 max-w-md"
+              >
+                <FormField
+                  control={form.control}
+                  name="redemptionCode"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel>兑换码</FormLabel>
+                      <div className="flex gap-2">
+                        <FormControl>
+                          <Input placeholder="请输入您的兑换码" {...field} />
+                        </FormControl>
+                        <Button type="submit" disabled={isPending}>
+                          {isPending ? "兑换中..." : "兑换"}
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <p className="text-xs text-muted-foreground">
+                  输入您获得的兑换码以增加账户额度。
+                </p>
+              </form>
+            </Form>
           )}
 
           {activeTab === "online" && topupInfo && (
             <div className="space-y-4 max-w-md">
               <div className="space-y-2">
-                <Label>充值金额 ($)</Label>
+                <FormLabel>充值金额 ($)</FormLabel>
                 <Input
                   type="number"
                   min={topupInfo.min_topup}

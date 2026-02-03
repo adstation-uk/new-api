@@ -1,15 +1,5 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import {
-  Zap,
-  Shield,
-  Unlock,
-  ArrowRight,
-  Coins,
-  Copy,
-  Gift,
-} from "lucide-react";
+import React from "react";
+import { Zap, Shield, Unlock, ArrowRight, Coins, Gift } from "lucide-react";
 import {
   OpenAI,
   Claude,
@@ -30,7 +20,9 @@ import {
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
-import { toast } from "sonner";
+import { api } from "@/lib/api";
+import { ServerAddressClient } from "@/components/server-address-client";
+import Marquee from "@/components/magicui/marquee";
 
 const HERO_MODELS_DATA = [
   {
@@ -109,30 +101,15 @@ const MODEL_SCROLL_DATA = [
   { name: "Grok-2", discount: "X" },
 ];
 
-export default function HomePage() {
-  const [serverAddress, setServerAddress] = useState("");
-  const [homeContent, setHomeContent] = useState("");
-
-  useEffect(() => {
-    setServerAddress(window.location.origin);
-
-    // Fetch home page content
-    const fetchHomeContent = async () => {
-      try {
-        const res = await fetch("/api/home_page_content");
-        const json = await res.json();
-        if (json.success) {
-          setHomeContent(json.data);
-        }
-      } catch (e) {}
-    };
-    fetchHomeContent();
-  }, []);
-
-  const handleCopyBaseURL = () => {
-    navigator.clipboard.writeText(serverAddress);
-    toast.success("已复制到剪切板");
-  };
+export default async function HomePage() {
+  let homeContent = "";
+  try {
+    const res = await api("/api/home_page_content");
+    const json = await res.json();
+    if (json.success) {
+      homeContent = json.data;
+    }
+  } catch (e) {}
 
   const advantages = [
     {
@@ -174,21 +151,7 @@ export default function HomePage() {
               </p>
 
               {/* BASE URL */}
-              <div className="w-full max-w-md mb-10">
-                <div className="relative flex items-center h-14 w-full bg-muted border rounded-xl px-4 hover:border-primary/50 transition-colors group">
-                  <input
-                    readOnly
-                    value={serverAddress}
-                    className="bg-transparent border-none outline-none flex-1 text-foreground font-medium focus:ring-0 w-full"
-                  />
-                  <button
-                    onClick={handleCopyBaseURL}
-                    className="ml-2 p-2 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-colors cursor-pointer border-none flex items-center justify-center"
-                  >
-                    <Copy size={16} />
-                  </button>
-                </div>
-              </div>
+              <ServerAddressClient />
 
               {/* 操作按钮 */}
               <div className="flex flex-wrap gap-4 items-center">
@@ -301,37 +264,42 @@ export default function HomePage() {
               支持全球主流大模型
             </p>
             <div className="space-y-6">
-              {[0, 1].map((row) => (
-                <div key={row} className="flex overflow-hidden group">
+              <Marquee pauseOnHover className="[--duration:50s]">
+                {MODEL_GROUPS_ITEMS.map((item, idx) => (
                   <div
-                    className={cn(
-                      "flex gap-8 py-4 animate-scroll-logos",
-                      row === 1 && "animate-scroll-logos-reverse",
-                    )}
+                    key={idx}
+                    className="flex items-center gap-3 px-6 py-3 bg-muted/50 border rounded-2xl whitespace-nowrap"
                   >
-                    {[
-                      ...MODEL_GROUPS_ITEMS,
-                      ...MODEL_GROUPS_ITEMS,
-                      ...MODEL_GROUPS_ITEMS,
-                    ].map((item, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-center gap-3 px-6 py-3 bg-muted/50 border rounded-2xl whitespace-nowrap"
-                      >
-                        {item.icon}
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-foreground">
-                            {item.name}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">
-                            {item.desc}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                    {item.icon}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-foreground">
+                        {item.name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {item.desc}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </Marquee>
+              <Marquee reverse pauseOnHover className="[--duration:50s]">
+                {MODEL_GROUPS_ITEMS.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 px-6 py-3 bg-muted/50 border rounded-2xl whitespace-nowrap"
+                  >
+                    {item.icon}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-bold text-foreground">
+                        {item.name}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground">
+                        {item.desc}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </Marquee>
             </div>
           </div>
         </div>
@@ -339,12 +307,8 @@ export default function HomePage() {
 
       {/* 滚动条部分 */}
       <div className="w-full py-4 bg-muted/50 border-b overflow-hidden relative">
-        <div className="flex animate-scroll-left w-max hover:[animation-play-state:paused]">
-          {[
-            ...MODEL_SCROLL_DATA,
-            ...MODEL_SCROLL_DATA,
-            ...MODEL_SCROLL_DATA,
-          ].map((item, idx) => (
+        <Marquee pauseOnHover className="[--duration:40s]">
+          {MODEL_SCROLL_DATA.map((item, idx) => (
             <div
               key={idx}
               className="flex items-center gap-4 px-8 py-4 bg-card rounded-2xl mx-4 border shadow-sm"
@@ -355,7 +319,7 @@ export default function HomePage() {
               </span>
             </div>
           ))}
-        </div>
+        </Marquee>
       </div>
 
       {/* 自定义公告/内容 */}
@@ -371,34 +335,6 @@ export default function HomePage() {
       )}
 
       <Footer />
-
-      <style jsx>{`
-        @keyframes scroll-left {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-33.333%);
-          }
-        }
-        @keyframes scroll-right {
-          from {
-            transform: translateX(-33.333%);
-          }
-          to {
-            transform: translateX(0);
-          }
-        }
-        .animate-scroll-left {
-          animation: scroll-left 40s linear infinite;
-        }
-        .animate-scroll-logos {
-          animation: scroll-left 50s linear infinite;
-        }
-        .animate-scroll-logos-reverse {
-          animation: scroll-right 50s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }

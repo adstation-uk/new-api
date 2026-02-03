@@ -27,9 +27,7 @@ export default async function ConsoleLayout({
       {/* Secondary Menu */}
       <ConsoleNavbar user={user} />
 
-      <main className="container mx-auto px-4 md:px-8 py-8  animate-in fade-in duration-500">
-        {children}
-      </main>
+      <main className="container mx-auto px-4 md:px-8 py-8">{children}</main>
     </div>
   );
 }

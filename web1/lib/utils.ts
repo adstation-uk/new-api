@@ -32,3 +32,59 @@ export function renderQuota(quota: number, digits = 2): string {
   }
   return symbol + fixedResult;
 }
+
+export function renderStatus(status: number) {
+  switch (status) {
+    case 1:
+      return "已启用";
+    case 2:
+      return "已禁用";
+    case 3:
+      return "已过期";
+    case 4:
+      return "已耗尽";
+    default:
+      return "未知";
+  }
+}
+
+export function getStatusBadgeClass(status: number) {
+  switch (status) {
+    case 1:
+      return "text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400";
+    case 2:
+      return "text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400";
+    case 3:
+      return "text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400";
+    case 4:
+      return "text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400";
+    default:
+      return "text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400";
+  }
+}
+
+export function renderLogType(type: number) {
+  switch (type) {
+    case 1:
+      return "充值";
+    case 2:
+      return "消费";
+    case 3:
+      return "管理";
+    default:
+      return "未知";
+  }
+}
+
+export function getLogTypeClass(type: number) {
+  switch (type) {
+    case 1:
+      return "text-green-600 bg-green-50 dark:bg-green-900/20";
+    case 2:
+      return "text-blue-600 bg-blue-50 dark:bg-blue-900/20";
+    case 3:
+      return "text-purple-600 bg-purple-50 dark:bg-purple-900/20";
+    default:
+      return "text-gray-600 bg-gray-50 dark:bg-gray-900/20";
+  }
+}

@@ -1,0 +1,31 @@
+"use client";
+
+import { useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+export function RefreshButton() {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  const handleRefresh = () => {
+    startTransition(() => {
+      router.refresh();
+    });
+  };
+
+  return (
+    <Button
+      variant="default"
+      size="sm"
+      className="gap-2"
+      onClick={handleRefresh}
+      disabled={isPending}
+    >
+      <RefreshCw className={cn("w-4 h-4", isPending && "animate-spin")} />
+      刷新
+    </Button>
+  );
+}

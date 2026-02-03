@@ -1,5 +1,9 @@
 import { api } from "@/lib/api";
-import { TokenClient } from "./token-client";
+import { Card } from "@/components/ui/card";
+import { TokenSearch } from "./token-search";
+import { TokenCreate } from "./token-create";
+import { Pagination } from "@/components/ui-pagination";
+import { TokenTable } from "./token-table";
 
 async function getTokens(page: number, pageSize: number, keyword: string) {
   try {
@@ -39,12 +43,23 @@ export default async function TokenPage({
   const { items, total } = await getTokens(page, pageSize, keyword);
 
   return (
-    <TokenClient
-      initialTokens={items}
-      total={total}
-      page={page}
-      pageSize={pageSize}
-      keyword={keyword}
-    />
+    <div className="space-y-6">
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight">我的令牌</h1>
+          <TokenCreate />
+        </div>
+
+        <Card className="p-0 overflow-hidden shadow-sm">
+          <div className="p-4 border-b flex gap-4">
+            <TokenSearch initialKeyword={keyword} />
+          </div>
+
+          <TokenTable data={items} />
+
+          <Pagination page={page} total={total} pageSize={pageSize} />
+        </Card>
+      </div>
+    </div>
   );
 }
