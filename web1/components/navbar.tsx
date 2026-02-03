@@ -1,18 +1,17 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Zap } from "lucide-react";
-import { UserMenu } from "./user-menu";
-import { ModeToggle } from "./mode-toggle";
-import { UserInfo } from "@/lib/user";
-import { MainNav } from "./main-nav";
-import { MobileNav } from "./mobile-nav";
+import type { UserInfo } from '@/lib/user'
+import { Zap } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { MainNav } from './main-nav'
+import { MobileNav } from './mobile-nav'
+import { ModeToggle } from './mode-toggle'
+import { UserMenu } from './user-menu'
 
 export async function Navbar({ user }: { user: UserInfo | null }) {
   const navLinks = [
-    { name: "首页", href: "/" },
-    { name: "价格", href: "/pricing" },
-  ];
+    { name: '首页', href: '/' },
+    { name: '价格', href: '/pricing' },
+  ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/60 backdrop-blur h-16">
@@ -34,27 +33,29 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
           <ModeToggle />
 
           <div className="hidden md:flex items-center gap-3">
-            {user ? (
-              <UserMenu user={user} />
-            ) : (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/login" className="no-underline">
-                    登录
-                  </Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/register" className="no-underline px-6">
-                    注册
-                  </Link>
-                </Button>
-              </>
-            )}
+            {user
+              ? (
+                  <UserMenu user={user} />
+                )
+              : (
+                  <>
+                    <Button variant="ghost" size="sm" asChild>
+                      <Link href="/login" className="no-underline">
+                        登录
+                      </Link>
+                    </Button>
+                    <Button size="sm" asChild>
+                      <Link href="/register" className="no-underline px-6">
+                        注册
+                      </Link>
+                    </Button>
+                  </>
+                )}
           </div>
 
           <MobileNav navLinks={navLinks} user={user} />
         </div>
       </div>
     </header>
-  );
+  )
 }

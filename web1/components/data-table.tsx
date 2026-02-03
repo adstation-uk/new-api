@@ -1,11 +1,13 @@
-"use client";
+'use client'
 
-import {
+import type {
   ColumnDef,
+} from '@tanstack/react-table'
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table'
 
 import {
   Table,
@@ -14,13 +16,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  className?: string;
+type DataTableProps<TData, TValue> = {
+  columns: ColumnDef<TData, TValue>[]
+  data: TData[]
+  className?: string
 }
 
 export function DataTable<TData, TValue>({
@@ -32,13 +34,13 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  });
+  })
 
   return (
-    <div className={cn("rounded-md border", className)}>
+    <div className={cn('rounded-md border', className)}>
       <Table>
         <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
+          {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
@@ -50,34 +52,36 @@ export function DataTable<TData, TValue>({
                           header.getContext(),
                         )}
                   </TableHead>
-                );
+                )
               })}
             </TableRow>
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+          {table.getRowModel().rows?.length
+            ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell key={cell.id}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )
+            : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                    暂无数据
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                暂无数据
-              </TableCell>
-            </TableRow>
-          )}
+                </TableRow>
+              )}
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

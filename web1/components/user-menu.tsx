@@ -1,5 +1,11 @@
-"use client";
+'use client'
 
+import type { UserInfo } from '@/lib/user'
+import { LayoutDashboard, LogOut, Settings } from 'lucide-react'
+import Link from 'next/link'
+import { logout } from '@/app/actions/auth'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,16 +13,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { User, LogOut, Settings, LayoutDashboard } from "lucide-react";
-import Link from "next/link";
-import { logout } from "@/app/actions/auth";
-import { UserInfo } from "@/lib/user";
+} from '@/components/ui/dropdown-menu'
 
-interface UserMenuProps {
-  user: UserInfo;
+type UserMenuProps = {
+  user: UserInfo
 }
 
 export function UserMenu({ user }: UserMenuProps) {
@@ -34,7 +34,7 @@ export function UserMenu({ user }: UserMenuProps) {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">{user.username}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user.role >= 10 ? "管理员" : "普通用户"}
+              {user.role >= 10 ? '管理员' : '普通用户'}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -61,5 +61,5 @@ export function UserMenu({ user }: UserMenuProps) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 }

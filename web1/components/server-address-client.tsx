@@ -1,20 +1,26 @@
-"use client";
+'use client'
 
-import React, { useEffect, useState } from "react";
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
+import { Copy } from 'lucide-react'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 export function ServerAddressClient() {
-  const [serverAddress, setServerAddress] = useState("");
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setServerAddress(window.location.origin);
-  }, []);
+    // eslint-disable-next-line react-hooks/set-state-in-effect, react-hooks-extra/no-direct-set-state-in-use-effect
+    setMounted(true)
+  }, [])
+
+  const serverAddress = mounted ? window.location.origin : ''
 
   const handleCopyBaseURL = () => {
-    navigator.clipboard.writeText(serverAddress);
-    toast.success("已复制到剪切板");
-  };
+    if (!serverAddress)
+      return
+    navigator.clipboard.writeText(serverAddress)
+    toast.success('已复制到剪切板')
+  }
 
   return (
     <div className="w-full max-w-md mb-10">
@@ -32,5 +38,5 @@ export function ServerAddressClient() {
         </button>
       </div>
     </div>
-  );
+  )
 }

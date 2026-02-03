@@ -1,20 +1,20 @@
-"use client";
+'use client'
 
-import { useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { RefreshCw } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useTransition } from 'react'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export function RefreshButton() {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const handleRefresh = () => {
     startTransition(() => {
-      router.refresh();
-    });
-  };
+      router.refresh()
+    })
+  }
 
   return (
     <Button
@@ -24,8 +24,8 @@ export function RefreshButton() {
       onClick={handleRefresh}
       disabled={isPending}
     >
-      <RefreshCw className={cn("w-4 h-4", isPending && "animate-spin")} />
+      <RefreshCw className={cn('w-4 h-4', isPending && 'animate-spin')} />
       刷新
     </Button>
-  );
+  )
 }

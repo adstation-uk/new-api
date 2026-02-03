@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { CardContent, CardFooter } from "@/components/ui/card";
-import { toast } from "sonner";
-import { loginAction } from "@/app/login/actions";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { loginAction } from '@/app/login/actions'
+import { Button } from '@/components/ui/button'
+import { CardContent, CardFooter } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -16,55 +16,58 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { useState } from "react";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 const loginSchema = z.object({
   username: z
     .string()
-    .min(1, "请输入用户名")
-    .max(20, "用户名长度不得超过 20 位"),
+    .min(1, '请输入用户名')
+    .max(20, '用户名长度不得超过 20 位'),
   password: z
     .string()
-    .min(8, "密码长度不得小于 8 位")
-    .max(20, "密码长度不得超过 20 位"),
-});
+    .min(8, '密码长度不得小于 8 位')
+    .max(20, '密码长度不得超过 20 位'),
+})
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>
 
 export function LoginForm() {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      username: "",
-      password: "",
+      username: '',
+      password: '',
     },
-  });
+  })
 
   async function onSubmit(values: LoginFormValues) {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const formData = new FormData();
-      formData.append("username", values.username);
-      formData.append("password", values.password);
+      const formData = new FormData()
+      formData.append('username', values.username)
+      formData.append('password', values.password)
 
-      const result = await loginAction(formData);
+      const result = await loginAction(formData)
 
       if (result.success) {
-        toast.success("登录成功");
-        router.push("/console");
-        router.refresh();
-      } else {
-        toast.error(result.message || "登录失败");
+        toast.success('登录成功')
+        router.push('/console')
+        router.refresh()
       }
-    } catch (error) {
-      toast.error("网络错误");
-    } finally {
-      setIsSubmitting(false);
+      else {
+        toast.error(result.message || '登录失败')
+      }
+    }
+    catch {
+      toast.error('网络错误')
+    }
+    finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -101,10 +104,10 @@ export function LoginForm() {
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "登录中..." : "登录"}
+            {isSubmitting ? '登录中...' : '登录'}
           </Button>
         </CardFooter>
       </form>
     </Form>
-  );
+  )
 }

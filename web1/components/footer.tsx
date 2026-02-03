@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import Link from "next/link";
-import { Zap, Github, Mail, Globe, Shield, FileText } from "lucide-react";
+import { FileText, Github, Globe, Mail, Shield, Zap } from 'lucide-react'
+import Link from 'next/link'
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className="bg-background border-t pt-16 pb-8 px-6 overflow-hidden relative">
@@ -132,7 +132,11 @@ export function Footer() {
 
         <div className="pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-xs">
-            © {currentYear} New API Project. 保留所有权利。
+            ©
+            {' '}
+            {currentYear}
+            {' '}
+            New API Project. 保留所有权利。
           </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -143,5 +147,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

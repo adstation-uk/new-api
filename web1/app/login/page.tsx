@@ -1,10 +1,10 @@
+import { LoginForm } from '@/components/login-form'
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { LoginForm } from "@/components/login-form";
+} from '@/components/ui/card'
 
 export default function LoginPage() {
   return (
@@ -21,5 +21,5 @@ export default function LoginPage() {
         <LoginForm />
       </Card>
     </div>
-  );
+  )
 }

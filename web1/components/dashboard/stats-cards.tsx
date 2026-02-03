@@ -1,31 +1,19 @@
-"use client";
+'use client'
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { renderQuota, renderNumber, cn } from "@/lib/utils";
 import {
-  CreditCard,
-  BarChart3,
   Activity,
+  BarChart3,
+  CreditCard,
   Zap,
-  ArrowUpRight,
-  TrendingUp,
-} from "lucide-react";
-import { Line, LineChart, ResponsiveContainer } from "recharts";
+} from 'lucide-react'
+import * as React from 'react'
+import { Line, LineChart, ResponsiveContainer } from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn, renderNumber, renderQuota } from '@/lib/utils'
 
-interface StatsCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  trend?: any[];
-  trendColor?: string;
-  className?: string;
-  onClick?: () => void;
-  subValue?: string;
-}
-
-const MiniTrend = ({ data, color }: { data: any[]; color: string }) => {
-  if (!data || data.length === 0) return null;
+function MiniTrend({ data, color }: { data: any[], color: string }) {
+  if (!data || data.length === 0)
+    return null
   return (
     <div className="h-8 w-16">
       <ResponsiveContainer width="100%" height="100%">
@@ -40,56 +28,56 @@ const MiniTrend = ({ data, color }: { data: any[]; color: string }) => {
         </LineChart>
       </ResponsiveContainer>
     </div>
-  );
-};
+  )
+}
 
-export const StatsCards = ({
+export function StatsCards({
   data,
   loading,
 }: {
-  data: any;
-  loading: boolean;
-}) => {
+  data: any
+  loading: boolean
+}) {
   const stats = [
     {
-      title: "当前余额",
+      title: '当前余额',
       value: renderQuota(data?.quota || 0),
       icon: <CreditCard className="w-4 h-4" />,
-      className: "",
-      trendColor: "#3b82f6",
-      subValue: "点击充值",
+      className: '',
+      trendColor: '#3b82f6',
+      subValue: '点击充值',
     },
     {
-      title: "今日消耗",
+      title: '今日消耗',
       value: renderQuota(data?.today_quota || 0),
       icon: <Zap className="w-4 h-4" />,
-      className: "",
-      trendColor: "#f59e0b",
+      className: '',
+      trendColor: '#f59e0b',
       trend: data?.trend?.consumeQuota,
     },
     {
-      title: "今日调用",
+      title: '今日调用',
       value: renderNumber(data?.today_times || 0),
       icon: <Activity className="w-4 h-4" />,
-      className: "",
-      trendColor: "#10b981",
+      className: '',
+      trendColor: '#10b981',
       trend: data?.trend?.times,
     },
     {
-      title: "总调用次数",
+      title: '总调用次数',
       value: renderNumber(data?.times || 0),
       icon: <BarChart3 className="w-4 h-4" />,
-      className: "",
-      trendColor: "#a855f7",
+      className: '',
+      trendColor: '#a855f7',
     },
-  ];
+  ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {stats.map((stat, idx) => (
         <Card
           key={idx}
-          className={cn("overflow-hidden transition-all", stat.className)}
+          className={cn('overflow-hidden transition-all', stat.className)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -101,7 +89,7 @@ export const StatsCards = ({
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-2xl font-bold tracking-tight">
-                  {loading ? "..." : stat.value}
+                  {loading ? '...' : stat.value}
                 </div>
                 {stat.subValue && (
                   <p className="text-xs text-muted-foreground mt-1 cursor-pointer hover:text-primary">
@@ -112,7 +100,7 @@ export const StatsCards = ({
               {!loading && stat.trend && (
                 <MiniTrend
                   data={stat.trend}
-                  color={stat.trendColor || "#8884d8"}
+                  color={stat.trendColor || '#8884d8'}
                 />
               )}
             </div>
@@ -120,5 +108,5 @@ export const StatsCards = ({
         </Card>
       ))}
     </div>
-  );
-};
+  )
+}

@@ -1,24 +1,15 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Coins, CreditCard, Ticket } from "lucide-react";
-import { cn, renderQuota } from "@/lib/utils";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Coins, CreditCard } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import * as React from 'react'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -26,76 +17,89 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { cn, renderQuota } from '@/lib/utils'
 
 // Re-define interfaces or import if shared
-interface Log {
-  id: number;
-  created_at: number;
-  type: number;
-  quota: number;
-  content: string;
+type Log = {
+  id: number
+  created_at: number
+  type: number
+  quota: number
+  content: string
 }
 
-interface TopupInfo {
-  enable_online_topup: boolean;
-  enable_stripe_topup: boolean;
-  min_topup: number;
-  pay_methods: any[]; // Assuming array of objects
-  amount_options: number[];
-  discount: Record<string, number>;
+type TopupInfo = {
+  enable_online_topup: boolean
+  enable_stripe_topup: boolean
+  min_topup: number
+  pay_methods: any[] // Assuming array of objects
+  amount_options: number[]
+  discount: Record<string, number>
 }
 
-interface TopupClientProps {
-  user: any;
-  topupInfo: TopupInfo | null;
-  initialLogs: Log[];
+type TopupClientProps = {
+  user: any
+  topupInfo: TopupInfo | null
+  initialLogs: Log[]
 }
 
 const redemptionSchema = z.object({
-  redemptionCode: z.string().min(1, "请输入兑换码"),
-});
+  redemptionCode: z.string().min(1, '请输入兑换码'),
+})
 
-type RedemptionFormValues = z.infer<typeof redemptionSchema>;
+type RedemptionFormValues = z.infer<typeof redemptionSchema>
 
 export function TopupClient({
   user,
   topupInfo,
   initialLogs,
 }: TopupClientProps) {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"online" | "code">("code");
-  const [amount, setAmount] = useState<number>(topupInfo?.min_topup || 10);
-  const [isPending, setIsPending] = useState(false);
+  const router = useRouter()
+  const [activeTab, setActiveTab] = useState<'online' | 'code'>('code')
+  const [amount, setAmount] = useState<number>(topupInfo?.min_topup || 10)
+  const [isPending, setIsPending] = useState(false)
 
   const form = useForm<RedemptionFormValues>({
     resolver: zodResolver(redemptionSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      redemptionCode: "",
+      redemptionCode: '',
     },
-  });
+  })
 
   async function onSubmit(values: RedemptionFormValues) {
-    setIsPending(true);
+    setIsPending(true)
     try {
-      const res = await fetch("/api/user/topup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('/api/user/topup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key: values.redemptionCode }),
-      });
-      const data = await res.json();
+      })
+      const data = await res.json()
       if (data.success) {
-        toast.success("兑换成功");
-        form.reset();
-        router.refresh();
-      } else {
-        toast.error(data.message || "兑换失败");
+        toast.success('兑换成功')
+        form.reset()
+        router.refresh()
       }
-    } catch (err) {
-      toast.error("网络错误");
-    } finally {
-      setIsPending(false);
+      else {
+        toast.error(data.message || '兑换失败')
+      }
+    }
+    catch {
+      toast.error('网络错误')
+    }
+    finally {
+      setIsPending(false)
     }
   }
 
@@ -103,42 +107,46 @@ export function TopupClient({
     // This is complex. It usually redirects to Epay or Stripe.
     // Flow: POST /api/user/pay (or stripe/pay) -> get redirect URL -> window.location.href
     if (amount < (topupInfo?.min_topup || 1)) {
-      toast.error(`最小充值金额为 ${topupInfo?.min_topup || 1}`);
-      return;
+      toast.error(`最小充值金额为 ${topupInfo?.min_topup || 1}`)
+      return
     }
 
-    setIsPending(true);
+    setIsPending(true)
     try {
-      let url = "/api/user/pay"; // Default Epay
-      let body: any = { amount, top_up_code: "" };
+      let url = '/api/user/pay' // Default Epay
+      const body: any = { amount, top_up_code: '' }
 
-      if (paymentMethod === "stripe") {
-        url = "/api/user/stripe/pay";
+      if (paymentMethod === 'stripe') {
+        url = '/api/user/stripe/pay'
       }
 
       const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-      });
+      })
 
-      const data = await res.json();
+      const data = await res.json()
       if (data.success) {
         // If data has data (url), redirect
         if (data.data) {
-          window.location.href = data.data;
-        } else {
-          toast.success(data.message);
+          window.location.href = data.data
         }
-      } else {
-        toast.error(data.message || "请求支付失败");
+        else {
+          toast.success(data.message)
+        }
       }
-    } catch (e) {
-      toast.error("支付请求错误");
-    } finally {
-      setIsPending(false);
+      else {
+        toast.error(data.message || '请求支付失败')
+      }
     }
-  };
+    catch {
+      toast.error('支付请求错误')
+    }
+    finally {
+      setIsPending(false)
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -164,7 +172,9 @@ export function TopupClient({
             </div>
           </div>
           <div className="mt-4 text-sm text-muted-foreground border-t pt-4">
-            剩余额度: {user?.quota || 0}
+            剩余额度:
+            {' '}
+            {user?.quota || 0}
           </div>
         </Card>
 
@@ -173,31 +183,31 @@ export function TopupClient({
           <div className="flex items-center gap-4 mb-6 border-b pb-2">
             {topupInfo?.enable_online_topup && (
               <button
-                onClick={() => setActiveTab("online")}
+                onClick={() => setActiveTab('online')}
                 className={cn(
-                  "text-sm font-semibold px-4 py-2 rounded-md transition-all relative",
-                  activeTab === "online"
-                    ? "text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  'text-sm font-semibold px-4 py-2 rounded-md transition-all relative',
+                  activeTab === 'online'
+                    ? 'text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                    : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 在线充值
               </button>
             )}
             <button
-              onClick={() => setActiveTab("code")}
+              onClick={() => setActiveTab('code')}
               className={cn(
-                "text-sm font-semibold px-4 py-2 rounded-md transition-all relative",
-                activeTab === "code"
-                  ? "text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary"
-                  : "text-muted-foreground hover:text-foreground",
+                'text-sm font-semibold px-4 py-2 rounded-md transition-all relative',
+                activeTab === 'code'
+                  ? 'text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               兑换码充值
             </button>
           </div>
 
-          {activeTab === "code" && (
+          {activeTab === 'code' && (
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -214,7 +224,7 @@ export function TopupClient({
                           <Input placeholder="请输入您的兑换码" {...field} />
                         </FormControl>
                         <Button type="submit" disabled={isPending}>
-                          {isPending ? "兑换中..." : "兑换"}
+                          {isPending ? '兑换中...' : '兑换'}
                         </Button>
                       </div>
                       <FormMessage />
@@ -228,7 +238,7 @@ export function TopupClient({
             </Form>
           )}
 
-          {activeTab === "online" && topupInfo && (
+          {activeTab === 'online' && topupInfo && (
             <div className="space-y-4 max-w-md">
               <div className="space-y-2">
                 <FormLabel>充值金额 ($)</FormLabel>
@@ -236,10 +246,12 @@ export function TopupClient({
                   type="number"
                   min={topupInfo.min_topup}
                   value={amount}
-                  onChange={(e) => setAmount(parseInt(e.target.value))}
+                  onChange={e => setAmount(Number.parseInt(e.target.value))}
                 />
                 <p className="text-xs text-muted-foreground">
-                  当前汇率等请参考充值页面说明。最小充值: {topupInfo.min_topup}
+                  当前汇率等请参考充值页面说明。最小充值:
+                  {' '}
+                  {topupInfo.min_topup}
                 </p>
               </div>
 
@@ -247,7 +259,7 @@ export function TopupClient({
                 {/* Render button for generic Epay */}
                 {topupInfo.enable_online_topup && (
                   <Button
-                    onClick={() => handleOnlinePay("epay")}
+                    onClick={() => handleOnlinePay('epay')}
                     disabled={isPending}
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
@@ -258,7 +270,7 @@ export function TopupClient({
                 {topupInfo.enable_stripe_topup && (
                   <Button
                     variant="outline"
-                    onClick={() => handleOnlinePay("stripe")}
+                    onClick={() => handleOnlinePay('stripe')}
                     disabled={isPending}
                   >
                     <CreditCard className="w-4 h-4 mr-2" />
@@ -284,42 +296,44 @@ export function TopupClient({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {initialLogs.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    暂无记录
-                  </TableCell>
-                </TableRow>
-              ) : (
-                initialLogs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(log.created_at * 1000).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-[10px] font-bold uppercase border">
-                        {log.type === 1 ? "充值" : "消费"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {renderQuota(log.quota)}
-                    </TableCell>
-                    <TableCell
-                      className="max-w-[200px] truncate text-muted-foreground"
-                      title={log.content}
-                    >
-                      {log.content}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
+              {initialLogs.length === 0
+                ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={4}
+                        className="text-center py-8 text-muted-foreground"
+                      >
+                        暂无记录
+                      </TableCell>
+                    </TableRow>
+                  )
+                : (
+                    initialLogs.map(log => (
+                      <TableRow key={log.id}>
+                        <TableCell className="text-muted-foreground">
+                          {new Date(log.created_at * 1000).toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-[10px] font-bold uppercase border">
+                            {log.type === 1 ? '充值' : '消费'}
+                          </span>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {renderQuota(log.quota)}
+                        </TableCell>
+                        <TableCell
+                          className="max-w-[200px] truncate text-muted-foreground"
+                          title={log.content}
+                        >
+                          {log.content}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
             </TableBody>
           </Table>
         </Card>
       </div>
     </div>
-  );
+  )
 }

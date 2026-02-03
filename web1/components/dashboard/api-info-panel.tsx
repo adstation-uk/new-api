@@ -1,24 +1,24 @@
-"use client";
+'use client'
 
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink, Terminal, Copy, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { Check, Copy, ExternalLink, Terminal } from 'lucide-react'
+import * as React from 'react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-interface ApiInfoPanelProps {
-  apiKey?: string;
+type ApiInfoPanelProps = {
+  apiKey?: string
 }
 
-export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
-  const [copied, setCopied] = React.useState(false);
+export function ApiInfoPanel({ apiKey = 'sk-...' }: ApiInfoPanelProps) {
+  const [copied, setCopied] = React.useState(false)
 
   const copyKey = () => {
-    navigator.clipboard.writeText(apiKey);
-    setCopied(true);
-    toast.success("API Key 已复制");
-    setTimeout(() => setCopied(false), 2000);
-  };
+    navigator.clipboard.writeText(apiKey)
+    setCopied(true)
+    toast.success('API Key 已复制')
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <Card className="lg:col-span-3">
@@ -44,11 +44,13 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
                 className="h-8 w-8"
                 onClick={copyKey}
               >
-                {copied ? (
-                  <Check className="h-4 h-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 h-4" />
-                )}
+                {copied
+                  ? (
+                      <Check className="h-4 h-4 text-green-500" />
+                    )
+                  : (
+                      <Copy className="h-4 h-4" />
+                    )}
               </Button>
             </div>
           </div>
@@ -86,12 +88,14 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
               配置基地址
             </h4>
             <p className="text-xs text-foreground/80 leading-relaxed font-mono">
-              Base URL:{" "}
-              {typeof window !== "undefined" ? window.location.origin : ""}/v1
+              Base URL:
+              {' '}
+              {typeof window !== 'undefined' ? window.location.origin : ''}
+              /v1
             </p>
           </div>
         </div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

@@ -1,133 +1,129 @@
-import React from "react";
-import { Zap, Shield, Unlock, ArrowRight, Coins, Gift } from "lucide-react";
 import {
-  OpenAI,
   Claude,
-  Gemini,
   DeepSeek,
-  Qwen,
-  Wenxin,
+  Gemini,
   Midjourney,
-  XAI,
   Moonshot,
-  Zhipu,
+  OpenAI,
+  Qwen,
   Suno,
-  Volcengine,
-  Minimax,
-  Hunyuan,
-  Spark,
-} from "@lobehub/icons";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { Footer } from "@/components/footer";
-import { api } from "@/lib/api";
-import { ServerAddressClient } from "@/components/server-address-client";
-import Marquee from "@/components/magicui/marquee";
+  XAI,
+  Zhipu,
+} from '@lobehub/icons'
+import { ArrowRight, Coins, Gift, Shield, Unlock, Zap } from 'lucide-react'
+import Link from 'next/link'
+import * as React from 'react'
+import { Footer } from '@/components/footer'
+import Marquee from '@/components/magicui/marquee'
+import { ServerAddressClient } from '@/components/server-address-client'
+import { api } from '@/lib/api'
+import { cn } from '@/lib/utils'
 
 const HERO_MODELS_DATA = [
   {
-    name: "Suno music",
-    price: "$0.075",
-    original: "$0.12",
-    discount: "-37.5% OFF",
-    unit: "/req",
+    name: 'Suno music',
+    price: '$0.075',
+    original: '$0.12',
+    discount: '-37.5% OFF',
+    unit: '/req',
     icon: (size: number) => <Suno size={size} />,
-    pos: "-translate-x-32 -translate-y-36 rotate-[-6deg]",
+    pos: '-translate-x-32 -translate-y-36 rotate-[-6deg]',
   },
   {
-    name: "Gemini 3 Pro",
-    price: "$9.0",
-    original: "$12.0",
-    discount: "BEST VALUE",
-    unit: "/M",
+    name: 'Gemini 3 Pro',
+    price: '$9.0',
+    original: '$12.0',
+    discount: 'BEST VALUE',
+    unit: '/M',
     icon: (size: number) => <Gemini.Color size={size} />,
-    pos: "translate-x-4 -translate-y-8",
+    pos: 'translate-x-4 -translate-y-8',
     featured: true,
   },
   {
-    name: "GPT-5",
-    price: "$7.5",
-    original: "$10",
-    discount: "-25% OFF",
-    unit: "/M",
+    name: 'GPT-5',
+    price: '$7.5',
+    original: '$10',
+    discount: '-25% OFF',
+    unit: '/M',
     icon: (size: number) => <OpenAI size={size} />,
-    pos: "translate-x-40 -translate-y-44 rotate-[4deg]",
+    pos: 'translate-x-40 -translate-y-44 rotate-[4deg]',
   },
   {
-    name: "Veo 3.1",
-    price: "$3.0",
-    original: "$4.38",
-    discount: "-31% OFF",
-    unit: "/req",
+    name: 'Veo 3.1',
+    price: '$3.0',
+    original: '$4.38',
+    discount: '-31% OFF',
+    unit: '/req',
     icon: (size: number) => <Gemini size={size} />,
-    pos: "-translate-x-20 translate-y-32 rotate-[-2deg]",
+    pos: '-translate-x-20 translate-y-32 rotate-[-2deg]',
   },
   {
-    name: "Gemini 2.5 Flash",
-    price: "$1.8",
-    original: "$2.5",
-    discount: "-28% OFF",
-    unit: "/M",
+    name: 'Gemini 2.5 Flash',
+    price: '$1.8',
+    original: '$2.5',
+    discount: '-28% OFF',
+    unit: '/M',
     icon: (size: number) => <Gemini.Color size={size} />,
-    pos: "translate-x-40 translate-y-24 rotate-[5deg]",
+    pos: 'translate-x-40 translate-y-24 rotate-[5deg]',
   },
-];
+]
 
 const MODEL_GROUPS_ITEMS = [
-  { name: "OpenAI", icon: <OpenAI size={24} />, desc: "GPT-4o, GPT-5" },
+  { name: 'OpenAI', icon: <OpenAI size={24} />, desc: 'GPT-4o, GPT-5' },
   {
-    name: "Anthropic",
+    name: 'Anthropic',
     icon: <Claude.Color size={24} />,
-    desc: "Claude 3.5 Sonnet",
+    desc: 'Claude 3.5 Sonnet',
   },
-  { name: "Google", icon: <Gemini.Color size={24} />, desc: "Gemini 3 Pro" },
-  { name: "Moonshot", icon: <Moonshot size={24} />, desc: "Kimi-latest" },
-  { name: "Zhipu", icon: <Zhipu size={24} />, desc: "GLM-4 Plus" },
-  { name: "DeepSeek", icon: <DeepSeek.Color size={24} />, desc: "DeepSeek V3" },
-  { name: "Midjourney", icon: <Midjourney size={24} />, desc: "Image Gen V6" },
-  { name: "X.AI", icon: <XAI size={24} />, desc: "Grok-2" },
-  { name: "Aliyun", icon: <Qwen.Color size={24} />, desc: "Qwen 2.5" },
-  { name: "Suno", icon: <Suno size={24} />, desc: "Suno V3.5" },
-];
+  { name: 'Google', icon: <Gemini.Color size={24} />, desc: 'Gemini 3 Pro' },
+  { name: 'Moonshot', icon: <Moonshot size={24} />, desc: 'Kimi-latest' },
+  { name: 'Zhipu', icon: <Zhipu size={24} />, desc: 'GLM-4 Plus' },
+  { name: 'DeepSeek', icon: <DeepSeek.Color size={24} />, desc: 'DeepSeek V3' },
+  { name: 'Midjourney', icon: <Midjourney size={24} />, desc: 'Image Gen V6' },
+  { name: 'X.AI', icon: <XAI size={24} />, desc: 'Grok-2' },
+  { name: 'Aliyun', icon: <Qwen.Color size={24} />, desc: 'Qwen 2.5' },
+  { name: 'Suno', icon: <Suno size={24} />, desc: 'Suno V3.5' },
+]
 
 const MODEL_SCROLL_DATA = [
-  { name: "GPT-4o", discount: "80% OFF" },
-  { name: "Claude 3.5 Sonnet", discount: "NEW" },
-  { name: "Gemini 3 Pro", discount: "TOP" },
-  { name: "DeepSeek V3", discount: "VALUE" },
-  { name: "Midjourney V6", discount: "PRO" },
-  { name: "Suno V3.5", discount: "HOT" },
-  { name: "Kimi-latest", discount: "FAST" },
-  { name: "Grok-2", discount: "X" },
-];
+  { name: 'GPT-4o', discount: '80% OFF' },
+  { name: 'Claude 3.5 Sonnet', discount: 'NEW' },
+  { name: 'Gemini 3 Pro', discount: 'TOP' },
+  { name: 'DeepSeek V3', discount: 'VALUE' },
+  { name: 'Midjourney V6', discount: 'PRO' },
+  { name: 'Suno V3.5', discount: 'HOT' },
+  { name: 'Kimi-latest', discount: 'FAST' },
+  { name: 'Grok-2', discount: 'X' },
+]
 
 export default async function HomePage() {
-  let homeContent = "";
+  let homeContent = ''
   try {
-    const res = await api("/api/home_page_content");
-    const json = await res.json();
+    const res = await api('/api/home_page_content')
+    const json = await res.json()
     if (json.success) {
-      homeContent = json.data;
+      homeContent = json.data
     }
-  } catch (e) {}
+  }
+  catch {}
 
   const advantages = [
     {
-      title: "价格更低",
-      desc: "相比官方定价，我们的价格更具竞争力，为您节省每一分钱。",
+      title: '价格更低',
+      desc: '相比官方定价，我们的价格更具竞争力，为您节省每一分钱。',
       icon: <Coins size={32} className="text-primary" />,
     },
     {
-      title: "服务稳定",
-      desc: "高可用架构设计，确保服务全天候在线，随时响应您的请求。",
+      title: '服务稳定',
+      desc: '高可用架构设计，确保服务全天候在线，随时响应您的请求。',
       icon: <Shield size={32} className="text-primary" />,
     },
     {
-      title: "无限制",
-      desc: "没有繁琐的请求限制，释放您的创造力，尽情探索 AI 的可能性。",
+      title: '无限制',
+      desc: '没有繁琐的请求限制，释放您的创造力，尽情探索 AI 的可能性。',
       icon: <Unlock size={32} className="text-primary" />,
     },
-  ];
+  ]
 
   return (
     <div className="w-full overflow-x-hidden">
@@ -181,15 +177,15 @@ export default async function HomePage() {
                 <div
                   key={idx}
                   className={cn(
-                    "absolute transform transition-all hover:scale-105 hover:z-50",
+                    'absolute transform transition-all hover:scale-105 hover:z-50',
                     item.pos,
-                    item.featured ? "z-30" : "z-20",
+                    item.featured ? 'z-30' : 'z-20',
                   )}
                 >
                   <div
                     className={cn(
-                      "p-8 rounded-2xl border shadow-xl bg-card text-card-foreground",
-                      item.featured && "ring-2 ring-primary border-primary",
+                      'p-8 rounded-2xl border shadow-xl bg-card text-card-foreground',
+                      item.featured && 'ring-2 ring-primary border-primary',
                     )}
                   >
                     <div className="flex items-center gap-4 mb-5">
@@ -203,20 +199,20 @@ export default async function HomePage() {
                         <span className="text-4xl font-black">
                           {item.price}
                           <span className="text-lg font-normal text-muted-foreground">
-                            {item.unit || "/M"}
+                            {item.unit || '/M'}
                           </span>
                         </span>
                         <span className="text-sm line-through text-muted-foreground/50">
                           {item.original}
-                          {item.unit || "/M"}
+                          {item.unit || '/M'}
                         </span>
                       </div>
                       <div
                         className={cn(
-                          "inline-flex px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest",
+                          'inline-flex px-3 py-1 rounded-full text-[10px] font-bold border uppercase tracking-widest',
                           item.featured
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-muted text-muted-foreground border-border",
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'bg-muted text-muted-foreground border-border',
                         )}
                       >
                         {item.discount}
@@ -336,5 +332,5 @@ export default async function HomePage() {
 
       <Footer />
     </div>
-  );
+  )
 }

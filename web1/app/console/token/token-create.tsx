@@ -1,15 +1,14 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Plus, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { createToken } from "./actions";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -17,74 +16,81 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { createToken } from './actions'
 
 const tokenSchema = z.object({
-  name: z.string().min(1, "请输入名称"),
+  name: z.string().min(1, '请输入名称'),
   expire: z.string().refine((val) => {
-    if (!val) return true;
-    return new Date(val).getTime() > Date.now();
-  }, "过期时间不能早于当前时间"),
+    if (!val)
+      return true
+    return new Date(val).getTime() > Date.now()
+  }, '过期时间不能早于当前时间'),
   quota: z.string().refine((val) => {
-    const n = Number(val);
-    return !isNaN(n) && n >= 0;
-  }, "额度必须是大于等于 0 的数字"),
+    const n = Number(val)
+    return !Number.isNaN(n) && n >= 0
+  }, '额度必须是大于等于 0 的数字'),
   unlimited: z.boolean(),
-});
+})
 
-type TokenFormValues = z.infer<typeof tokenSchema>;
+type TokenFormValues = z.infer<typeof tokenSchema>
 
 export function TokenCreate() {
-  const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false)
+  const router = useRouter()
 
   const form = useForm<TokenFormValues>({
     resolver: zodResolver(tokenSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      name: "",
-      expire: "",
-      quota: "500000",
+      name: '',
+      expire: '',
+      quota: '500000',
       unlimited: true,
     },
-  });
+  })
 
   async function onSubmit(values: TokenFormValues) {
-    const formData = new FormData();
-    formData.append("name", values.name);
-    formData.append("unlimited_quota", values.unlimited.toString());
+    const formData = new FormData()
+    formData.append('name', values.name)
+    formData.append('unlimited_quota', values.unlimited.toString())
     if (!values.unlimited) {
-      formData.append("remain_quota", values.quota);
-    } else {
-      formData.append("remain_quota", "0");
+      formData.append('remain_quota', values.quota)
+    }
+    else {
+      formData.append('remain_quota', '0')
     }
 
     if (values.expire) {
-      const ts = Math.floor(new Date(values.expire).getTime() / 1000);
-      formData.append("expire_time", ts.toString());
-    } else {
-      formData.append("expire_time", "-1");
+      const ts = Math.floor(new Date(values.expire).getTime() / 1000)
+      formData.append('expire_time', ts.toString())
+    }
+    else {
+      formData.append('expire_time', '-1')
     }
 
-    const res = await createToken(null, formData);
+    const res = await createToken(null, formData)
 
     if (res.success) {
-      toast.success("创建成功");
-      setIsOpen(false);
-      form.reset();
-      router.refresh();
-    } else {
-      toast.error(res.message || "创建失败");
+      toast.success('创建成功')
+      setIsOpen(false)
+      form.reset()
+      router.refresh()
+    }
+    else {
+      toast.error(res.message || '创建失败')
     }
   }
 
-  const unlimited = form.watch("unlimited");
+  const unlimited = form.watch('unlimited')
 
   return (
     <>
       <Button onClick={() => setIsOpen(true)}>
-        <Plus className="mr-2 h-4 w-4" /> 创建令牌
+        <Plus className="mr-2 h-4 w-4" />
+        {' '}
+        创建令牌
       </Button>
 
       {isOpen && (
@@ -183,7 +189,7 @@ export function TokenCreate() {
                     className="flex-1"
                     disabled={form.formState.isSubmitting}
                   >
-                    {form.formState.isSubmitting ? "创建中..." : "创建"}
+                    {form.formState.isSubmitting ? '创建中...' : '创建'}
                   </Button>
                 </div>
               </form>
@@ -192,5 +198,5 @@ export function TokenCreate() {
         </div>
       )}
     </>
-  );
+  )
 }

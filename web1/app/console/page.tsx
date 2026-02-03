@@ -1,55 +1,56 @@
-import { api } from "@/lib/api";
-import { LayoutDashboard, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { processDashboardData } from "@/lib/dashboard-utils";
-import { StatsCards } from "@/components/dashboard/stats-cards";
-import { ChartsPanel } from "@/components/dashboard/charts-panel";
-import { AnnouncementsPanel } from "@/components/dashboard/announcements-panel";
-import { ApiInfoPanel } from "@/components/dashboard/api-info-panel";
-import { UptimePanel } from "@/components/dashboard/uptime-panel";
-import { RefreshButton } from "@/components/dashboard/refresh-button";
+import { Calendar, LayoutDashboard } from 'lucide-react'
+import { AnnouncementsPanel } from '@/components/dashboard/announcements-panel'
+import { ApiInfoPanel } from '@/components/dashboard/api-info-panel'
+import { ChartsPanel } from '@/components/dashboard/charts-panel'
+import { RefreshButton } from '@/components/dashboard/refresh-button'
+import { StatsCards } from '@/components/dashboard/stats-cards'
+import { UptimePanel } from '@/components/dashboard/uptime-panel'
+import { Button } from '@/components/ui/button'
+import { api } from '@/lib/api'
+import { processDashboardData } from '@/lib/dashboard-utils'
 
 async function getDashboardData() {
   try {
     const [userRes, quotaRes, statusRes, uptimeRes] = await Promise.all([
-      api("/api/user/self"),
-      api("/api/data/self/?default_time=today"),
-      api("/api/status"),
-      api("/api/uptime/status").catch((e) => ({
+      api('/api/user/self'),
+      api('/api/data/self/?default_time=today'),
+      api('/api/status'),
+      api('/api/uptime/status').catch(() => ({
         json: async () => ({ success: false }),
         ok: false,
       })),
-    ]);
+    ])
 
-    const userJson = await userRes.json();
-    const quotaJson = await quotaRes.json();
-    const statusJson = await statusRes.json();
+    const userJson = await userRes.json()
+    const quotaJson = await quotaRes.json()
+    const statusJson = await statusRes.json()
 
     // Safety check for uptime response
-    let uptimeJson = { success: false, data: [] };
+    let uptimeJson = { success: false, data: [] }
     try {
-      if (uptimeRes && typeof uptimeRes.json === "function") {
-        uptimeJson = await uptimeRes.json();
+      if (uptimeRes && typeof uptimeRes.json === 'function') {
+        uptimeJson = await uptimeRes.json()
       }
-    } catch (e) {
+    }
+    catch {
       // ignore uptime parse errors
     }
 
-    const userData = userJson.success ? userJson.data : null;
-    const quotaData = quotaJson.success ? quotaJson.data || [] : [];
-    const statusData = statusJson.success ? statusJson.data : null;
+    const userData = userJson.success ? userJson.data : null
+    const quotaData = quotaJson.success ? quotaJson.data || [] : []
+    const statusData = statusJson.success ? statusJson.data : null
 
-    let uptimeData = [];
+    let uptimeData = []
     if (uptimeJson.success && Array.isArray(uptimeJson.data)) {
       // Flatten uptime data if it's grouped
-      uptimeData =
-        uptimeJson.data.flatMap((group: any) =>
+      uptimeData
+        = uptimeJson.data.flatMap((group: any) =>
           group.monitors.map((m: any) => ({
             name: m.name,
-            status: m.status === 1 ? "up" : "down",
+            status: m.status === 1 ? 'up' : 'down',
             uptime: m.uptime,
           })),
-        ) || [];
+        ) || []
     }
 
     return {
@@ -57,21 +58,22 @@ async function getDashboardData() {
       quotaData,
       status: statusData,
       uptimeData,
-    };
-  } catch (e) {
-    console.error("Failed to fetch dashboard data", e);
+    }
+  }
+  catch (e) {
+    console.error('Failed to fetch dashboard data', e)
     return {
       user: null,
       quotaData: [],
       status: null,
       uptimeData: [],
-    };
+    }
   }
 }
 
 export default async function DashboardPage() {
-  const { user, quotaData, status, uptimeData } = await getDashboardData();
-  const processedChartData = processDashboardData(quotaData);
+  const { user, quotaData, status, uptimeData } = await getDashboardData()
+  const processedChartData = processDashboardData(quotaData)
 
   const dashboardStats = {
     quota: user?.quota || 0,
@@ -79,17 +81,17 @@ export default async function DashboardPage() {
     times: user?.request_count || 0,
     today_times: quotaData.reduce((acc, curr) => acc + curr.count, 0),
     trend: processedChartData.trend,
-  };
+  }
 
   const announcements = status?.notice
     ? [
         {
           content: status.notice,
-          time: "当前",
-          type: "info",
+          time: '当前',
+          type: 'info',
         },
       ]
-    : [];
+    : []
 
   return (
     <div className="space-y-6">
@@ -102,7 +104,9 @@ export default async function DashboardPage() {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">数据看板</h2>
             <p className="text-sm text-muted-foreground">
-              欢迎回来，{user?.username || "用户"}。这是您的账户活跃情况概览。
+              欢迎回来，
+              {user?.username || '用户'}
+              。这是您的账户活跃情况概览。
             </p>
           </div>
         </div>
@@ -125,7 +129,7 @@ export default async function DashboardPage() {
 
         {/* Right Col: Info & Announcements */}
         <div className="lg:col-span-2 space-y-6">
-          <ApiInfoPanel apiKey={user?.access_token || "sk-..."} />
+          <ApiInfoPanel apiKey={user?.access_token || 'sk-...'} />
           <AnnouncementsPanel data={announcements} />
         </div>
       </div>
@@ -133,5 +137,5 @@ export default async function DashboardPage() {
       {/* Uptime Section */}
       <UptimePanel data={uptimeData} />
     </div>
-  );
+  )
 }

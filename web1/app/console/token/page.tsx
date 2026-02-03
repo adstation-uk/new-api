@@ -1,9 +1,9 @@
-import { api } from "@/lib/api";
-import { Card } from "@/components/ui/card";
-import { TokenSearch } from "./token-search";
-import { TokenCreate } from "./token-create";
-import { Pagination } from "@/components/ui-pagination";
-import { TokenTable } from "./token-table";
+import { Pagination } from '@/components/ui-pagination'
+import { Card } from '@/components/ui/card'
+import { api } from '@/lib/api'
+import { TokenCreate } from './token-create'
+import { TokenSearch } from './token-search'
+import { TokenTable } from './token-table'
 
 async function getTokens(page: number, pageSize: number, keyword: string) {
   try {
@@ -11,36 +11,38 @@ async function getTokens(page: number, pageSize: number, keyword: string) {
       `/api/token?p=${page - 1}&size=${pageSize}&keyword=${encodeURIComponent(
         keyword,
       )}`,
-    );
-    const data = await res.json();
+    )
+    const data = await res.json()
     if (data.success) {
       // Handle legacy response structure variations if needed
       if (data.data && Array.isArray(data.data.items)) {
         return {
           items: data.data.items,
           total: data.data.total,
-        };
-      } else if (Array.isArray(data.data)) {
-        return { items: data.data, total: data.data.length };
+        }
+      }
+      else if (Array.isArray(data.data)) {
+        return { items: data.data, total: data.data.length }
       }
     }
-  } catch (e) {
-    console.error("Failed to fetch tokens", e);
   }
-  return { items: [], total: 0 };
+  catch (e) {
+    console.error('Failed to fetch tokens', e)
+  }
+  return { items: [], total: 0 }
 }
 
 export default async function TokenPage({
   searchParams,
 }: {
-  searchParams: Promise<{ p?: string; keyword?: string }>;
+  searchParams: Promise<{ p?: string, keyword?: string }>
 }) {
-  const params = await searchParams;
-  const page = parseInt(params.p || "1");
-  const keyword = params.keyword || "";
-  const pageSize = 10;
+  const params = await searchParams
+  const page = Number.parseInt(params.p || '1')
+  const keyword = params.keyword || ''
+  const pageSize = 10
 
-  const { items, total } = await getTokens(page, pageSize, keyword);
+  const { items, total } = await getTokens(page, pageSize, keyword)
 
   return (
     <div className="space-y-6">
@@ -61,5 +63,5 @@ export default async function TokenPage({
         </Card>
       </div>
     </div>
-  );
+  )
 }

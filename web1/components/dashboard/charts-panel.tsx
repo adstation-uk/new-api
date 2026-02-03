@@ -1,69 +1,70 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  PieChart as PieChartIcon,
-  BarChart3,
-  TrendingUp,
-  ListOrdered,
   Activity,
-} from "lucide-react";
+  ListOrdered,
+  PieChart as PieChartIcon,
+  TrendingUp,
+} from 'lucide-react'
+import * as React from 'react'
+import { useState } from 'react'
 import {
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
+  Area,
+  AreaChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from "recharts";
-import { cn, renderQuota, renderNumber } from "@/lib/utils";
+} from 'recharts'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn, renderNumber, renderQuota } from '@/lib/utils'
 
 const COLORS = [
-  "#0088FE",
-  "#00C49F",
-  "#FFBB28",
-  "#FF8042",
-  "#8884d8",
-  "#82ca9d",
-];
+  '#0088FE',
+  '#00C49F',
+  '#FFBB28',
+  '#FF8042',
+  '#8884d8',
+  '#82ca9d',
+]
 
-interface ChartsPanelProps {
-  data: any;
-  loading: boolean;
+type ChartsPanelProps = {
+  data: any
+  loading: boolean
 }
 
-export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
-  const [activeTab, setActiveTab] = useState("1");
+export function ChartsPanel({ data, loading }: ChartsPanelProps) {
+  const [activeTab, setActiveTab] = useState('1')
 
   // Prepare data for charts
   // Note: Inherit mapping logic from legacy useDashboardCharts.jsx
-  const pieData = data?.pieData || [{ name: "无数据", value: 1 }];
-  const lineData = data?.lineData || [];
-  const barData = data?.barData || [];
+  const pieData = data?.pieData || [{ name: '无数据', value: 1 }]
+  const lineData = data?.lineData || []
+  const barData = data?.barData || []
 
   const tabs = [
-    { id: "1", label: "消耗分布", icon: <PieChartIcon className="w-4 h-4" /> },
-    { id: "2", label: "消耗趋势", icon: <TrendingUp className="w-4 h-4" /> },
-    { id: "3", label: "次数分布", icon: <Activity className="w-4 h-4" /> },
-    { id: "4", label: "调用排行", icon: <ListOrdered className="w-4 h-4" /> },
-  ];
+    { id: '1', label: '消耗分布', icon: <PieChartIcon className="w-4 h-4" /> },
+    { id: '2', label: '消耗趋势', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: '3', label: '次数分布', icon: <Activity className="w-4 h-4" /> },
+    { id: '4', label: '调用排行', icon: <ListOrdered className="w-4 h-4" /> },
+  ]
 
   const renderChart = () => {
-    if (loading)
+    if (loading) {
       return (
         <div className="h-full flex items-center justify-center">加载中...</div>
-      );
+      )
+    }
 
     switch (activeTab) {
-      case "1": // Pie chart for consumption
+      case '1': // Pie chart for consumption
         return (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -76,8 +77,7 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
                 paddingAngle={5}
                 dataKey="value"
                 label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
+                  `${name} ${(percent * 100).toFixed(0)}%`}
               >
                 {pieData.map((entry: any, index: number) => (
                   <Cell
@@ -90,8 +90,8 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
               <Legend />
             </PieChart>
           </ResponsiveContainer>
-        );
-      case "2": // Area chart for trend
+        )
+      case '2': // Area chart for trend
         return (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={lineData}>
@@ -101,7 +101,7 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
                 stroke="#f0f0f0"
               />
               <XAxis dataKey="Time" hide />
-              <YAxis tickFormatter={(value) => renderQuota(value)} />
+              <YAxis tickFormatter={value => renderQuota(value)} />
               <Tooltip formatter={(value: number) => renderQuota(value)} />
               <Area
                 type="monotone"
@@ -113,8 +113,8 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
               />
             </AreaChart>
           </ResponsiveContainer>
-        );
-      case "3": // Bar chart for distribution
+        )
+      case '3': // Bar chart for distribution
         return (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData}>
@@ -129,8 +129,8 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
               <Bar dataKey="Counts" fill="#82ca9d" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        );
-      case "4": // Horizontal Bar chart for ranking
+        )
+      case '4': // Horizontal Bar chart for ranking
         return (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={barData} layout="vertical">
@@ -144,17 +144,17 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
                 dataKey="Model"
                 type="category"
                 width={80}
-                style={{ fontSize: "10px" }}
+                style={{ fontSize: '10px' }}
               />
               <Tooltip formatter={(value: number) => renderNumber(value)} />
               <Bar dataKey="Counts" fill="#ffc658" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <Card className="col-span-full lg:col-span-3">
@@ -164,15 +164,15 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
           <CardTitle className="text-lg font-semibold">模型数据分析</CardTitle>
         </div>
         <div className="flex bg-muted p-1 rounded-lg">
-          {tabs.map((tab) => (
+          {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all',
                 activeTab === tab.id
-                  ? "bg-background shadow-sm text-primary"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? 'bg-background shadow-sm text-primary'
+                  : 'text-muted-foreground hover:text-foreground',
               )}
             >
               {tab.icon}
@@ -185,5 +185,5 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
         <div className="h-[350px] w-full">{renderChart()}</div>
       </CardContent>
     </Card>
-  );
-};
+  )
+}

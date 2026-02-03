@@ -1,24 +1,12 @@
-import { ConsoleNavbar } from "@/components/console-navbar";
-import { getUserInfo } from "@/lib/user";
-import { api } from "@/lib/api";
-
-async function getStatus() {
-  try {
-    const res = await api("/api/status");
-    return await res.json();
-  } catch (e) {
-    return { success: false };
-  }
-}
+import { ConsoleNavbar } from '@/components/console-navbar'
+import { getUserInfo } from '@/lib/user'
 
 export default async function ConsoleLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const user = await getUserInfo();
-  // const statusRes = await getStatus();
-  // const status = statusRes.success ? statusRes.data : {};
+  const user = await getUserInfo()
 
   return (
     <div className="min-h-screen">
@@ -29,5 +17,5 @@ export default async function ConsoleLayout({
 
       <main className="container mx-auto px-4 md:px-8 py-8">{children}</main>
     </div>
-  );
+  )
 }

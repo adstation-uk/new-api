@@ -8,6 +8,7 @@ export default antfu({
   rules: {
     'react-refresh/only-export-components': 'off',
     'ts/consistent-type-definitions': ['error', 'type'],
+    'node/prefer-global/process': 'off',
   },
   ignores: [
     '.next/**',
