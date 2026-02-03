@@ -23,6 +23,7 @@ import {
   Ticket,
   Sliders,
   Server,
+  Database,
 } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 
@@ -48,29 +49,9 @@ const DEFAULT_ADMIN_CONFIG: any = {
   },
 };
 
-export function ConsoleSidebar() {
+export function ConsoleSidebar({ user, status }: { user: any; status: any }) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [status, setStatus] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [statusRes, userRes] = await Promise.all([
-          fetch("/api/status"),
-          fetch("/api/user/self"),
-        ]);
-        const statusJson = await statusRes.json();
-        const userJson = await userRes.json();
-        if (statusJson.success) setStatus(statusJson.data);
-        if (userJson.success) setUser(userJson.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
-  }, []);
 
   const adminConfig = useMemo(() => {
     const merged = JSON.parse(JSON.stringify(DEFAULT_ADMIN_CONFIG));
