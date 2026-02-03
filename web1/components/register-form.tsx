@@ -1,12 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { loginAction } from "@/app/login/actions";
+import { registerAction } from "@/app/register/actions";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import {
@@ -20,47 +20,63 @@ import {
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
-const loginSchema = z.object({
-  username: z
-    .string()
-    .min(1, "请输入用户名")
-    .max(20, "用户名长度不得超过 20 位"),
-  password: z
-    .string()
-    .min(8, "密码长度不得小于 8 位")
-    .max(20, "密码长度不得超过 20 位"),
-});
+const registerSchema = z
+  .object({
+    username: z
+      .string()
+      .min(1, "请输入用户名")
+      .max(20, "用户名长度不得超过 20 位"),
+    password: z
+      .string()
+      .min(8, "密码长度不得小于 8 位")
+      .max(20, "密码长度不得超过 20 位"),
+    password2: z
+      .string()
+      .min(8, "请再次输入密码")
+      .max(20, "密码长度不得超过 20 位"),
+  })
+  .refine((data) => data.password === data.password2, {
+    message: "两次输入的密码不一致",
+    path: ["password2"],
+  });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export function LoginForm() {
+export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     mode: "onChange",
     defaultValues: {
       username: "",
       password: "",
+      password2: "",
     },
   });
 
-  async function onSubmit(values: LoginFormValues) {
+  async function onSubmit(values: RegisterFormValues) {
     setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append("username", values.username);
       formData.append("password", values.password);
+      formData.append("password2", values.password2);
 
-      const result = await loginAction(formData);
+      const aff = searchParams.get("aff");
+      if (aff) {
+        formData.append("aff_code", aff);
+      }
+
+      const result = await registerAction(formData);
 
       if (result.success) {
-        toast.success("登录成功");
-        router.push("/console");
-        router.refresh();
+        toast.success("注册成功，请登录");
+        router.push("/login");
       } else {
-        toast.error(result.message || "登录失败");
+        toast.error(result.message || "注册失败");
       }
     } catch {
       toast.error("网络错误");
@@ -78,9 +94,9 @@ export function LoginForm() {
             name="username"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>用户名 / 邮箱</FormLabel>
+                <FormLabel>用户名</FormLabel>
                 <FormControl>
-                  <Input placeholder="admin" {...field} />
+                  <Input placeholder="用户名" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,15 +115,28 @@ export function LoginForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="password2"
+            render={({ field }) => (
+              <FormItem className="flex flex-col gap-2">
+                <FormLabel>确认密码</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "登录中..." : "登录"}
+            {isSubmitting ? "注册中..." : "注册"}
           </Button>
           <div className="text-sm text-center text-muted-foreground">
-            没有账号？{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              立即注册
+            已有账号？{" "}
+            <Link href="/login" className="text-primary hover:underline">
+              立即登录
             </Link>
           </div>
         </CardFooter>
