@@ -7,14 +7,23 @@ import { TokenTable } from './token-table'
 
 async function getTokens(page: number, pageSize: number, keyword: string) {
   try {
-    const res = await api(
-      `/api/token?p=${page - 1}&size=${pageSize}&keyword=${encodeURIComponent(
-        keyword,
-      )}`,
-    )
+    const url = keyword
+      ? `/api/token/search?keyword=${encodeURIComponent(keyword)}&token=`
+      : `/api/token?p=${page - 1}&size=${pageSize}`
+    const res = await api(url)
     const data = await res.json()
+
     if (data.success) {
-      // Handle legacy response structure variations if needed
+      // Search response returns an array directly in data.data or data
+      if (keyword) {
+        const items = Array.isArray(data.data) ? data.data : []
+        return {
+          items,
+          total: items.length,
+        }
+      }
+
+      // Regular list response
       if (data.data && Array.isArray(data.data.items)) {
         return {
           items: data.data.items,

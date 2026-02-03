@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { deleteToken } from './actions'
+import { TokenDrawer } from './token-drawer'
 
 export function TokenKey({ token }: { token: { key: string, id: number } }) {
   const [showKey, setShowKey] = useState(false)
@@ -41,12 +42,9 @@ export function TokenKey({ token }: { token: { key: string, id: number } }) {
   )
 }
 
-export function TokenActions({
-  token,
-}: {
-  token: { id: number, name: string }
-}) {
+export function TokenActions({ token }: { token: any }) {
   const router = useRouter()
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
   const handleDelete = async () => {
     // eslint-disable-next-line no-alert
@@ -64,7 +62,12 @@ export function TokenActions({
 
   return (
     <div className="flex items-center justify-end gap-1">
-      <Button size="icon" variant="ghost" className="h-8 w-8 hover:bg-muted">
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8 hover:bg-muted"
+        onClick={() => setIsEditOpen(true)}
+      >
         <Edit size={14} className="text-muted-foreground" />
       </Button>
       <Button
@@ -75,6 +78,12 @@ export function TokenActions({
       >
         <Trash2 size={14} />
       </Button>
+
+      <TokenDrawer
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        editingToken={token}
+      />
     </div>
   )
 }

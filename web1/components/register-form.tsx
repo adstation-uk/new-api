@@ -1,14 +1,15 @@
-"use client";
+'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { registerAction } from "@/app/register/actions";
-import { Button } from "@/components/ui/button";
-import { CardContent, CardFooter } from "@/components/ui/card";
+import { zodResolver } from '@hookform/resolvers/zod'
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { registerAction } from '@/app/register/actions'
+import { Button } from '@/components/ui/button'
+import { CardContent, CardFooter } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -16,72 +17,74 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 const registerSchema = z
   .object({
     username: z
       .string()
-      .min(1, "请输入用户名")
-      .max(20, "用户名长度不得超过 20 位"),
+      .min(1, '请输入用户名')
+      .max(20, '用户名长度不得超过 20 位'),
     password: z
       .string()
-      .min(8, "密码长度不得小于 8 位")
-      .max(20, "密码长度不得超过 20 位"),
+      .min(8, '密码长度不得小于 8 位')
+      .max(20, '密码长度不得超过 20 位'),
     password2: z
       .string()
-      .min(8, "请再次输入密码")
-      .max(20, "密码长度不得超过 20 位"),
+      .min(8, '请再次输入密码')
+      .max(20, '密码长度不得超过 20 位'),
   })
-  .refine((data) => data.password === data.password2, {
-    message: "两次输入的密码不一致",
-    path: ["password2"],
-  });
+  .refine(data => data.password === data.password2, {
+    message: '两次输入的密码不一致',
+    path: ['password2'],
+  })
 
-type RegisterFormValues = z.infer<typeof registerSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>
 
 export function RegisterForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    mode: "onChange",
+    mode: 'onChange',
     defaultValues: {
-      username: "",
-      password: "",
-      password2: "",
+      username: '',
+      password: '',
+      password2: '',
     },
-  });
+  })
 
   async function onSubmit(values: RegisterFormValues) {
-    setIsSubmitting(true);
+    setIsSubmitting(true)
     try {
-      const formData = new FormData();
-      formData.append("username", values.username);
-      formData.append("password", values.password);
-      formData.append("password2", values.password2);
+      const formData = new FormData()
+      formData.append('username', values.username)
+      formData.append('password', values.password)
+      formData.append('password2', values.password2)
 
-      const aff = searchParams.get("aff");
+      const aff = searchParams.get('aff')
       if (aff) {
-        formData.append("aff_code", aff);
+        formData.append('aff_code', aff)
       }
 
-      const result = await registerAction(formData);
+      const result = await registerAction(formData)
 
       if (result.success) {
-        toast.success("注册成功，请登录");
-        router.push("/login");
-      } else {
-        toast.error(result.message || "注册失败");
+        toast.success('注册成功，请登录')
+        router.push('/login')
       }
-    } catch {
-      toast.error("网络错误");
-    } finally {
-      setIsSubmitting(false);
+      else {
+        toast.error(result.message || '注册失败')
+      }
+    }
+    catch {
+      toast.error('网络错误')
+    }
+    finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -131,10 +134,11 @@ export function RegisterForm() {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "注册中..." : "注册"}
+            {isSubmitting ? '注册中...' : '注册'}
           </Button>
           <div className="text-sm text-center text-muted-foreground">
-            已有账号？{" "}
+            已有账号？
+            {' '}
             <Link href="/login" className="text-primary hover:underline">
               立即登录
             </Link>
@@ -142,5 +146,5 @@ export function RegisterForm() {
         </CardFooter>
       </form>
     </Form>
-  );
+  )
 }

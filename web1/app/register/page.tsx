@@ -1,11 +1,11 @@
-import { RegisterForm } from "@/components/register-form";
+import { Suspense } from 'react'
+import { RegisterForm } from '@/components/register-form'
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Suspense } from "react";
+} from '@/components/ui/card'
 
 export default function RegisterPage() {
   return (
@@ -24,5 +24,5 @@ export default function RegisterPage() {
         </Suspense>
       </Card>
     </div>
-  );
+  )
 }
