@@ -23,19 +23,19 @@ export async function getUserInfo(minRole: number = 1): Promise<UserInfo> {
 
   if (res.status === 401) {
     // 处理 401 鉴权失败，带上过期参数以防止中间件循环重定向
-    redirect('/login?expired=1')
+    redirect('/login')
   }
 
   if (!res.ok) {
     const text = await res.text()
     console.error(`Status ${res.status}: ${text}`)
     // 其他非 401 错误也可以统一处理，或者根据需求展示错误页
-    redirect('/login?expired=1')
+    redirect('/login')
   }
 
   const data = await res.json()
   if (!data.success) {
-    redirect('/login?expired=1')
+    redirect('/login')
   }
 
   const user = data.data
