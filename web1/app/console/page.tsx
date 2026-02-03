@@ -1,248 +1,194 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import {
-  TrendingUp,
-  Activity,
-  Zap,
-  CreditCard,
-  AlertCircle,
-  RefreshCw,
-  Search,
-  Calendar,
-  Key,
-} from "lucide-react";
+import React, { useEffect, useState, useMemo } from "react";
+import { Calendar, RefreshCw, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { StatsCards } from "@/components/dashboard/stats-cards";
+import { ChartsPanel } from "@/components/dashboard/charts-panel";
+import { AnnouncementsPanel } from "@/components/dashboard/announcements-panel";
+import { ApiInfoPanel } from "@/components/dashboard/api-info-panel";
+import { UptimePanel } from "@/components/dashboard/uptime-panel";
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [stats, setStats] = useState({
-    quota: 0,
-    usedQuota: 0,
-    requestCount: 0,
-    todayQuota: 0,
-  });
+  const [status, setStatus] = useState<any>(null);
+  const [quotaData, setQuotaData] = useState<any[]>([]);
+  const [uptimeData, setUptimeData] = useState<any[]>([]);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [userRes, quotaRes, statusRes, uptimeRes] = await Promise.all([
+        fetch("/api/user/self"),
+        fetch("/api/data/self/?default_time=today"),
+        fetch("/api/status"),
+        fetch("/api/uptime/status").catch(() => null),
+      ]);
+
+      const userJson = await userRes.json();
+      const quotaJson = await quotaRes.json();
+      const statusJson = await statusRes.json();
+      const uptimeJson = uptimeRes
+        ? await uptimeRes.json()
+        : { success: false };
+
+      if (userJson.success) setUser(userJson.data);
+      if (quotaJson.success) setQuotaData(quotaJson.data || []);
+      if (statusJson.success) setStatus(statusJson.data);
+      if (uptimeJson.success) {
+        // Flatten uptime data if it's grouped
+        const allMonitors =
+          uptimeJson.data.flatMap((group: any) =>
+            group.monitors.map((m: any) => ({
+              name: m.name,
+              status: m.status === 1 ? "up" : "down",
+              uptime: m.uptime,
+            })),
+          ) || [];
+        setUptimeData(allMonitors);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("数据加载失败");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [userRes, quotaRes] = await Promise.all([
-          fetch("/api/user/self"),
-          fetch("/api/data/self/?default_time=today"),
-        ]);
-
-        const userJson = await userRes.json();
-        const quotaJson = await quotaRes.json();
-
-        if (userJson.success) {
-          setUser(userJson.data);
-          localStorage.setItem("user_info", JSON.stringify(userJson.data));
-        }
-
-        if (quotaJson.success) {
-          // Simplified stats calculation
-          const data = quotaJson.data || [];
-          const totalUsed = data.reduce(
-            (acc: number, item: any) => acc + (item.quota || 0),
-            0,
-          );
-          const totalCount = data.reduce(
-            (acc: number, item: any) => acc + (item.count || 0),
-            0,
-          );
-
-          setStats((prev) => ({
-            ...prev,
-            usedQuota: totalUsed,
-            requestCount: totalCount,
-          }));
-        }
-      } catch (err) {
-        // toast.error('数据加载失败');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  const formatQuota = (quota: number) => {
-    if (!quota || quota === 0) return "$0.00";
-    return `$${(quota / 500000).toFixed(2)}`;
+  // Process data for charts
+  const processedChartData = useMemo(() => {
+    if (!quotaData) return {};
+
+    // 1. Consume distribution (Pie)
+    const modelConsumption: Record<string, number> = {};
+    const modelCounts: Record<string, number> = {};
+    const hourMap: Record<string, any> = {};
+
+    quotaData.forEach((item) => {
+      const model = item.model_name || "unknown";
+      // Consumption
+      modelConsumption[model] =
+        (modelConsumption[model] || 0) + (item.quota || 0);
+      // Counts
+      modelCounts[model] = (modelCounts[model] || 0) + (item.count || 0);
+
+      // Timeline grouping by hour
+      const time = new Date(item.created_at * 1000).toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      if (!hourMap[time]) hourMap[time] = { Time: time, Usage: 0 };
+      hourMap[time].Usage += item.quota;
+      hourMap[time][model] = (hourMap[time][model] || 0) + item.quota;
+    });
+
+    const pieData = Object.entries(modelConsumption)
+      .map(([name, value]) => ({ name, value }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 10);
+
+    const barData = Object.entries(modelCounts)
+      .map(([Model, Counts]) => ({ Model, Counts }))
+      .sort((a, b) => b.Counts - a.Counts)
+      .slice(0, 10);
+
+    const lineData = Object.values(hourMap).sort((a: any, b: any) =>
+      a.Time.localeCompare(b.Time),
+    );
+
+    // Trend for stats cards
+    const timesTrend = lineData.map((d: any) => ({ value: d.Usage || 0 }));
+    const quotaTrend = lineData.map((d: any) => ({ value: d.Usage || 0 }));
+
+    return {
+      pieData,
+      barData,
+      lineData,
+      trend: {
+        times: timesTrend,
+        consumeQuota: quotaTrend,
+      },
+    };
+  }, [quotaData]);
+
+  const dashboardStats = {
+    quota: user?.quota || 0,
+    today_quota: quotaData.reduce((acc, curr) => acc + curr.quota, 0),
+    times: user?.request_count || 0, // Fallback if not in user
+    today_times: quotaData.reduce((acc, curr) => acc + curr.count, 0),
+    trend: processedChartData.trend,
   };
 
-  const statCards = [
-    {
-      title: "当前余额",
-      value: user ? formatQuota(user.quota) : "$0.00",
-      icon: CreditCard,
-      color: "text-blue-600",
-      bg: "bg-blue-50 dark:bg-blue-500/10",
-      desc: "可用额度",
-    },
-    {
-      title: "今日消耗",
-      value: formatQuota(stats.usedQuota),
-      icon: TrendingUp,
-      color: "text-orange-600",
-      bg: "bg-orange-50 dark:bg-orange-500/10",
-      desc: "相比昨日 +0%",
-    },
-    {
-      title: "请求数",
-      value: stats.requestCount.toString(),
-      icon: Activity,
-      color: "text-green-600",
-      bg: "bg-green-50 dark:bg-green-500/10",
-      desc: "今日累计请求",
-    },
-    {
-      title: "API 状态",
-      value: "运行正常",
-      icon: Zap,
-      color: "text-purple-600",
-      bg: "bg-purple-50 dark:bg-purple-500/10",
-      desc: "节点响应正常",
-    },
-  ];
+  const announcements = useMemo(() => {
+    if (!status?.notice) return [];
+    // Basic mock of announcements from notice string or a dedicated API if available
+    // Here we split by newlines as a simple heuristic
+    return [
+      {
+        content: status.notice,
+        time: "当前",
+        type: "info",
+      },
+    ] as any[];
+  }, [status]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
-            👋 欢迎回来, {user?.username || "用户"}
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400">
-            这是您的 API 使用数据概览
-          </p>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-gray-900/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-primary/10 rounded-xl">
+            <LayoutDashboard className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight">数据看板</h2>
+            <p className="text-sm text-muted-foreground">
+              欢迎回来，{user?.username || "用户"}。这是您的账户活跃情况概览。
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="gap-2">
-            <Calendar size={16} />
-            最近 7 天
+          <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
+            <Calendar className="w-4 h-4" />
+            今日数据
           </Button>
           <Button
             variant="default"
             size="sm"
-            className="gap-2 bg-blue-600 text-white"
+            className="gap-2"
+            onClick={fetchData}
+            disabled={loading}
           >
-            <RefreshCw size={16} className={cn(loading && "animate-spin")} />
-            刷新数据
+            <RefreshCw className={cn("w-4 h-4", loading && "animate-spin")} />
+            刷新
           </Button>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((card, idx) => (
-          <Card
-            key={idx}
-            className="border-none shadow-sm shadow-slate-200 dark:shadow-none bg-white dark:bg-slate-900/50 backdrop-blur-sm overflow-hidden group hover:scale-[1.02] transition-transform"
-          >
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <div className={cn("p-2.5 rounded-xl", card.bg)}>
-                  <card.icon size={24} className={card.color} />
-                </div>
-                <div className="text-xs font-medium text-slate-400 bg-slate-50 dark:bg-white/5 px-2 py-1 rounded-full">
-                  {card.title}
-                </div>
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white">
-                  {loading ? "..." : card.value}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                  {card.desc}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {/* Basic Stats */}
+      <StatsCards data={dashboardStats} loading={loading} />
 
-      {/* Main Content Areas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Charts Placeholder */}
-        <Card className="lg:col-span-2 border-slate-200 dark:border-white/10 dark:bg-slate-900/50">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg font-bold">使用趋势</CardTitle>
-            <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/5 p-1 rounded-lg">
-              <button className="px-3 py-1 text-xs font-bold rounded-md bg-white dark:bg-slate-800 shadow-sm">
-                额度
-              </button>
-              <button className="px-3 py-1 text-xs font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white">
-                次数
-              </button>
-            </div>
-          </CardHeader>
-          <CardContent className="h-80 flex items-center justify-center text-slate-400 text-sm italic">
-            此处为图表展示区域 (支持 ECharts/Recharts)
-          </CardContent>
-        </Card>
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Left Col: Charts */}
+        <ChartsPanel data={processedChartData} loading={loading} />
 
-        {/* Quick Actions / Announcements */}
-        <div className="space-y-8">
-          <Card className="border-slate-200 dark:border-white/10 dark:bg-slate-900/50">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">公告列表</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-500/20">
-                <h5 className="text-sm font-bold text-blue-700 dark:text-blue-400 mb-1">
-                  系统升级公告
-                </h5>
-                <p className="text-xs text-blue-600/80 dark:text-blue-400/80 leading-relaxed">
-                  我们最近优化了所有模型的响应延迟，建议将 API 基址切换为全域
-                  CDN 节点。
-                </p>
-              </div>
-              <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-white/5 group hover:bg-white dark:hover:bg-slate-800 transition-colors">
-                <h5 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">
-                  欢迎体验 Gemini 1.5 Pro
-                </h5>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  完全免费，目前处于限时体验阶段。
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-200 dark:border-white/10 dark:bg-slate-900/50">
-            <CardHeader>
-              <CardTitle className="text-lg font-bold">快捷操作</CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <Button
-                variant="outline"
-                className="h-20 flex flex-col gap-2 rounded-2xl group hover:border-blue-500/50 transition-all"
-              >
-                <Key
-                  size={20}
-                  className="text-slate-400 group-hover:text-blue-500 transition-colors"
-                />
-                <span className="text-xs font-bold">创建令牌</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-20 flex flex-col gap-2 rounded-2xl group hover:border-blue-500/50 transition-all"
-              >
-                <Search
-                  size={20}
-                  className="text-slate-400 group-hover:text-blue-500 transition-colors"
-                />
-                <span className="text-xs font-bold">查看日志</span>
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Right Col: Info & Announcements */}
+        <div className="lg:col-span-2 space-y-6">
+          <ApiInfoPanel apiKey={user?.access_token || "sk-..."} />
+          <AnnouncementsPanel data={announcements} loading={loading} />
         </div>
       </div>
+
+      {/* Uptime Section */}
+      <UptimePanel data={uptimeData} loading={loading} />
     </div>
   );
 }

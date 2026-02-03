@@ -21,10 +21,16 @@ import {
   XAI,
   Moonshot,
   Zhipu,
+  Suno,
+  Volcengine,
+  Minimax,
+  Hunyuan,
+  Spark,
 } from "@lobehub/icons";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { Footer } from "@/components/footer";
+import { toast } from "sonner";
 
 const HERO_MODELS_DATA = [
   {
@@ -33,7 +39,7 @@ const HERO_MODELS_DATA = [
     original: "$0.12",
     discount: "-37.5% OFF",
     unit: "/req",
-    icon: (size: number) => <Gemini size={size} />, // Fallback icon
+    icon: (size: number) => <Suno size={size} />,
     pos: "-translate-x-32 -translate-y-36 rotate-[-6deg]",
   },
   {
@@ -75,21 +81,52 @@ const HERO_MODELS_DATA = [
   },
 ];
 
+const MODEL_GROUPS_ITEMS = [
+  { name: "OpenAI", icon: <OpenAI size={24} />, desc: "GPT-4o, GPT-5" },
+  {
+    name: "Anthropic",
+    icon: <Claude.Color size={24} />,
+    desc: "Claude 3.5 Sonnet",
+  },
+  { name: "Google", icon: <Gemini.Color size={24} />, desc: "Gemini 3 Pro" },
+  { name: "Moonshot", icon: <Moonshot size={24} />, desc: "Kimi-latest" },
+  { name: "Zhipu", icon: <Zhipu size={24} />, desc: "GLM-4 Plus" },
+  { name: "DeepSeek", icon: <DeepSeek.Color size={24} />, desc: "DeepSeek V3" },
+  { name: "Midjourney", icon: <Midjourney size={24} />, desc: "Image Gen V6" },
+  { name: "X.AI", icon: <XAI size={24} />, desc: "Grok-2" },
+  { name: "Aliyun", icon: <Qwen.Color size={24} />, desc: "Qwen 2.5" },
+  { name: "Suno", icon: <Suno size={24} />, desc: "Suno V3.5" },
+];
+
 const MODEL_SCROLL_DATA = [
-  { name: "GPT-4o", price: "$10", discount: "-33%" },
-  { name: "GPT-4o-mini", price: "$0.60", discount: "-40%" },
-  { name: "GPT-5", price: "$12", discount: "-40%" },
-  { name: "GPT-5-mini", price: "$3", discount: "-25%" },
-  { name: "Gemini 2.0 Flash", price: "$0.5", discount: "-45%" },
-  { name: "Gemini 2.5 Flash", price: "$2.5", discount: "-33%" },
-  { name: "Gemini 2.5 Flash lite", price: "$0.4", discount: "-25%" },
+  { name: "GPT-4o", discount: "80% OFF" },
+  { name: "Claude 3.5 Sonnet", discount: "NEW" },
+  { name: "Gemini 3 Pro", discount: "TOP" },
+  { name: "DeepSeek V3", discount: "VALUE" },
+  { name: "Midjourney V6", discount: "PRO" },
+  { name: "Suno V3.5", discount: "HOT" },
+  { name: "Kimi-latest", discount: "FAST" },
+  { name: "Grok-2", discount: "X" },
 ];
 
 export default function HomePage() {
   const [serverAddress, setServerAddress] = useState("");
+  const [homeContent, setHomeContent] = useState("");
 
   useEffect(() => {
     setServerAddress(window.location.origin);
+
+    // Fetch home page content
+    const fetchHomeContent = async () => {
+      try {
+        const res = await fetch("/api/home_page_content");
+        const json = await res.json();
+        if (json.success) {
+          setHomeContent(json.data);
+        }
+      } catch (e) {}
+    };
+    fetchHomeContent();
   }, []);
 
   const handleCopyBaseURL = () => {
@@ -303,19 +340,40 @@ export default function HomePage() {
 
           <div className="mt-24 pt-12 border-t border-slate-200 dark:border-white/10">
             <p className="text-center text-slate-400 dark:text-slate-500 mb-10 font-medium tracking-widest uppercase text-sm">
-              采用领先強 AI 技术赋能
+              支持全球主流大模型
             </p>
-            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-700 bg-slate-100/30 dark:bg-slate-900/30 py-10 px-8 rounded-3xl">
-              <OpenAI size={40} />
-              <Claude.Color size={40} />
-              <Gemini.Color size={40} />
-              <DeepSeek.Color size={40} />
-              <Qwen.Color size={40} />
-              <Wenxin.Color size={40} />
-              <Midjourney size={40} />
-              <XAI size={40} />
-              <Moonshot size={40} />
-              <Zhipu size={40} />
+            <div className="space-y-6">
+              {[0, 1].map((row) => (
+                <div key={row} className="flex overflow-hidden group">
+                  <div
+                    className={cn(
+                      "flex gap-8 py-4 animate-scroll-logos",
+                      row === 1 && "animate-scroll-logos-reverse",
+                    )}
+                  >
+                    {[
+                      ...MODEL_GROUPS_ITEMS,
+                      ...MODEL_GROUPS_ITEMS,
+                      ...MODEL_GROUPS_ITEMS,
+                    ].map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 px-6 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-white/5 rounded-2xl whitespace-nowrap"
+                      >
+                        {item.icon}
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-slate-900 dark:text-white">
+                            {item.name}
+                          </span>
+                          <span className="text-[10px] text-slate-500">
+                            {item.desc}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -344,6 +402,18 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* 自定义公告/内容 */}
+      {homeContent && (
+        <div className="w-full bg-white dark:bg-slate-900 py-16 border-b border-slate-100 dark:border-white/5">
+          <div className="container mx-auto px-6">
+            <div
+              className="prose prose-slate dark:prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: homeContent }}
+            />
+          </div>
+        </div>
+      )}
+
       <Footer />
 
       <style jsx>{`
@@ -355,8 +425,22 @@ export default function HomePage() {
             transform: translateX(-33.333%);
           }
         }
+        @keyframes scroll-right {
+          from {
+            transform: translateX(-33.333%);
+          }
+          to {
+            transform: translateX(0);
+          }
+        }
         .animate-scroll-left {
-          animation: scroll-left 30s linear infinite;
+          animation: scroll-left 40s linear infinite;
+        }
+        .animate-scroll-logos {
+          animation: scroll-left 50s linear infinite;
+        }
+        .animate-scroll-logos-reverse {
+          animation: scroll-right 50s linear infinite;
         }
       `}</style>
     </div>

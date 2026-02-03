@@ -23,21 +23,13 @@ import { useState, useEffect } from "react";
 
 export function Navbar() {
   const pathname = usePathname();
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: Sync with iron-session
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-
     // Check login status (simplified for now, should check cookie or call API)
     const hasSession = document.cookie.includes("session");
     setIsLoggedIn(hasSession);
-
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
@@ -55,16 +47,13 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled || isMobileMenuOpen
-          ? "bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 py-3"
-          : "bg-transparent py-5",
+        "sticky top-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-white/10 py-3",
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group no-underline">
-            <div className="p-1.5 rounded-lg bg-blue-600 text-white group-hover:scale-110 transition-transform">
+            <div className="p-1.5 rounded-lg bg-blue-600 text-white">
               <Zap size={20} fill="currentColor" />
             </div>
             <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -149,14 +138,6 @@ export function Navbar() {
                 </Button>
               </>
             )}
-
-            <Link
-              href="https://github.com/nps-z/new-api"
-              target="_blank"
-              className="p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
-            >
-              <Github size={20} />
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
