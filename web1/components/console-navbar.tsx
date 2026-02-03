@@ -78,7 +78,7 @@ export function ConsoleNavbar({ user }: { user: any }) {
   ];
 
   return (
-    <div className="w-full border-b sticky top-16 z-40 bg-background">
+    <div className="w-full border-b sticky top-16 z-40 bg-background/60 backdrop-blur">
       <div className="container mx-auto px-4 md:px-8">
         <div className="flex items-center h-12 gap-1 overflow-x-auto no-scrollbar">
           {links.map((link) => (
