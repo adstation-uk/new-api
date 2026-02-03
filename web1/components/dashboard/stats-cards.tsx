@@ -55,8 +55,7 @@ export const StatsCards = ({
       title: "当前余额",
       value: renderQuota(data?.quota || 0),
       icon: <CreditCard className="w-4 h-4" />,
-      className:
-        "bg-blue-50/50 dark:bg-blue-950/20 border-blue-100 dark:border-blue-900",
+      className: "",
       trendColor: "#3b82f6",
       subValue: "点击充值",
     },
@@ -64,8 +63,7 @@ export const StatsCards = ({
       title: "今日消耗",
       value: renderQuota(data?.today_quota || 0),
       icon: <Zap className="w-4 h-4" />,
-      className:
-        "bg-orange-50/50 dark:bg-orange-950/20 border-orange-100 dark:border-orange-900",
+      className: "",
       trendColor: "#f59e0b",
       trend: data?.trend?.consumeQuota,
     },
@@ -73,8 +71,7 @@ export const StatsCards = ({
       title: "今日调用",
       value: renderNumber(data?.today_times || 0),
       icon: <Activity className="w-4 h-4" />,
-      className:
-        "bg-green-50/50 dark:bg-green-950/20 border-green-100 dark:border-green-900",
+      className: "",
       trendColor: "#10b981",
       trend: data?.trend?.times,
     },
@@ -82,8 +79,7 @@ export const StatsCards = ({
       title: "总调用次数",
       value: renderNumber(data?.times || 0),
       icon: <BarChart3 className="w-4 h-4" />,
-      className:
-        "bg-purple-50/50 dark:bg-purple-950/20 border-purple-100 dark:border-purple-900",
+      className: "",
       trendColor: "#a855f7",
     },
   ];
@@ -93,18 +89,13 @@ export const StatsCards = ({
       {stats.map((stat, idx) => (
         <Card
           key={idx}
-          className={cn(
-            "overflow-hidden border transition-all hover:shadow-md",
-            stat.className,
-          )}
+          className={cn("overflow-hidden transition-all", stat.className)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {stat.title}
             </CardTitle>
-            <div className="p-2 bg-white dark:bg-gray-900 rounded-lg shadow-sm">
-              {stat.icon}
-            </div>
+            <div className="p-2 bg-muted rounded-lg">{stat.icon}</div>
           </CardHeader>
           <CardContent>
             <div className="flex items-end justify-between">

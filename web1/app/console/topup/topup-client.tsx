@@ -134,7 +134,7 @@ export function TopupClient({
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Balance Card */}
-        <Card className="p-6 flex flex-col justify-between bg-primary/5 border-primary/10">
+        <Card className="p-6 flex flex-col justify-between shadow-sm">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-primary/10 rounded-full text-primary">
               <Coins size={24} />
@@ -148,22 +148,22 @@ export function TopupClient({
               </h2>
             </div>
           </div>
-          <div className="mt-4 text-sm text-muted-foreground">
+          <div className="mt-4 text-sm text-muted-foreground border-t pt-4">
             剩余额度: {user?.quota || 0}
           </div>
         </Card>
 
         {/* Topup Action Card */}
-        <Card className="col-span-1 md:col-span-2 p-6">
-          <div className="flex items-center gap-4 mb-6 border-b pb-4">
+        <Card className="col-span-1 md:col-span-2 p-6 shadow-sm">
+          <div className="flex items-center gap-4 mb-6 border-b pb-2">
             {topupInfo?.enable_online_topup && (
               <button
                 onClick={() => setActiveTab("online")}
                 className={cn(
-                  "text-sm font-medium px-4 py-2 rounded-md transition-colors",
+                  "text-sm font-semibold px-4 py-2 rounded-md transition-all relative",
                   activeTab === "online"
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted",
+                    ? "text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 在线充值
@@ -172,10 +172,10 @@ export function TopupClient({
             <button
               onClick={() => setActiveTab("code")}
               className={cn(
-                "text-sm font-medium px-4 py-2 rounded-md transition-colors",
+                "text-sm font-semibold px-4 py-2 rounded-md transition-all relative",
                 activeTab === "code"
-                  ? "bg-primary text-primary-foreground"
-                  : "hover:bg-muted",
+                  ? "text-primary after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-0.5 after:bg-primary"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               兑换码充值
@@ -272,19 +272,19 @@ export function TopupClient({
               ) : (
                 initialLogs.map((log) => (
                   <TableRow key={log.id}>
-                    <TableCell>
+                    <TableCell className="text-muted-foreground">
                       {new Date(log.created_at * 1000).toLocaleString()}
                     </TableCell>
                     <TableCell>
-                      <span className="bg-primary/10 text-primary px-2 py-1 rounded text-xs">
+                      <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-[10px] font-bold uppercase border">
                         {log.type === 1 ? "充值" : "消费"}
                       </span>
                     </TableCell>
-                    <TableCell className="font-mono">
+                    <TableCell className="font-mono text-sm">
                       {renderQuota(log.quota)}
                     </TableCell>
                     <TableCell
-                      className="max-w-[200px] truncate"
+                      className="max-w-[200px] truncate text-muted-foreground"
                       title={log.content}
                     >
                       {log.content}

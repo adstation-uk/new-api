@@ -116,16 +116,14 @@ export function PersonalClient({ user, status }: PersonalClientProps) {
     <div className="space-y-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            个人设置
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">个人设置</h1>
           <p className="text-muted-foreground mt-1">
             管理您的个人资料和账户安全
           </p>
         </div>
         <Button
           variant="ghost"
-          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
           onClick={handleLogout}
         >
           <LogOut className="mr-2 h-4 w-4" /> 退出登录
@@ -202,9 +200,9 @@ export function PersonalClient({ user, status }: PersonalClientProps) {
                 账号绑定
               </h4>
 
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border rounded-lg bg-card shadow-sm">
                 <div className="flex items-center gap-3">
-                  <Mail className="h-5 w-5 text-slate-500" />
+                  <Mail className="h-5 w-5 text-muted-foreground" />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">邮箱</span>
                     <span className="text-xs text-muted-foreground">
@@ -218,9 +216,9 @@ export function PersonalClient({ user, status }: PersonalClientProps) {
               </div>
 
               {status.github_oauth && (
-                <div className="flex items-center justify-between p-3 border rounded-lg">
+                <div className="flex items-center justify-between p-3 border rounded-lg bg-card shadow-sm">
                   <div className="flex items-center gap-3">
-                    <Github className="h-5 w-5 text-slate-900 dark:text-white" />
+                    <Github className="h-5 w-5" />
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">GitHub</span>
                       <span className="text-xs text-muted-foreground">
@@ -256,33 +254,33 @@ export function PersonalClient({ user, status }: PersonalClientProps) {
               </div>
               {accessToken ? (
                 <div className="relative">
-                  <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-md font-mono text-xs break-all pr-10">
+                  <div className="p-3 bg-muted rounded-md font-mono text-xs break-all pr-10 border">
                     {accessToken}
                   </div>
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="absolute right-1 top-1 h-7 w-7"
+                    className="absolute right-1 top-1 h-7 w-7 text-muted-foreground hover:text-foreground"
                     onClick={() => copyToClipboard(accessToken)}
                   >
                     <Copy size={14} />
                   </Button>
                 </div>
               ) : (
-                <div className="text-xs text-muted-foreground text-center py-2 border border-dashed rounded-md">
+                <div className="text-xs text-muted-foreground text-center py-4 border border-dashed rounded-md bg-muted/30">
                   点击生成获取用于 OpenAI 客户端连接的系统级令牌
                 </div>
               )}
             </div>
           </CardContent>
-          <CardFooter className="bg-slate-50 dark:bg-slate-900/50 p-4 border-t">
-            <div className="w-full flex gap-2">
+          <CardFooter className="p-6 pt-0 border-t bg-transparent">
+            <div className="w-full flex gap-2 pt-6">
               <Button variant="outline" className="w-full">
                 修改密码
               </Button>
               <Button
                 variant="outline"
-                className="w-full text-red-500 hover:text-red-700"
+                className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
               >
                 删除账号
               </Button>

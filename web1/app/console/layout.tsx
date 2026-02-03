@@ -1,4 +1,4 @@
-import { ConsoleSidebar } from "@/components/console-sidebar";
+import { ConsoleNavbar } from "@/components/console-navbar";
 import { getUserInfo } from "@/lib/user";
 import { api } from "@/lib/api";
 
@@ -17,14 +17,18 @@ export default async function ConsoleLayout({
   children: React.ReactNode;
 }) {
   const user = await getUserInfo();
-  const statusRes = await getStatus();
-  const status = statusRes.success ? statusRes.data : {};
+  // const statusRes = await getStatus();
+  // const status = statusRes.success ? statusRes.data : {};
 
   return (
-    <div className="flex pt-16 min-h-screen bg-slate-50 dark:bg-slate-900">
-      <ConsoleSidebar user={user} status={status} />
-      <main className="flex-1 transition-all duration-300 ml-64 overflow-x-hidden">
-        <div className="p-6 md:p-8 max-w-7xl mx-auto">{children}</div>
+    <div className="min-h-screen">
+      {/* Top spacing for fixed global navbar (approx 64px) */}
+
+      {/* Secondary Menu */}
+      <ConsoleNavbar user={user} />
+
+      <main className="container mx-auto px-4 md:px-8 py-8 max-w-7xl animate-in fade-in duration-500">
+        {children}
       </main>
     </div>
   );

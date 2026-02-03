@@ -47,3 +47,19 @@ export async function getUserInfo(minRole: number = 1): Promise<UserInfo> {
 
   return user;
 }
+
+/**
+ * 获取当前登录用户信息（可选）
+ * 如果未登录，返回 null，而不重定向
+ */
+export async function getOptionalUserInfo(): Promise<UserInfo | null> {
+  try {
+    const res = await api("/api/user/self");
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.success) return null;
+    return data.data;
+  } catch (error) {
+    return null;
+  }
+}

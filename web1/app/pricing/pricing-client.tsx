@@ -16,12 +16,14 @@ import { cn } from "@/lib/utils";
 
 const BadgeComponent = ({ children, variant = "default", className }: any) => {
   const variants: any = {
-    default: "bg-blue-500/10 text-blue-600 border border-blue-500/20",
-    secondary: "bg-slate-100 text-slate-600 border border-slate-200",
+    default: "bg-primary/10 text-primary border border-primary/20",
+    secondary: "bg-muted text-muted-foreground border",
     outline:
-      "border border-input bg-background text-slate-600 dark:text-slate-400 font-medium",
-    success: "bg-green-500/10 text-green-500 border-green-500/20",
-    purple: "bg-purple-500/10 text-purple-600 border border-purple-500/20",
+      "border border-input bg-background text-muted-foreground font-medium",
+    success:
+      "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20",
+    purple:
+      "bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20",
   };
   return (
     <span
@@ -190,28 +192,28 @@ export function PricingClient({
   }, [models]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 pt-20 pb-20">
+    <div className="min-h-screen bg-background pt-10 pb-20">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
-          <aside className="w-full lg:w-64 space-y-6 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-120px)] lg:overflow-y-auto custom-scrollbar">
+          <aside className="w-full lg:w-64 space-y-6 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-120px)] lg:overflow-y-auto">
             <div className="space-y-4">
-              <h3 className="font-bold text-sm text-slate-400 uppercase tracking-widest">
+              <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">
                 筛选排序
               </h3>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500">
+                <label className="text-xs font-bold text-muted-foreground">
                   价格分组 (Group)
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setSelectedGroup("all")}
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-sm",
+                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm border",
                       selectedGroup === "all"
-                        ? "bg-blue-600 text-white"
-                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-50",
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-input text-muted-foreground hover:bg-muted",
                     )}
                   >
                     最优分组
@@ -221,10 +223,10 @@ export function PricingClient({
                       key={group}
                       onClick={() => setSelectedGroup(group)}
                       className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-sm",
+                        "px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm border",
                         selectedGroup === group
-                          ? "bg-blue-600 text-white"
-                          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-50",
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-input text-muted-foreground hover:bg-muted",
                       )}
                     >
                       {group}
@@ -234,7 +236,7 @@ export function PricingClient({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500">
+                <label className="text-xs font-bold text-muted-foreground">
                   供应商 (Vendor)
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -249,10 +251,10 @@ export function PricingClient({
                         )
                       }
                       className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-sm",
+                        "px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm border",
                         filterVendor.includes(v)
-                          ? "bg-purple-600 text-white"
-                          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-50",
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-input text-muted-foreground hover:bg-muted",
                       )}
                     >
                       {v}
@@ -262,7 +264,7 @@ export function PricingClient({
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500">
+                <label className="text-xs font-bold text-muted-foreground">
                   标签 (Tags)
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -277,10 +279,10 @@ export function PricingClient({
                         )
                       }
                       className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-medium transition-all shadow-sm",
+                        "px-3 py-1.5 rounded-md text-xs font-medium transition-all shadow-sm border",
                         filterTag.includes(t)
-                          ? "bg-emerald-600 text-white"
-                          : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-slate-400 hover:bg-slate-50",
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background border-input text-muted-foreground hover:bg-muted",
                       )}
                     >
                       {t}
@@ -294,37 +296,37 @@ export function PricingClient({
           {/* Main Content */}
           <div className="flex-1 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-3xl font-bold tracking-tight text-foreground">
                 模型定价费率
               </h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 查看不同模型、不同分组下的费率详情。支持按量和按次计费，一站式调用全球领先
                 AI 能力。
               </p>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-slate-50/80 dark:bg-slate-900/40 p-5 rounded-3xl border border-slate-100 dark:border-white/5">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-muted/40 p-4 rounded-xl border border-border">
               <div className="relative w-full md:w-96">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="搜索模型、供应商、标签..."
-                  className="pl-11 bg-white dark:bg-slate-900 border-none shadow-sm h-12 rounded-2xl focus-visible:ring-1"
+                  className="pl-9 bg-background shadow-sm h-10 rounded-lg"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex bg-white dark:bg-slate-900 p-1.5 rounded-2xl shadow-sm border border-slate-100 dark:border-white/10">
+                <div className="flex bg-background p-1 rounded-lg border shadow-sm">
                   {["USD", "CNY"].map((curr) => (
                     <button
                       key={curr}
                       onClick={() => setCurrency(curr)}
                       className={cn(
-                        "px-5 py-2 rounded-xl text-xs font-black transition-all",
+                        "px-4 py-1.5 rounded-md text-xs font-bold transition-all",
                         currency === curr
-                          ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30"
-                          : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200",
+                          ? "bg-primary text-primary-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground",
                       )}
                     >
                       {curr}
@@ -335,61 +337,61 @@ export function PricingClient({
                 <button
                   onClick={() => setShowWithRecharge(!showWithRecharge)}
                   className={cn(
-                    "px-5 py-3 rounded-2xl text-xs font-black border transition-all flex items-center gap-2",
+                    "px-4 py-2 rounded-lg text-xs font-bold border transition-all flex items-center gap-2 shadow-sm",
                     showWithRecharge
-                      ? "bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-500/30"
-                      : "bg-white dark:bg-slate-900 border-slate-100 dark:border-white/5 text-slate-500",
+                      ? "bg-primary border-primary text-primary-foreground"
+                      : "bg-background border-input text-muted-foreground hover:bg-muted",
                   )}
                 >
                   {showWithRecharge ? "显示折后" : "显示原价"}
                 </button>
 
-                <div className="flex bg-white dark:bg-slate-900 p-1 rounded-2xl shadow-sm border border-slate-100 dark:border-white/10 ml-2">
+                <div className="flex bg-background p-1 rounded-lg border shadow-sm ml-2">
                   <button
                     onClick={() => setViewMode("grid")}
                     className={cn(
-                      "p-2 rounded-xl transition-all",
+                      "p-1.5 rounded-md transition-all",
                       viewMode === "grid"
-                        ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                        : "text-slate-400 hover:text-slate-600",
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    <LayoutGrid size={18} />
+                    <LayoutGrid size={16} />
                   </button>
                   <button
                     onClick={() => setViewMode("list")}
                     className={cn(
-                      "p-2 rounded-xl transition-all",
+                      "p-1.5 rounded-md transition-all",
                       viewMode === "list"
-                        ? "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white"
-                        : "text-slate-400 hover:text-slate-600",
+                        ? "bg-muted text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
-                    <List size={18} />
+                    <List size={16} />
                   </button>
                 </div>
               </div>
             </div>
 
             {viewMode === "list" ? (
-              <Card className="border border-slate-100 dark:border-white/5 shadow-2xl shadow-slate-200/40 dark:shadow-none bg-white dark:bg-slate-900/60 overflow-hidden rounded-3xl">
+              <Card className="border overflow-hidden rounded-xl shadow-sm">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-slate-50/50 dark:bg-slate-800/20 hover:bg-transparent border-b border-slate-100 dark:border-white/5">
-                      <TableHead className="py-6 px-8 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[10px]">
-                        Model Information
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="py-4 px-6 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+                        模型信息
                       </TableHead>
-                      <TableHead className="py-6 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[10px]">
-                        Billing
+                      <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+                        计费模式
                       </TableHead>
-                      <TableHead className="py-6 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[10px]">
+                      <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
                         Prompt (1M)
                       </TableHead>
-                      <TableHead className="py-6 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[10px]">
+                      <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
                         Completion (1M)
                       </TableHead>
-                      <TableHead className="py-6 font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-[10px]">
-                        Details
+                      <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
+                        详细参数
                       </TableHead>
                     </TableRow>
                   </TableHeader>
@@ -400,16 +402,19 @@ export function PricingClient({
                         return (
                           <TableRow
                             key={model.model_name}
-                            className="hover:bg-slate-50/40 dark:hover:bg-blue-500/5 transition-colors border-b border-slate-50 dark:border-white/5 group"
+                            className="hover:bg-muted/30 transition-colors border-b group"
                           >
-                            <TableCell className="py-6 px-8">
-                              <div className="flex flex-col gap-2">
-                                <span className="font-black text-slate-900 dark:text-white text-base tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            <TableCell className="py-4 px-6">
+                              <div className="flex flex-col gap-1.5">
+                                <span className="font-bold text-foreground text-sm tracking-tight group-hover:text-primary transition-colors">
                                   {model.model_name}
                                 </span>
-                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                <div className="flex flex-wrap gap-1">
                                   {model.vendor_name && (
-                                    <BadgeComponent variant="outline">
+                                    <BadgeComponent
+                                      variant="outline"
+                                      className="scale-90 origin-left"
+                                    >
                                       {model.vendor_name}
                                     </BadgeComponent>
                                   )}
@@ -417,6 +422,7 @@ export function PricingClient({
                                     <BadgeComponent
                                       key={tag}
                                       variant="secondary"
+                                      className="scale-90 origin-left"
                                     >
                                       {tag.trim()}
                                     </BadgeComponent>
@@ -435,33 +441,31 @@ export function PricingClient({
                                   : "Flat Rate"}
                               </BadgeComponent>
                             </TableCell>
-                            <TableCell className="font-mono text-sm font-black text-slate-900 dark:text-slate-100">
+                            <TableCell className="font-mono text-sm font-semibold">
                               {priceData.isPerToken
                                 ? priceData.input
                                 : priceData.price}
                             </TableCell>
-                            <TableCell className="font-mono text-sm font-black text-slate-900 dark:text-slate-100">
+                            <TableCell className="font-mono text-sm font-semibold">
                               {priceData.isPerToken ? priceData.output : "-"}
                             </TableCell>
                             <TableCell>
-                              <div className="flex flex-col gap-1.5 text-[10px] text-slate-400 font-bold uppercase tracking-tighter">
-                                <div className="flex justify-between items-center bg-slate-50/50 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                              <div className="flex flex-col gap-1 text-[10px] text-muted-foreground font-medium uppercase">
+                                <div className="flex justify-between items-center bg-muted/50 px-2 py-0.5 rounded border">
                                   <span>Ratio:</span>
-                                  <span className="text-slate-900 dark:text-white">
+                                  <span className="text-foreground">
                                     {model.model_ratio}
                                   </span>
                                 </div>
-                                <div className="flex justify-between items-center bg-slate-50/50 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                                <div className="flex justify-between items-center bg-muted/50 px-2 py-0.5 rounded border">
                                   <span>Comp:</span>
-                                  <span className="text-slate-900 dark:text-white">
+                                  <span className="text-foreground">
                                     {model.completion_ratio}
                                   </span>
                                 </div>
-                                <div className="flex justify-between items-center bg-blue-50/50 dark:bg-blue-500/10 px-2 py-1 rounded-md mt-1 border border-blue-100 dark:border-blue-500/20">
-                                  <span className="text-blue-600 dark:text-blue-400">
-                                    Fixed:
-                                  </span>
-                                  <span className="text-blue-700 dark:text-blue-300 font-black">
+                                <div className="flex justify-between items-center bg-primary/5 px-2 py-0.5 rounded border border-primary/10">
+                                  <span className="text-primary">Fixed:</span>
+                                  <span className="text-primary font-bold">
                                     {priceData.usedGroupRatio}
                                   </span>
                                 </div>
@@ -472,13 +476,11 @@ export function PricingClient({
                       })
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="h-80 text-center">
-                          <div className="flex flex-col items-center gap-4 opacity-40">
-                            <Search className="h-12 w-12 text-slate-300" />
-                            <span className="text-slate-500 font-bold">
-                              No matching models found
-                            </span>
-                          </div>
+                        <TableCell
+                          colSpan={5}
+                          className="h-40 text-center text-muted-foreground"
+                        >
+                          暂无符合条件的模型
                         </TableCell>
                       </TableRow>
                     )}
@@ -493,38 +495,40 @@ export function PricingClient({
                     return (
                       <Card
                         key={model.model_name}
-                        className="p-6 border-slate-100 dark:border-white/5 hover:shadow-xl transition-all group relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900/60"
+                        className="p-5 border hover:shadow-md transition-all group relative overflow-hidden rounded-xl bg-card"
                       >
-                        {/* Background blobs or decoration */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <div
-                              className="font-black text-lg text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 break-all"
+                              className="font-bold text-base text-card-foreground group-hover:text-primary transition-colors line-clamp-1 break-all"
                               title={model.model_name}
                             >
                               {model.model_name}
                             </div>
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="text-xs text-muted-foreground mt-0.5">
                               {model.vendor_name || "Unknown Vendor"}
                             </div>
                           </div>
-                          {/* Can add Vendor Icon here if available */}
                         </div>
 
-                        <div className="flex flex-wrap gap-1.5 mb-6 min-h-[50px] content-start">
+                        <div className="flex flex-wrap gap-1 mb-6 min-h-[40px] content-start">
                           {model.tags
                             ?.split(",")
                             .slice(0, 5)
                             .map((tag: string) => (
-                              <BadgeComponent key={tag} variant="secondary">
+                              <BadgeComponent
+                                key={tag}
+                                variant="secondary"
+                                className="scale-90 origin-left"
+                              >
                                 {tag.trim()}
                               </BadgeComponent>
                             ))}
                         </div>
 
                         <div className="space-y-3">
-                          <div className="flex justify-between items-center text-sm p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                            <span className="text-slate-500 font-medium">
+                          <div className="flex justify-between items-center text-sm p-3 bg-muted/30 rounded-lg">
+                            <span className="text-muted-foreground font-medium text-xs">
                               计费模式
                             </span>
                             <BadgeComponent
@@ -537,34 +541,36 @@ export function PricingClient({
                           </div>
 
                           {priceData.isPerToken ? (
-                            <>
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-500">
+                            <div className="space-y-2 px-1">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-muted-foreground">
                                   提示 (Prompt)
                                 </span>
-                                <span className="font-mono font-black">
+                                <span className="font-mono font-bold">
                                   {priceData.input} / 1M
                                 </span>
                               </div>
-                              <div className="flex justify-between items-center text-sm">
-                                <span className="text-slate-500">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-muted-foreground">
                                   补全 (Completion)
                                 </span>
-                                <span className="font-mono font-black">
+                                <span className="font-mono font-bold">
                                   {priceData.output} / 1M
                                 </span>
                               </div>
-                            </>
+                            </div>
                           ) : (
-                            <div className="flex justify-between items-center text-sm">
-                              <span className="text-slate-500">价格</span>
-                              <span className="font-mono font-black">
+                            <div className="flex justify-between items-center text-sm px-1">
+                              <span className="text-muted-foreground text-xs">
+                                价格
+                              </span>
+                              <span className="font-mono font-bold">
                                 {priceData.price} / 次
                               </span>
                             </div>
                           )}
 
-                          <div className="pt-3 border-t border-slate-100 dark:border-dashed dark:border-white/10 flex justify-between items-center text-xs text-slate-400">
+                          <div className="pt-3 border-t border-dashed flex justify-between items-center text-[10px] text-muted-foreground">
                             <span>分组倍率: {priceData.usedGroupRatio}</span>
                             <span>模型倍率: {model.model_ratio}</span>
                           </div>
@@ -574,9 +580,9 @@ export function PricingClient({
                   })
                 ) : (
                   <div className="col-span-full py-20 text-center opacity-50">
-                    <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <span className="text-slate-500 font-bold">
-                      No matching models found
+                    <Search className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
+                    <span className="text-muted-foreground font-medium">
+                      暂无符合条件的模型
                     </span>
                   </div>
                 )}

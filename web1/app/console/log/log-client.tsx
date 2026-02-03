@@ -103,15 +103,13 @@ export function LogClient({
     <div className="space-y-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            使用日志
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">使用日志</h1>
         </div>
 
-        <Card className="p-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex gap-4">
+        <Card className="p-0 overflow-hidden shadow-sm">
+          <div className="p-4 border-b flex gap-4">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="搜索日志..."
                 className="pl-8"
@@ -141,7 +139,7 @@ export function LogClient({
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="text-center py-8 text-slate-500"
+                    className="text-center py-8 text-muted-foreground"
                   >
                     暂无数据
                   </TableCell>
@@ -149,13 +147,13 @@ export function LogClient({
               ) : (
                 initialLogs.map((log) => (
                   <TableRow key={log.id}>
-                    <TableCell className="text-sm text-slate-500 whitespace-nowrap">
+                    <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
                       {new Date(log.created_at * 1000).toLocaleString()}
                     </TableCell>
                     <TableCell>{renderType(log.type)}</TableCell>
                     <TableCell>
                       {log.model_name && (
-                        <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs font-mono">
+                        <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs font-mono border border-border">
                           {log.model_name}
                         </span>
                       )}
@@ -163,17 +161,17 @@ export function LogClient({
                     <TableCell className="text-sm">
                       <div className="flex flex-col">
                         <span>{log.username}</span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-muted-foreground/70">
                           {log.token_name}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell className="text-sm">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-xs">
+                        <span className="text-xs text-muted-foreground">
                           提示: {log.prompt_tokens}
                         </span>
-                        <span className="text-xs">
+                        <span className="text-xs text-muted-foreground">
                           补全: {log.completion_tokens}
                         </span>
                         <span className="font-medium">
@@ -181,11 +179,11 @@ export function LogClient({
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-slate-500">
+                    <TableCell className="text-sm text-muted-foreground">
                       {log.use_time}ms
                     </TableCell>
                     <TableCell
-                      className="text-sm max-w-[200px] truncate"
+                      className="text-sm max-w-[200px] truncate text-muted-foreground"
                       title={log.content}
                     >
                       {log.content}
@@ -196,8 +194,10 @@ export function LogClient({
             </TableBody>
           </Table>
 
-          <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            <div className="text-sm text-slate-500">共 {total} 条数据</div>
+          <div className="p-4 border-t flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              共 {total} 条数据
+            </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"

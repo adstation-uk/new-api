@@ -21,8 +21,8 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
   };
 
   return (
-    <Card className="lg:col-span-3 border-none shadow-sm dark:bg-gray-900/50">
-      <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-50 dark:border-gray-800">
+    <Card className="lg:col-span-3">
+      <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-purple-500" />
           <CardTitle className="text-lg font-semibold">快速开始</CardTitle>
@@ -34,7 +34,7 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
               您的个人令牌 (默认)
             </label>
-            <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-2 p-2 bg-muted rounded-lg border">
               <code className="flex-1 text-xs font-mono break-all line-clamp-1">
                 {apiKey}
               </code>
@@ -56,7 +56,7 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <a
               href="/console/token"
-              className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
+              className="flex items-center justify-between p-4 rounded-xl border hover:bg-muted transition-colors group"
             >
               <div className="flex flex-col">
                 <span className="text-sm font-semibold">管理令牌</span>
@@ -69,7 +69,7 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
 
             <a
               href="/docs"
-              className="flex items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors group"
+              className="flex items-center justify-between p-4 rounded-xl border hover:bg-muted transition-colors group"
             >
               <div className="flex flex-col">
                 <span className="text-sm font-semibold">官方文档</span>
@@ -81,7 +81,7 @@ export const ApiInfoPanel = ({ apiKey = "sk-..." }: ApiInfoPanelProps) => {
             </a>
           </div>
 
-          <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+          <div className="p-4 rounded-xl bg-accent/50 border">
             <h4 className="text-xs font-bold text-primary mb-1 uppercase">
               配置基地址
             </h4>

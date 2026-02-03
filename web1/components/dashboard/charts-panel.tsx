@@ -157,13 +157,13 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
   };
 
   return (
-    <Card className="col-span-full lg:col-span-3 border-none shadow-sm dark:bg-gray-900/50">
-      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4 border-b border-gray-50 dark:border-gray-800">
+    <Card className="col-span-full lg:col-span-3">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4 border-b">
         <div className="flex items-center gap-2">
           <PieChartIcon className="w-5 h-5 text-primary" />
           <CardTitle className="text-lg font-semibold">模型数据分析</CardTitle>
         </div>
-        <div className="flex bg-gray-100/50 dark:bg-gray-800/50 p-1 rounded-lg">
+        <div className="flex bg-muted p-1 rounded-lg">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -171,7 +171,7 @@ export const ChartsPanel = ({ data, loading }: ChartsPanelProps) => {
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all",
                 activeTab === tab.id
-                  ? "bg-white dark:bg-gray-700 shadow-sm text-primary"
+                  ? "bg-background shadow-sm text-primary"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >

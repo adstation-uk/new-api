@@ -13,5 +13,6 @@ export const sessionOptions: IronSessionOptions = {
   cookieName: "new_api_session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
+    maxAge: 30 * 24 * 60 * 60, // 30 days, match Go backend
   },
 };

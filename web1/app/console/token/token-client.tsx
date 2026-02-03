@@ -191,19 +191,17 @@ export function TokenClient({
     <div className="space-y-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            我的令牌
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">我的令牌</h1>
           <Button onClick={() => setIsCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> 创建令牌
           </Button>
         </div>
 
-        <Card className="p-0 overflow-hidden bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
-          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex gap-4">
+        <Card className="p-0 overflow-hidden shadow-sm">
+          <div className="p-4 border-b flex gap-4">
             <div className="relative flex-1 max-w-sm flex gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-slate-500" />
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="搜索令牌名称或密钥..."
                   className="pl-8"
@@ -235,7 +233,7 @@ export function TokenClient({
                 <TableRow>
                   <TableCell
                     colSpan={7}
-                    className="text-center py-8 text-slate-500"
+                    className="text-center py-8 text-muted-foreground"
                   >
                     暂无数据
                   </TableCell>
@@ -246,7 +244,7 @@ export function TokenClient({
                     <TableCell className="font-medium">
                       <div className="flex flex-col gap-1">
                         <span>{token.name}</span>
-                        <div className="flex items-center gap-1 text-xs text-slate-500">
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
                           {showKey[token.id]
                             ? `sk-${token.key}`
                             : `sk-${token.key.substring(0, 4)}***${token.key.substring(token.key.length - 4)}`}
@@ -257,7 +255,7 @@ export function TokenClient({
                                 [token.id]: !prev[token.id],
                               }))
                             }
-                            className="hover:text-blue-500"
+                            className="hover:text-primary transition-colors"
                           >
                             {showKey[token.id] ? (
                               <EyeOff size={12} />
@@ -267,7 +265,7 @@ export function TokenClient({
                           </button>
                           <button
                             onClick={() => copyToClipboard(`sk-${token.key}`)}
-                            className="hover:text-blue-500"
+                            className="hover:text-primary transition-colors"
                           >
                             <Copy size={12} />
                           </button>
@@ -278,17 +276,17 @@ export function TokenClient({
                     <TableCell>{renderQuota(token.used_quota)}</TableCell>
                     <TableCell>
                       {token.unlimited_quota ? (
-                        <span className="text-green-600 dark:text-green-400 flex items-center gap-1">
+                        <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                           <span className="text-lg">∞</span> 无限制
                         </span>
                       ) : (
                         renderQuota(token.remain_quota)
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-slate-500">
+                    <TableCell className="text-sm text-muted-foreground">
                       {new Date(token.created_time * 1000).toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-sm text-slate-500">
+                    <TableCell className="text-sm text-muted-foreground">
                       {token.expired_time === -1
                         ? "永不过期"
                         : new Date(token.expired_time * 1000).toLocaleString()}
@@ -301,7 +299,7 @@ export function TokenClient({
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                          className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => handleDelete(token.id)}
                         >
                           <Trash2 size={16} />
@@ -315,8 +313,10 @@ export function TokenClient({
           </Table>
 
           {/* Pagination simple implementation */}
-          <div className="p-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            <div className="text-sm text-slate-500">共 {total} 条数据</div>
+          <div className="p-4 border-t flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              共 {total} 条数据
+            </div>
             <div className="flex gap-2">
               <Button
                 variant="outline"
@@ -341,13 +341,13 @@ export function TokenClient({
 
       {/* Create Token Modal Overlay */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <Card className="w-full max-w-md bg-white dark:bg-slate-900 shadow-xl border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 bg-background/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <Card className="w-full max-w-md bg-card shadow-lg border-border animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b">
               <h2 className="text-lg font-semibold">创建新令牌</h2>
               <button
                 onClick={() => setIsCreateOpen(false)}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X size={20} />
               </button>
@@ -374,7 +374,7 @@ export function TokenClient({
                     value={newExpire}
                     onChange={(e) => setNewExpire(e.target.value)}
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     留空表示永不过期
                   </p>
                 </div>
@@ -389,11 +389,11 @@ export function TokenClient({
                       id="unlimited"
                       checked={isUnlimited}
                       onChange={(e) => setIsUnlimited(e.target.checked)}
-                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                      className="h-4 w-4 rounded border-input bg-background"
                     />
                     <label
                       htmlFor="unlimited"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      className="text-sm font-medium leading-none"
                     >
                       无限额度
                     </label>
