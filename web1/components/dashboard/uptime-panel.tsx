@@ -38,9 +38,9 @@ export function UptimePanel({ data, loading }: UptimePanelProps) {
           : data.length > 0
             ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {data.map((monitor, idx) => (
+                  {data.map(monitor => (
                     <div
-                      key={idx}
+                      key={monitor.name}
                       className="flex items-center justify-between p-4 rounded-xl border bg-card"
                     >
                       <div className="flex items-center gap-3">

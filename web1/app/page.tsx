@@ -173,9 +173,9 @@ export default async function HomePage() {
 
             {/* 右侧展示区 - 错落卡片 */}
             <div className="relative lg:w-1/2 w-full hidden md:flex justify-center items-center h-[600px]">
-              {HERO_MODELS_DATA.map((item, idx) => (
+              {HERO_MODELS_DATA.map(item => (
                 <div
-                  key={idx}
+                  key={item.name}
                   className={cn(
                     'absolute transform transition-all hover:scale-105 hover:z-50',
                     item.pos,
@@ -237,9 +237,9 @@ export default async function HomePage() {
             <p className="text-xl text-muted-foreground">为什么选择我们</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {advantages.map((adv, idx) => (
+            {advantages.map(adv => (
               <div
-                key={idx}
+                key={adv.title}
                 className="p-8 rounded-2xl bg-card border transition-all duration-300 hover:-translate-y-2 group relative overflow-hidden"
               >
                 <div className="mb-6 p-4 rounded-full bg-muted w-fit group-hover:scale-110 transition-transform hidden md:block relative z-10">
@@ -261,9 +261,9 @@ export default async function HomePage() {
             </p>
             <div className="space-y-6">
               <Marquee pauseOnHover className="[--duration:50s]">
-                {MODEL_GROUPS_ITEMS.map((item, idx) => (
+                {MODEL_GROUPS_ITEMS.map(item => (
                   <div
-                    key={idx}
+                    key={item.name}
                     className="flex items-center gap-3 px-6 py-3 bg-muted/50 border rounded-2xl whitespace-nowrap"
                   >
                     {item.icon}
@@ -279,9 +279,9 @@ export default async function HomePage() {
                 ))}
               </Marquee>
               <Marquee reverse pauseOnHover className="[--duration:50s]">
-                {MODEL_GROUPS_ITEMS.map((item, idx) => (
+                {MODEL_GROUPS_ITEMS.map(item => (
                   <div
-                    key={idx}
+                    key={item.name}
                     className="flex items-center gap-3 px-6 py-3 bg-muted/50 border rounded-2xl whitespace-nowrap"
                   >
                     {item.icon}
@@ -304,9 +304,9 @@ export default async function HomePage() {
       {/* 滚动条部分 */}
       <div className="w-full py-4 bg-muted/50 border-b overflow-hidden relative">
         <Marquee pauseOnHover className="[--duration:40s]">
-          {MODEL_SCROLL_DATA.map((item, idx) => (
+          {MODEL_SCROLL_DATA.map(item => (
             <div
-              key={idx}
+              key={item.name}
               className="flex items-center gap-4 px-8 py-4 bg-card rounded-2xl mx-4 border shadow-sm"
             >
               <span className="font-bold text-foreground">{item.name}</span>
@@ -324,6 +324,7 @@ export default async function HomePage() {
           <div className="container mx-auto px-6">
             <div
               className="prose prose-slate dark:prose-invert max-w-none"
+              // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
               dangerouslySetInnerHTML={{ __html: homeContent }}
             />
           </div>

@@ -74,9 +74,9 @@ export function StatsCards({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      {stats.map((stat, idx) => (
+      {stats.map(stat => (
         <Card
-          key={idx}
+          key={stat.title}
           className={cn('overflow-hidden transition-all', stat.className)}
         >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

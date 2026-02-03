@@ -53,12 +53,12 @@ export function AnnouncementsPanel({
             : data.length > 0
               ? (
                   <div className="space-y-8 relative before:absolute before:left-[5px] before:top-2 before:bottom-2 before:w-[2px] before:bg-border">
-                    {data.map((item, idx) => {
+                    {data.map((item) => {
                       const htmlContent = marked.parse(item.content || '')
                       const htmlExtra = item.extra ? marked.parse(item.extra) : ''
 
                       return (
-                        <div key={idx} className="relative pl-6">
+                        <div key={item.time} className="relative pl-6">
                           {/* dot */}
                           <div
                             className={cn(
@@ -81,11 +81,13 @@ export function AnnouncementsPanel({
                             </span>
                             <div
                               className="prose prose-sm dark:prose-invert max-w-none text-sm text-foreground/90 leading-relaxed"
+                              // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
                               dangerouslySetInnerHTML={{ __html: htmlContent }}
                             />
                             {item.extra && (
                               <div
                                 className="mt-2 p-2 rounded bg-muted/50 text-[11px] text-muted-foreground"
+                                // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
                                 dangerouslySetInnerHTML={{ __html: htmlExtra }}
                               />
                             )}

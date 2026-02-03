@@ -34,6 +34,7 @@ export default function Marquee({
       {Array.from({ length: repeat })
         .map((_, i) => (
           <div
+            // eslint-disable-next-line react/no-array-index-key
             key={i}
             className={cn('flex shrink-0 justify-around [gap:var(--gap)]', {
               'animate-marquee flex-row': !vertical,

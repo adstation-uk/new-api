@@ -81,7 +81,7 @@ export function ChartsPanel({ data, loading }: ChartsPanelProps) {
               >
                 {pieData.map((entry: any, index: number) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={entry.name}
                     fill={COLORS[index % COLORS.length]}
                   />
                 ))}
