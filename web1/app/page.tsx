@@ -128,7 +128,7 @@ export default async function HomePage() {
   return (
     <div className="w-full overflow-x-hidden">
       {/* Banner 部分 */}
-      <div className="w-full lg:min-h-[calc(100vh-64px)] relative overflow-hidden flex flex-col justify-center pt-20 bg-background">
+      <div className="w-full lg:min-h-[calc(100vh-64px)] relative overflow-hidden flex flex-col justify-center bg-background">
         <div className="container mx-auto px-6 z-10 text-foreground h-full flex items-center">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12 w-full">
             {/* 左侧内容区 */}
