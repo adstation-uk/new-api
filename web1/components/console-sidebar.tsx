@@ -8,18 +8,12 @@ import {
   Key,
   History,
   CreditCard,
-  Gift,
   Settings,
   Users,
   Layers,
-  Monitor,
-  Terminal,
   ChevronLeft,
   ChevronRight,
   TrendingUp,
-  Package,
-  Activity,
-  MessageSquare,
   Ticket,
   Sliders,
   Server,
@@ -99,26 +93,7 @@ export function ConsoleSidebar({ user, status }: { user: any; status: any }) {
     const groups: { group: string; items: any[] }[] = [];
 
     // Group 0: Experience (Playground/Chat)
-    const experienceItems = [
-      {
-        name: "操练场",
-        href: "/console/playground",
-        icon: Terminal,
-        section: "chat",
-        module: "playground",
-      },
-      {
-        name: "聊天",
-        href: "/console/chat",
-        icon: MessageSquare,
-        section: "chat",
-        module: "chat",
-      },
-    ].filter((item) => isModuleVisible(item.section, item.module));
-
-    if (experienceItems.length > 0) {
-      groups.push({ group: "预览体验", items: experienceItems });
-    }
+    // Removed as per request
 
     // Group 1: Workspace
     const workspaceItems = [
@@ -143,20 +118,6 @@ export function ConsoleSidebar({ user, status }: { user: any; status: any }) {
         section: "console",
         module: "log",
       },
-      {
-        name: "绘图日志",
-        href: "/console/midjourney",
-        icon: Layers,
-        section: "console",
-        module: "midjourney",
-      },
-      {
-        name: "任务日志",
-        href: "/console/task",
-        icon: Activity,
-        section: "console",
-        module: "task",
-      },
     ].filter((item) => isModuleVisible(item.section, item.module));
 
     if (workspaceItems.length > 0) {
@@ -169,13 +130,6 @@ export function ConsoleSidebar({ user, status }: { user: any; status: any }) {
         name: "钱包管理",
         href: "/console/topup",
         icon: CreditCard,
-        section: "personal",
-        module: "topup",
-      },
-      {
-        name: "充值中心",
-        href: "/console/recharge",
-        icon: Gift,
         section: "personal",
         module: "topup",
       },

@@ -12,11 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Copy, Eye, EyeOff, Plus, Search, Trash2, Edit } from "lucide-react";
+import { Copy, Eye, EyeOff, Plus, Search, Trash2, Edit, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { deleteToken } from "./actions";
+import { deleteToken, createToken } from "./actions";
+import { Label } from "@/components/ui/label";
 
 interface Token {
   id: number;
@@ -51,6 +52,13 @@ export function TokenClient({
   const [searchKeyword, setSearchKeyword] = useState(keyword);
   const [isPending, setIsPending] = useState(false);
 
+  // Create Modal State
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newExpire, setNewExpire] = useState(""); // YYYY-MM-DD
+  const [newQuota, setNewQuota] = useState("500000"); // Default $1
+  const [isUnlimited, setIsUnlimited] = useState(true);
+
   // Use local state for immediate feedback, but sync with props
   // Actually simplest is just use props for data, and local for interactive UI like showKey
 
@@ -78,6 +86,56 @@ export function TokenClient({
       router.refresh();
     } else {
       toast.error(res.message || "删除失败");
+    }
+  };
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsPending(true);
+
+    // Prepare FormData
+    const formData = new FormData();
+    formData.append("name", newName);
+
+    // Convert date to timestamp if needed, or let server handle.
+    // However, clean logic:
+    // If unlimited quota => quota is not sent or ignored by server usually?
+    // Usually API behavior:
+    // unlimited_quota: true/false.
+    // If false, remain_quota is required.
+
+    formData.append("unlimited_quota", isUnlimited.toString());
+
+    if (!isUnlimited) {
+      formData.append("remain_quota", newQuota);
+    } else {
+      formData.append("remain_quota", "0");
+    }
+
+    if (newExpire) {
+      // Convert YYYY-MM-DD to timestamp (seconds)
+      // Add end of day time usually? Or just midnight.
+      const ts = Math.floor(new Date(newExpire).getTime() / 1000);
+      formData.append("expire_time", ts.toString());
+    } else {
+      // If empty and not unlimited, what does it mean? Usually never expire.
+      // Default -1
+      formData.append("expire_time", "-1");
+    }
+
+    const res = await createToken(null, formData);
+    setIsPending(false);
+
+    if (res.success) {
+      toast.success("创建成功");
+      setIsCreateOpen(false);
+      setNewName("");
+      setNewQuota("500000");
+      setNewExpire("");
+      setIsUnlimited(true);
+      router.refresh();
+    } else {
+      toast.error(res.message || "创建失败");
     }
   };
 
@@ -136,7 +194,7 @@ export function TokenClient({
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             我的令牌
           </h1>
-          <Button>
+          <Button onClick={() => setIsCreateOpen(true)}>
             <Plus className="mr-2 h-4 w-4" /> 创建令牌
           </Button>
         </div>
@@ -280,6 +338,96 @@ export function TokenClient({
           </div>
         </Card>
       </div>
+
+      {/* Create Token Modal Overlay */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
+          <Card className="w-full max-w-md bg-white dark:bg-slate-900 shadow-xl border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+              <h2 className="text-lg font-semibold">创建新令牌</h2>
+              <button
+                onClick={() => setIsCreateOpen(false)}
+                className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreate} className="p-6 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">名称</Label>
+                <Input
+                  id="name"
+                  placeholder="请输入令牌名称"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="expire">过期时间</Label>
+                <div className="relative">
+                  <Input
+                    id="expire"
+                    type="date"
+                    value={newExpire}
+                    onChange={(e) => setNewExpire(e.target.value)}
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    留空表示永不过期
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label>额度限制</Label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="unlimited"
+                      checked={isUnlimited}
+                      onChange={(e) => setIsUnlimited(e.target.checked)}
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                    />
+                    <label
+                      htmlFor="unlimited"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      无限额度
+                    </label>
+                  </div>
+                </div>
+
+                {!isUnlimited && (
+                  <Input
+                    type="number"
+                    min="0"
+                    value={newQuota}
+                    onChange={(e) => setNewQuota(e.target.value)}
+                    placeholder="请输入额度 ($1 = 500000)"
+                  />
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setIsCreateOpen(false)}
+                  disabled={isPending}
+                >
+                  取消
+                </Button>
+                <Button type="submit" disabled={isPending}>
+                  {isPending ? "创建中..." : "提交"}
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
