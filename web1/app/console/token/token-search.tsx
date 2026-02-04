@@ -6,32 +6,67 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-export function TokenSearch({ initialKeyword }: { initialKeyword: string }) {
+export function TokenSearch({
+  initialKeyword,
+  initialToken,
+}: {
+  initialKeyword: string
+  initialToken: string
+}) {
   const [keyword, setKeyword] = useState(initialKeyword)
+  const [token, setToken] = useState(initialToken)
   const router = useRouter()
 
   const handleSearch = () => {
     const params = new URLSearchParams(window.location.search)
-    params.set('keyword', keyword)
+    if (keyword)
+      params.set('keyword', keyword)
+    else params.delete('keyword')
+
+    if (token)
+      params.set('token', token)
+    else params.delete('token')
+
     params.set('p', '1')
     router.push(`/console/token?${params.toString()}`)
   }
 
+  const handleReset = () => {
+    setKeyword('')
+    setToken('')
+    router.push('/console/token')
+  }
+
   return (
-    <div className="relative flex-1 max-w-sm flex gap-2">
-      <div className="relative flex-1">
+    <div className="flex flex-col sm:flex-row gap-2 flex-1 justify-end">
+      <div className="relative flex-1 max-w-[200px]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="搜索令牌名称或密钥..."
-          className="pl-8"
+          placeholder="搜索名称..."
+          className="pl-8 h-9"
           value={keyword}
           onChange={e => setKeyword(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleSearch()}
         />
       </div>
-      <Button variant="secondary" onClick={handleSearch}>
-        搜索
-      </Button>
+      <div className="relative flex-1 max-w-[200px]">
+        <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="搜索密钥..."
+          className="pl-8 h-9"
+          value={token}
+          onChange={e => setToken(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSearch()}
+        />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" variant="secondary" onClick={handleSearch} className="h-9">
+          查询
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleReset} className="h-9">
+          重置
+        </Button>
+      </div>
     </div>
   )
 }

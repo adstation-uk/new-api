@@ -17,23 +17,44 @@ export async function deleteToken(id: number) {
   }
 }
 
-export async function createToken(prevState: any, formData: FormData) {
-  const payload = {
-    name: formData.get('name') as string,
-    unlimited_quota: formData.get('unlimited_quota') === 'true',
-    remain_quota: Number.parseInt(
-      (formData.get('remain_quota') as string) || '0',
-    ),
-    expired_time: Number.parseInt(
-      (formData.get('expired_time') as string) || '-1',
-    ),
-    model_limits_enabled: formData.get('model_limits_enabled') === 'true',
-    model_limits: (formData.get('model_limits') as string) || '',
-    allow_ips: (formData.get('allow_ips') as string) || '',
-    group: (formData.get('group') as string) || '',
-    cross_group_retry: formData.get('cross_group_retry') === 'true',
+export async function toggleTokenStatus(id: number, status: number) {
+  try {
+    const res = await api('/api/token/?status_only=true', {
+      method: 'PUT',
+      body: JSON.stringify({ id, status }),
+    })
+    const data = await res.json()
+    if (data.success) {
+      revalidatePath('/console/token')
+    }
+    return data
   }
+  catch {
+    return { success: false, message: 'Network Error' }
+  }
+}
 
+export async function getModels() {
+  try {
+    const res = await api('/api/user/models')
+    return await res.json()
+  }
+  catch {
+    return { success: false, message: 'Network Error', data: [] }
+  }
+}
+
+export async function getGroups() {
+  try {
+    const res = await api('/api/user/self/groups')
+    return await res.json()
+  }
+  catch {
+    return { success: false, message: 'Network Error', data: {} }
+  }
+}
+
+export async function createToken(payload: any) {
   try {
     const res = await api('/api/token', {
       method: 'POST',
@@ -41,37 +62,16 @@ export async function createToken(prevState: any, formData: FormData) {
     })
     const data = await res.json()
     if (data.success) {
-      // If tokenCount > 1, the backend might only support one at a time via this endpoint
-      // The original project handles multiple creation by calling the API multiple times or having a different endpoint?
-      // Let's check backend AddToken in controller/token.go
       revalidatePath('/console/token')
-      return { success: true, message: '' }
     }
-    return { success: false, message: data.message }
+    return data
   }
   catch {
     return { success: false, message: 'Network Error' }
   }
 }
 
-export async function updateToken(id: number, formData: FormData) {
-  const payload = {
-    id,
-    name: formData.get('name') as string,
-    unlimited_quota: formData.get('unlimited_quota') === 'true',
-    remain_quota: Number.parseInt(
-      (formData.get('remain_quota') as string) || '0',
-    ),
-    expired_time: Number.parseInt(
-      (formData.get('expired_time') as string) || '-1',
-    ),
-    model_limits_enabled: formData.get('model_limits_enabled') === 'true',
-    model_limits: (formData.get('model_limits') as string) || '',
-    allow_ips: (formData.get('allow_ips') as string) || '',
-    group: (formData.get('group') as string) || '',
-    cross_group_retry: formData.get('cross_group_retry') === 'true',
-  }
-
+export async function updateToken(payload: any) {
   try {
     const res = await api('/api/token', {
       method: 'PUT',
@@ -80,9 +80,8 @@ export async function updateToken(id: number, formData: FormData) {
     const data = await res.json()
     if (data.success) {
       revalidatePath('/console/token')
-      return { success: true, message: '' }
     }
-    return { success: false, message: data.message }
+    return data
   }
   catch {
     return { success: false, message: 'Network Error' }

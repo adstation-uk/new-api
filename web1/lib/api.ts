@@ -19,13 +19,13 @@ export async function api(path: string, options: RequestInit = {}) {
     url = `${BACKEND_URL}${path.startsWith('/') ? '' : '/'}${path}`
   }
 
-  // Add New-Api-User header from session
+  // Add New-API-User header from session
   const session = await getSession()
   if (session && session.user) {
-    headers.set('New-Api-User', (session.user as any).id.toString())
+    headers.set('New-API-User', (session.user as any).id.toString())
   }
   else {
-    headers.set('New-Api-User', '-1')
+    headers.set('New-API-User', '-1')
   }
 
   // Forward cookies from the incoming request

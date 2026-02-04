@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import type {
   ColumnDef,
 } from '@tanstack/react-table'
@@ -23,18 +24,30 @@ type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   className?: string
+  rowSelection?: any
+  onRowSelectionChange?: any
+  getRowId?: (row: TData) => string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   className,
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData, TValue>) {
-  // eslint-disable-next-line react-hooks/incompatible-library
+  const [internalRowSelection, setInternalRowSelection] = useState({})
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: onRowSelectionChange || setInternalRowSelection,
+    getRowId,
+    state: {
+      rowSelection: rowSelection || internalRowSelection,
+    },
   })
 
   return (

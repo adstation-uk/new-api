@@ -2,20 +2,19 @@ import { Pagination } from '@/components/ui-pagination'
 import { Card } from '@/components/ui/card'
 import { api } from '@/lib/api'
 import { TokenCreate } from './token-create'
-import { TokenSearch } from './token-search'
-import { TokenTable } from './token-table'
+import { TokenContainer } from './token-container'
 
-async function getTokens(page: number, pageSize: number, keyword: string) {
+async function getTokens(page: number, pageSize: number, keyword: string, token: string = '') {
   try {
-    const url = keyword
-      ? `/api/token/search?keyword=${encodeURIComponent(keyword)}&token=`
-      : `/api/token?p=${page - 1}&size=${pageSize}`
+    const url = (keyword || token)
+      ? `/api/token/search?keyword=${encodeURIComponent(keyword)}&token=${encodeURIComponent(token)}`
+      : `/api/token?p=${page}&size=${pageSize}`
     const res = await api(url)
     const data = await res.json()
 
     if (data.success) {
       // Search response returns an array directly in data.data or data
-      if (keyword) {
+      if (keyword || token) {
         const items = Array.isArray(data.data) ? data.data : []
         return {
           items,
@@ -44,14 +43,15 @@ async function getTokens(page: number, pageSize: number, keyword: string) {
 export default async function TokenPage({
   searchParams,
 }: {
-  searchParams: Promise<{ p?: string, keyword?: string }>
+  searchParams: Promise<{ p?: string, keyword?: string, token?: string }>
 }) {
   const params = await searchParams
   const page = Number.parseInt(params.p || '1')
   const keyword = params.keyword || ''
+  const token = params.token || ''
   const pageSize = 10
 
-  const { items, total } = await getTokens(page, pageSize, keyword)
+  const { items, total } = await getTokens(page, pageSize, keyword, token)
 
   return (
     <div className="space-y-6">
@@ -62,11 +62,7 @@ export default async function TokenPage({
         </div>
 
         <Card className="p-0 overflow-hidden shadow-sm">
-          <div className="p-4 border-b flex gap-4">
-            <TokenSearch initialKeyword={keyword} />
-          </div>
-
-          <TokenTable data={items} />
+          <TokenContainer data={items} keyword={keyword} token={token} />
 
           <Pagination page={page} total={total} pageSize={pageSize} />
         </Card>

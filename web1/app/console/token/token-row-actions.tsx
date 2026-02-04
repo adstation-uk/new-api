@@ -1,11 +1,22 @@
 'use client'
 
-import { Copy, Edit, Eye, EyeOff, Trash2 } from 'lucide-react'
+import { Copy, Edit, Eye, EyeOff, Play, Square, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { deleteToken } from './actions'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { deleteToken, toggleTokenStatus } from './actions'
 import { TokenDrawer } from './token-drawer'
 
 export function TokenKey({ token }: { token: { key: string, id: number } }) {
@@ -47,9 +58,6 @@ export function TokenActions({ token }: { token: any }) {
   const [isEditOpen, setIsEditOpen] = useState(false)
 
   const handleDelete = async () => {
-    // eslint-disable-next-line no-alert
-    if (!window.confirm(`确认删除令牌 "${token.name}"？`))
-      return
     const res = await deleteToken(token.id)
     if (res.success) {
       toast.success('删除成功')
@@ -60,8 +68,35 @@ export function TokenActions({ token }: { token: any }) {
     }
   }
 
+  const handleToggleStatus = async () => {
+    const newStatus = token.status === 1 ? 2 : 1
+    const res = await toggleTokenStatus(token.id, newStatus)
+    if (res.success) {
+      toast.success(newStatus === 1 ? '已启用' : '已禁用')
+      router.refresh()
+    }
+    else {
+      toast.error(res.message || '操作失败')
+    }
+  }
+
   return (
     <div className="flex items-center justify-end gap-1">
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8 hover:bg-muted"
+        onClick={handleToggleStatus}
+        title={token.status === 1 ? '禁用' : '启用'}
+      >
+        {token.status === 1
+          ? (
+              <Square size={14} className="text-muted-foreground" />
+            )
+          : (
+              <Play size={14} className="text-muted-foreground" />
+            )}
+      </Button>
       <Button
         size="icon"
         variant="ghost"
@@ -70,14 +105,34 @@ export function TokenActions({ token }: { token: any }) {
       >
         <Edit size={14} className="text-muted-foreground" />
       </Button>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-        onClick={handleDelete}
-      >
-        <Trash2 size={14} />
-      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 size={14} />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogDescription>
+              确定删除令牌 &quot;{token.name}&quot; 吗？此操作无法撤销。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              确认删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <TokenDrawer
         isOpen={isEditOpen}

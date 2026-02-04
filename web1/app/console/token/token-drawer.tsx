@@ -61,8 +61,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { cn } from '@/lib/utils'
-import { createToken, updateToken } from './actions'
+import { cn, renderQuota } from '@/lib/utils'
+import { createToken, getGroups, getModels, updateToken } from './actions'
 
 const tokenSchema = z.object({
   name: z.string().min(1, '请输入名称'),
@@ -118,8 +118,7 @@ export function TokenDrawer({
 
   const fetchModels = async () => {
     try {
-      const res = await fetch('/api/user/models')
-      const data = await res.json()
+      const data = await getModels()
       if (data.success) {
         setModels(data.data || [])
       }
@@ -131,13 +130,13 @@ export function TokenDrawer({
 
   const fetchGroups = async () => {
     try {
-      const res = await fetch('/api/user/self/groups')
-      const data = await res.json()
+      const data = await getGroups()
       if (data.success) {
         const groupOptions = Object.entries(data.data).map(
           ([key, info]: [string, any]) => ({
             label: info.desc || key,
             value: key,
+            ratio: info.ratio,
           }),
         )
         setGroups(groupOptions)
@@ -191,28 +190,25 @@ export function TokenDrawer({
   async function onSubmit(values: TokenFormValues) {
     setIsLoading(true)
     try {
-      const formData = new FormData()
-      formData.append('name', values.name)
-      formData.append('unlimited_quota', values.unlimited_quota.toString())
-      formData.append('remain_quota', values.remain_quota)
-
-      let expireTs = -1
-      if (values.expired_time) {
-        expireTs = Math.floor(values.expired_time.getTime() / 1000)
+      const basePayload = {
+        name: values.name,
+        unlimited_quota: values.unlimited_quota,
+        remain_quota: Number.parseInt(values.remain_quota),
+        expired_time: values.expired_time
+          ? Math.floor(values.expired_time.getTime() / 1000)
+          : -1,
+        model_limits_enabled: values.model_limits.length > 0,
+        model_limits: values.model_limits.join(','),
+        allow_ips: values.allow_ips || '',
+        group: values.group || '',
+        cross_group_retry: values.cross_group_retry,
       }
-      formData.append('expired_time', expireTs.toString())
-
-      formData.append(
-        'model_limits_enabled',
-        (values.model_limits.length > 0).toString(),
-      )
-      formData.append('model_limits', values.model_limits.join(','))
-      formData.append('allow_ips', values.allow_ips || '')
-      formData.append('group', values.group || '')
-      formData.append('cross_group_retry', values.cross_group_retry.toString())
 
       if (isEdit) {
-        const res = await updateToken(editingToken.id, formData)
+        const res = await updateToken({
+          ...basePayload,
+          id: editingToken.id,
+        })
         if (res.success) {
           toast.success('更新成功')
           onClose()
@@ -227,17 +223,14 @@ export function TokenDrawer({
         let successCount = 0
         const count = values.tokenCount
         for (let i = 0; i < count; i++) {
-          const currentFormData = new FormData()
-          for (const [key, value] of formData.entries()) {
-            currentFormData.append(key, value)
-          }
+          const payload = { ...basePayload }
 
           if (count > 1) {
             const suffix = Math.random().toString(36).substring(2, 8)
-            currentFormData.set('name', `${values.name}-${suffix}`)
+            payload.name = `${values.name}-${suffix}`
           }
 
-          const res = await createToken(null, currentFormData)
+          const res = await createToken(payload)
           if (res.success)
             successCount++
         }
@@ -270,13 +263,13 @@ export function TokenDrawer({
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
-      <SheetContent className="w-full sm:max-w-2xl p-0 flex flex-col h-full scrollbar-none">
-        <SheetHeader className="p-6 border-b flex-row items-center gap-2 space-y-0">
+      <SheetContent className="w-full sm:max-w-2xl p-0 flex flex-col h-full scrollbar-none text-sm">
+        <SheetHeader className="p-4 border-b flex-row items-center gap-2 space-y-0">
           <div className="p-2 bg-primary/10 rounded-lg">
             <Key className="w-5 h-5 text-primary" />
           </div>
           <div className="flex flex-col gap-0.5">
-            <SheetTitle className="text-xl font-bold leading-none">
+            <SheetTitle className="text-lg font-bold leading-none">
               {isEdit ? '编辑令牌' : '创建令牌'}
             </SheetTitle>
             <SheetDescription className="text-xs text-muted-foreground leading-none">
@@ -285,11 +278,11 @@ export function TokenDrawer({
           </div>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-none">
+        <div className="flex-1 overflow-y-auto p-4 scrollbar-none">
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6"
+              className="space-y-4"
             >
               {/* 基本信息 */}
               <Card className="p-4 space-y-4">
@@ -302,7 +295,7 @@ export function TokenDrawer({
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className='flex flex-col'>
                       <FormLabel>名称</FormLabel>
                       <FormControl>
                         <Input placeholder="令牌名称" {...field} />
@@ -327,11 +320,20 @@ export function TokenDrawer({
                             <SelectValue placeholder="默认分组" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
-                          <SelectItem value="default">默认分组</SelectItem>
-                          {groups.map(g => (
+                        <SelectContent shadow-none="true">
+                          <SelectItem key="default_option" value="default">
+                            <div className="flex items-center justify-between w-full gap-2">
+                              <span>默认分组</span>
+                            </div>
+                          </SelectItem>
+                          {groups.filter(g => g.value !== 'default').map(g => (
                             <SelectItem key={g.value} value={g.value}>
-                              {g.label}
+                              <div className="flex items-center justify-between w-full gap-4">
+                                <span>{g.label}</span>
+                                <span className="text-[10px] text-muted-foreground bg-muted px-1 rounded">
+                                  {(g as any).ratio}x
+                                </span>
+                              </div>
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -484,7 +486,7 @@ export function TokenDrawer({
                     control={form.control}
                     name="tokenCount"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className='flex flex-col'>
                         <FormLabel>新建数量</FormLabel>
                         <FormControl>
                           <Input
@@ -536,11 +538,37 @@ export function TokenDrawer({
                     control={form.control}
                     name="remain_quota"
                     render={({ field }) => (
-                      <FormItem className="animate-in slide-in-from-top-1 duration-200">
-                        <FormLabel>可用额度 (1$ = 500k)</FormLabel>
+                      <FormItem className="flex flex-col animate-in slide-in-from-top-1 duration-200">
+                        <div className="flex items-center justify-between">
+                          <FormLabel>可用额度</FormLabel>
+                          <span className="text-xs text-muted-foreground">
+                            等价金额: {renderQuota(Number.parseInt(field.value || '0'))}
+                          </span>
+                        </div>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
+                        <div className="flex flex-wrap gap-1.5 mt-2">
+                          {[
+                            { label: '1$', value: 500000 },
+                            { label: '10$', value: 5000000 },
+                            { label: '50$', value: 25000000 },
+                            { label: '100$', value: 50000000 },
+                            { label: '500$', value: 250000000 },
+                            { label: '1000$', value: 500000000 },
+                          ].map(opt => (
+                            <Button
+                              key={opt.label}
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="h-7 px-2 text-[10px]"
+                              onClick={() => field.onChange(opt.value.toString())}
+                            >
+                              {opt.label}
+                            </Button>
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -561,7 +589,7 @@ export function TokenDrawer({
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>模型限制</FormLabel>
-                      <Popover>
+                      <Popover modal={true}>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
@@ -598,7 +626,7 @@ export function TokenDrawer({
                             <CommandInput placeholder="搜索模型..." />
                             <CommandList>
                               <CommandEmpty>未找到模型</CommandEmpty>
-                              <CommandGroup className="max-h-64 overflow-y-auto">
+                              <CommandGroup>
                                 {models.map(model => (
                                   <CommandItem
                                     key={model}
@@ -639,7 +667,7 @@ export function TokenDrawer({
                   control={form.control}
                   name="allow_ips"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex flex-col">
                       <FormLabel>IP 白名单</FormLabel>
                       <FormControl>
                         <Input
