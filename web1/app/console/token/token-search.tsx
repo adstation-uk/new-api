@@ -60,7 +60,7 @@ export function TokenSearch({
         />
       </div>
       <div className="flex gap-2">
-        <Button size="sm" variant="secondary" onClick={handleSearch} className="h-9">
+        <Button size="sm" variant="outline" onClick={handleSearch} className="h-9">
           查询
         </Button>
         <Button size="sm" variant="outline" onClick={handleReset} className="h-9">
