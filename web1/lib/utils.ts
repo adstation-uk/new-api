@@ -75,6 +75,12 @@ export function renderLogType(type: number) {
       return '消费'
     case 3:
       return '管理'
+    case 4:
+      return '系统'
+    case 5:
+      return '错误'
+    case 6:
+      return '退款'
     default:
       return '未知'
   }
@@ -88,6 +94,12 @@ export function getLogTypeClass(type: number) {
       return 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
     case 3:
       return 'text-purple-600 bg-purple-50 dark:bg-purple-900/20'
+    case 4:
+      return 'text-orange-600 bg-orange-50 dark:bg-orange-900/20'
+    case 5:
+      return 'text-red-600 bg-red-50 dark:bg-red-900/20'
+    case 6:
+      return 'text-cyan-600 bg-cyan-50 dark:bg-cyan-900/20'
     default:
       return 'text-gray-600 bg-gray-50 dark:bg-gray-900/20'
   }

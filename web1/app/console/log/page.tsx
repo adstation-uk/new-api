@@ -1,21 +1,26 @@
 import { Pagination } from '@/components/ui-pagination'
 import { Card } from '@/components/ui/card'
-import { api } from '@/lib/api'
+import { api, getSession } from '@/lib/api'
 import { LogSearch } from './log-search'
 import { LogTable } from './log-table'
+import { LogStats } from './log-stats'
 
-async function getLogs(page: number, pageSize: number, keyword: string) {
+async function getLogs(params: {
+  page: number
+  pageSize: number
+  query: { [key: string]: string | undefined }
+}) {
   try {
     const query = new URLSearchParams({
-      p: (page - 1).toString(),
-      size: pageSize.toString(),
+      p: (params.page - 1).toString(),
+      size: params.pageSize.toString(),
     })
 
-    // Simple heuristic: map keyword to likely fields if provided
-    // For now we map it to token_name as it's a common search target for users
-    if (keyword) {
-      query.set('token_name', keyword)
-    }
+    Object.entries(params.query).forEach(([key, value]) => {
+      if (value) {
+        query.set(key, value)
+      }
+    })
 
     const res = await api(`/api/log/?${query.toString()}`)
     const data = await res.json()
@@ -36,14 +41,40 @@ async function getLogs(page: number, pageSize: number, keyword: string) {
 export default async function LogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ p?: string, keyword?: string }>
+  searchParams: Promise<{
+    p?: string
+    size?: string
+    token_name?: string
+    model_name?: string
+    type?: string
+    channel?: string
+    username?: string
+    group?: string
+    start_timestamp?: string
+    end_timestamp?: string
+  }>
 }) {
   const params = await searchParams
   const page = Number.parseInt(params.p || '1')
-  const keyword = params.keyword || ''
-  const pageSize = 15
+  const pageSize = Number.parseInt(params.size || '15')
 
-  const { items, total } = await getLogs(page, pageSize, keyword)
+  const session = await getSession()
+  const isAdmin = (session?.user?.role || 0) >= 10
+
+  const { items, total } = await getLogs({
+    page,
+    pageSize,
+    query: {
+      token_name: params.token_name,
+      model_name: params.model_name,
+      type: params.type,
+      channel: params.channel,
+      username: params.username,
+      group: params.group,
+      start_timestamp: params.start_timestamp,
+      end_timestamp: params.end_timestamp,
+    },
+  })
 
   return (
     <div className="space-y-6">
@@ -53,11 +84,11 @@ export default async function LogPage({
         </div>
 
         <Card className="p-0 overflow-hidden shadow-sm">
-          <div className="p-4 border-b flex gap-4">
-            <LogSearch initialKeyword={keyword} />
+          <div className="p-4 border-b">
+            <LogSearch isAdmin={isAdmin} />
           </div>
 
-          <LogTable data={items} />
+          <LogTable data={items} isAdmin={isAdmin} />
 
           <Pagination page={page} total={total} pageSize={pageSize} />
         </Card>
