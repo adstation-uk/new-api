@@ -1,11 +1,11 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
+import { useState } from 'react'
 import { DataTable } from '@/components/data-table'
-import { cn, getLogTypeClass, renderLogType, renderQuota } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { useState } from 'react'
+import { cn, getLogTypeClass, renderLogType, renderQuota } from '@/lib/utils'
 
 type Log = {
   id: number
@@ -58,20 +58,24 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
         )
       },
     },
-    ...(isAdmin ? [
-      {
-        accessorKey: 'channel',
-        header: '渠道',
-        cell: ({ row }: { row: any }) => {
-          const channelId = row.getValue('channel') as number
-          return channelId ? (
-            <Badge variant="outline" className="font-mono">
-              {channelId}
-            </Badge>
-          ) : null
-        },
-      }
-    ] : []),
+    ...(isAdmin
+      ? [
+          {
+            accessorKey: 'channel',
+            header: '渠道',
+            cell: ({ row }: { row: any }) => {
+              const channelId = row.getValue('channel') as number
+              return channelId
+                ? (
+                    <Badge variant="outline" className="font-mono">
+                      {channelId}
+                    </Badge>
+                  )
+                : null
+            },
+          },
+        ]
+      : []),
     {
       accessorKey: 'model_name',
       header: '模型',
@@ -79,10 +83,10 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
         const model = row.getValue('model_name') as string
         return model
           ? (
-            <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs font-mono border border-border whitespace-nowrap">
-              {model}
-            </span>
-          )
+              <span className="bg-muted text-muted-foreground px-2 py-0.5 rounded text-xs font-mono border border-border whitespace-nowrap">
+                {model}
+              </span>
+            )
           : null
       },
     },
@@ -94,7 +98,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
         return (
           <div className="flex flex-col min-w-[100px]">
             {isAdmin && <span className="font-medium text-foreground truncate">{log.username}</span>}
-            <span className={cn("text-xs truncate", isAdmin ? "text-muted-foreground/70" : "font-medium text-foreground")}>
+            <span className={cn('text-xs truncate', isAdmin ? 'text-muted-foreground/70' : 'font-medium text-foreground')}>
               {log.token_name || (isAdmin ? '(系统)' : '默认令牌')}
             </span>
           </div>
@@ -111,13 +115,17 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
           <div className="flex flex-col gap-0.5 min-w-[120px]">
             {isConsumption && (
               <span className="text-[10px] text-muted-foreground whitespace-nowrap text-right">
-                {log.prompt_tokens} + {log.completion_tokens}
+                {log.prompt_tokens}
+                {' '}
+                +
+                {log.completion_tokens}
               </span>
             )}
             <span className={cn(
-              "font-bold text-right",
-              log.quota > 0 ? "text-primary" : log.quota < 0 ? "text-red-500" : "text-muted-foreground"
-            )}>
+              'font-bold text-right',
+              log.quota > 0 ? 'text-primary' : log.quota < 0 ? 'text-red-500' : 'text-muted-foreground',
+            )}
+            >
               {renderQuota(log.quota)}
             </span>
           </div>
@@ -129,13 +137,16 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
       header: '耗时',
       cell: ({ row }) => {
         const ms = row.getValue('use_time') as number
-        if (ms === 0) return '-'
+        if (ms === 0)
+          return '-'
         return (
           <span className={cn(
-            "text-xs whitespace-nowrap",
-            ms > 30000 ? "text-red-500" : ms > 10000 ? "text-orange-500" : "text-muted-foreground"
-          )}>
-            {(ms / 1000).toFixed(1)}s
+            'text-xs whitespace-nowrap',
+            ms > 30000 ? 'text-red-500' : ms > 10000 ? 'text-orange-500' : 'text-muted-foreground',
+          )}
+          >
+            {(ms / 1000).toFixed(1)}
+            s
           </span>
         )
       },
@@ -156,14 +167,14 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
 
   return (
     <>
-      <DataTable 
-        columns={columns} 
-        data={data} 
-        className="border-none" 
-        onRowClick={(row) => setSelectedLog(row)}
+      <DataTable
+        columns={columns}
+        data={data}
+        className="border-none"
+        onRowClick={row => setSelectedLog(row)}
       />
-      
-      <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+
+      <Dialog open={!!selectedLog} onOpenChange={open => !open && setSelectedLog(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>日志详情</DialogTitle>
@@ -188,7 +199,10 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
               </div>
               <div className="space-y-1">
                 <span className="text-muted-foreground">耗时</span>
-                <p>{selectedLog.use_time}ms</p>
+                <p>
+                  {selectedLog.use_time}
+                  ms
+                </p>
               </div>
               <div className="space-y-1">
                 <span className="text-muted-foreground">用户</span>
@@ -231,4 +245,3 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     </>
   )
 }
-

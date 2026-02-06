@@ -1,17 +1,16 @@
 'use client'
 
+import { endOfDay, format, startOfDay, startOfMonth, startOfWeek, subDays } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { Calendar as CalendarIcon, Eraser, Search } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
-import { format, startOfDay, endOfDay, subDays, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { LogStats } from './log-stats'
 
 export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
   const router = useRouter()
@@ -30,25 +29,30 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
     to: Date | undefined
-  }>({
-    from: searchParams.get('start_timestamp') ? new Date(Number.parseInt(searchParams.get('start_timestamp')!) * 1000) : undefined,
-    to: searchParams.get('end_timestamp') ? new Date(Number.parseInt(searchParams.get('end_timestamp')!) * 1000) : undefined,
+  }>(() => {
+    const start = searchParams.get('start_timestamp')
+    const end = searchParams.get('end_timestamp')
+    return {
+      from: start ? new Date(Number.parseInt(start) * 1000) : undefined,
+      to: end ? new Date(Number.parseInt(end) * 1000) : undefined,
+    }
   })
 
-  const [startTimeStr, setStartTimeStr] = useState('00:00:00')
-  const [endTimeStr, setEndTimeStr] = useState('23:59:59')
-
-  // 初始化时间字符串
-  useEffect(() => {
-    if (dateRange.from) setStartTimeStr(format(dateRange.from, 'HH:mm:ss'))
-    if (dateRange.to) setEndTimeStr(format(dateRange.to, 'HH:mm:ss'))
-  }, [])
+  const [startTimeStr, setStartTimeStr] = useState(() => {
+    const start = searchParams.get('start_timestamp')
+    return start ? format(new Date(Number.parseInt(start) * 1000), 'HH:mm:ss') : '00:00:00'
+  })
+  const [endTimeStr, setEndTimeStr] = useState(() => {
+    const end = searchParams.get('end_timestamp')
+    return end ? format(new Date(Number.parseInt(end) * 1000), 'HH:mm:ss') : '23:59:59'
+  })
 
   const handleSearch = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString())
-    
+
     Object.entries(filters).forEach(([key, value]) => {
-      if (value && value !== '0') params.set(key, value)
+      if (value && value !== '0')
+        params.set(key, value)
       else params.delete(key)
     })
 
@@ -57,7 +61,8 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
       const [h, m, s] = startTimeStr.split(':').map(Number)
       fromWithTime.setHours(h || 0, m || 0, s || 0)
       params.set('start_timestamp', Math.floor(fromWithTime.getTime() / 1000).toString())
-    } else {
+    }
+    else {
       params.delete('start_timestamp')
     }
 
@@ -66,7 +71,8 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
       const [h, m, s] = endTimeStr.split(':').map(Number)
       toWithTime.setHours(h || 23, m || 59, s || 59)
       params.set('end_timestamp', Math.floor(toWithTime.getTime() / 1000).toString())
-    } else {
+    }
+    else {
       params.delete('end_timestamp')
     }
 
@@ -84,16 +90,31 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
 
   const applyPreset = (preset: string) => {
     const now = new Date()
-    let from: Date, to: Date = endOfDay(now)
-    
+    let from: Date
+    let to: Date = endOfDay(now)
+
     switch (preset) {
-      case 'today': from = startOfDay(now); break
-      case 'yesterday': from = startOfDay(subDays(now, 1)); to = endOfDay(subDays(now, 1)); break
-      case '7days': from = startOfDay(subDays(now, 6)); break
-      case 'week': from = startOfWeek(now, { weekStartsOn: 1 }); break
-      case '30days': from = startOfDay(subDays(now, 29)); break
-      case 'month': from = startOfMonth(now); break
-      default: return
+      case 'today':
+        from = startOfDay(now)
+        break
+      case 'yesterday':
+        from = startOfDay(subDays(now, 1))
+        to = endOfDay(subDays(now, 1))
+        break
+      case '7days':
+        from = startOfDay(subDays(now, 6))
+        break
+      case 'week':
+        from = startOfWeek(now, { weekStartsOn: 1 })
+        break
+      case '30days':
+        from = startOfDay(subDays(now, 29))
+        break
+      case 'month':
+        from = startOfMonth(now)
+        break
+      default:
+        return
     }
     setDateRange({ from, to })
     setStartTimeStr(format(from, 'HH:mm:ss'))
@@ -103,8 +124,6 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <LogStats isAdmin={isAdmin} />
-        
         <Input
           placeholder="令牌"
           className="w-[120px] h-9"
@@ -136,9 +155,11 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className={cn('h-9 justify-start font-normal min-w-[200px]', !dateRange.from && 'text-muted-foreground')}>
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange.from ? (
-                dateRange.to ? `${format(dateRange.from, 'MM-dd')} ${startTimeStr} 至 ${format(dateRange.to, 'MM-dd')} ${endTimeStr}` : format(dateRange.from, 'PPP')
-              ) : <span>选择时间范围</span>}
+              {dateRange.from
+                ? (
+                    dateRange.to ? `${format(dateRange.from, 'MM-dd')} ${startTimeStr} 至 ${format(dateRange.to, 'MM-dd')} ${endTimeStr}` : format(dateRange.from, 'PPP')
+                  )
+                : <span>选择时间范围</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -156,7 +177,7 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
               initialFocus
               mode="range"
               selected={{ from: dateRange.from, to: dateRange.to }}
-              onSelect={range => { setDateRange({ from: range?.from, to: range?.to }) }}
+              onSelect={(range) => { setDateRange({ from: range?.from, to: range?.to }) }}
               locale={zhCN}
               numberOfMonths={2}
             />
@@ -177,10 +198,12 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
             <Input placeholder="用户" className="w-[100px] h-9" value={filters.username} onChange={e => setFilters(f => ({ ...f, username: e.target.value }))} />
           </>
         )}
-        
+
         <div className="flex items-center gap-1 ml-auto">
           <Button size="sm" onClick={handleSearch} className="h-9 px-4">
-            <Search className="mr-2 h-4 w-4" /> 查询
+            <Search className="mr-2 h-4 w-4" />
+            {' '}
+            查询
           </Button>
           <Button variant="ghost" size="sm" onClick={handleReset} className="h-9 px-3 text-muted-foreground">
             <Eraser className="h-4 w-4" />

@@ -3,7 +3,6 @@ import { Card } from '@/components/ui/card'
 import { api, getSession } from '@/lib/api'
 import { LogSearch } from './log-search'
 import { LogTable } from './log-table'
-import { LogStats } from './log-stats'
 
 async function getLogs(params: {
   page: number
