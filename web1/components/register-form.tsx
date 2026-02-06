@@ -19,6 +19,12 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import {
+  onDiscordOAuthClicked,
+  onGitHubOAuthClicked,
+  onLinuxDOOAuthClicked,
+  onOIDCClicked,
+} from '@/lib/oauth'
 
 const registerSchema = z
   .object({
@@ -42,7 +48,7 @@ const registerSchema = z
 
 type RegisterFormValues = z.infer<typeof registerSchema>
 
-export function RegisterForm() {
+export function RegisterForm({ status }: { status: any }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -136,6 +142,60 @@ export function RegisterForm() {
           <Button type="submit" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? '注册中...' : '注册'}
           </Button>
+
+          {(status?.github_oauth || status?.discord_oauth || status?.linuxdo_oauth || status?.oidc_enabled) && (
+            <div className="w-full space-y-3">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    或者使用以下方式注册
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                {status?.github_oauth && (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => onGitHubOAuthClicked(status.github_client_id)}
+                  >
+                    GitHub
+                  </Button>
+                )}
+                {status?.linuxdo_oauth && (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id)}
+                  >
+                    Linux DO
+                  </Button>
+                )}
+                {status?.discord_oauth && (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => onDiscordOAuthClicked(status.discord_client_id)}
+                  >
+                    Discord
+                  </Button>
+                )}
+                {status?.oidc_enabled && (
+                  <Button
+                    variant="outline"
+                    type="button"
+                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id)}
+                  >
+                    OIDC
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="text-sm text-center text-muted-foreground">
             已有账号？
             {' '}

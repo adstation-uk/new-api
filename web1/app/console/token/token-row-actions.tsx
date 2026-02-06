@@ -4,7 +4,6 @@ import { Copy, Edit, Eye, EyeOff, Play, Square, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
 import { deleteToken, toggleTokenStatus } from './actions'
 import { TokenDrawer } from './token-drawer'
 
@@ -119,7 +119,9 @@ export function TokenActions({ token }: { token: any }) {
           <AlertDialogHeader>
             <AlertDialogTitle>确认删除</AlertDialogTitle>
             <AlertDialogDescription>
-              确定删除令牌 &quot;{token.name}&quot; 吗？此操作无法撤销。
+              确定删除令牌 &quot;
+              {token.name}
+              &quot; 吗？此操作无法撤销。
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

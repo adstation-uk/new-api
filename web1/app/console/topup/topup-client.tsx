@@ -3,16 +3,16 @@
 import { Coins, User as UserIcon } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import * as React from 'react'
-import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { PayPalRecharge } from './paypal-recharge'
+import { Card } from '@/components/ui/card'
 import { renderQuota } from '@/lib/utils'
+import { PayPalRecharge } from './paypal-recharge'
 
 type TopupInfo = {
   enable_online_topup: boolean
   enable_stripe_topup: boolean
   min_topup: number
-  pay_methods: any[] 
+  pay_methods: any[]
   amount_options: number[]
   discount: Record<string, number>
 }
@@ -66,7 +66,7 @@ export function TopupClient({
                 {renderQuota(user?.quota || 0)}
               </span>
             </div>
-            
+
             <div className="px-4 text-left">
               <p className="text-xs text-muted-foreground flex justify-between items-center">
                 <span>精确额度</span>

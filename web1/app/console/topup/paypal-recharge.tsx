@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { CheckCircle, AlertCircle } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
+import * as React from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { cn, renderQuota } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { cn, renderQuota } from '@/lib/utils'
 
 const QUOTA_PER_UNIT = 500000
 const PAYPAL_CLIENT_ID
@@ -265,8 +266,8 @@ export function PayPalRecharge({
               <div className="text-4xl font-black">
                 {renderQuota(
                   selectedPackage.amount
-                    * QUOTA_PER_UNIT
-                    * (1 + (selectedPackage.bonus || 0)),
+                  * QUOTA_PER_UNIT
+                  * (1 + (selectedPackage.bonus || 0)),
                 )}
               </div>
               <div className="flex items-center justify-center gap-2 mt-4">

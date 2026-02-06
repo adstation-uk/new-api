@@ -1,10 +1,9 @@
 'use client'
 
-import { useState } from 'react'
 import { Copy, Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { toast } from 'sonner'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,9 +15,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import { Button } from '@/components/ui/button'
+import { deleteToken } from './actions'
 import { TokenSearch } from './token-search'
 import { TokenTable } from './token-table'
-import { deleteToken } from './actions'
 
 export function TokenContainer({
   data,
@@ -101,7 +101,11 @@ export function TokenContainer({
               <AlertDialogHeader>
                 <AlertDialogTitle>确认删除</AlertDialogTitle>
                 <AlertDialogDescription>
-                  确定删除选中的 {selectedIds.length} 个令牌吗？此操作无法撤销。
+                  确定删除选中的
+                  {' '}
+                  {selectedIds.length}
+                  {' '}
+                  个令牌吗？此操作无法撤销。
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

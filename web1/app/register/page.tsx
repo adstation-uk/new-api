@@ -6,8 +6,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { api } from '@/lib/api'
 
-export default function RegisterPage() {
+export default async function RegisterPage() {
+  const statusRes = await api('/api/status')
+  const statusJson = await statusRes.json()
+  const status = statusJson.success ? statusJson.data : {}
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -20,7 +25,7 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <Suspense fallback={<div className="p-6 text-center">加载中...</div>}>
-          <RegisterForm />
+          <RegisterForm status={status} />
         </Suspense>
       </Card>
     </div>

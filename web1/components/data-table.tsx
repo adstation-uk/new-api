@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import type {
   ColumnDef,
 } from '@tanstack/react-table'
@@ -9,6 +8,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useState } from 'react'
 
 import {
   Table,

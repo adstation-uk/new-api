@@ -295,7 +295,7 @@ export function TokenDrawer({
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem className='flex flex-col'>
+                    <FormItem className="flex flex-col">
                       <FormLabel>名称</FormLabel>
                       <FormControl>
                         <Input placeholder="令牌名称" {...field} />
@@ -331,7 +331,8 @@ export function TokenDrawer({
                               <div className="flex items-center justify-between w-full gap-4">
                                 <span>{g.label}</span>
                                 <span className="text-[10px] text-muted-foreground bg-muted px-1 rounded">
-                                  {(g as any).ratio}x
+                                  {(g as any).ratio}
+                                  x
                                 </span>
                               </div>
                             </SelectItem>
@@ -486,7 +487,7 @@ export function TokenDrawer({
                     control={form.control}
                     name="tokenCount"
                     render={({ field }) => (
-                      <FormItem className='flex flex-col'>
+                      <FormItem className="flex flex-col">
                         <FormLabel>新建数量</FormLabel>
                         <FormControl>
                           <Input
@@ -542,7 +543,9 @@ export function TokenDrawer({
                         <div className="flex items-center justify-between">
                           <FormLabel>可用额度</FormLabel>
                           <span className="text-xs text-muted-foreground">
-                            等价金额: {renderQuota(Number.parseInt(field.value || '0'))}
+                            等价金额:
+                            {' '}
+                            {renderQuota(Number.parseInt(field.value || '0'))}
                           </span>
                         </div>
                         <FormControl>
