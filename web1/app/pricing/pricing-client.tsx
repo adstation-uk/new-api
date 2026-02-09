@@ -193,7 +193,7 @@ export function PricingClient({
 
   return (
     <div className="min-h-screen bg-background pt-10 pb-20">
-      <div className="container mx-auto px-4 max-w-7xl">
+      <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="w-full lg:w-64 space-y-6 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-120px)] lg:overflow-y-auto">

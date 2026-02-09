@@ -8,7 +8,7 @@ export function Footer() {
 
   return (
     <footer className="bg-background border-t pt-16 pb-8 px-6 overflow-hidden relative">
-      <div className="container mx-auto max-w-7xl">
+      <div className="container mx-auto ">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <Link
