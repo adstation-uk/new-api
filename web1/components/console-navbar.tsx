@@ -54,22 +54,22 @@ export function ConsoleNavbar({ user }: { user: any }) {
   const adminLinks = [
     {
       name: '渠道',
-      href: '/console/admin/channel',
+      href: '/console/channel',
       icon: Database,
     },
     {
       name: '用户',
-      href: '/console/admin/user',
+      href: '/console/user',
       icon: Users,
     },
     {
       name: '兑换',
-      href: '/console/admin/redemption',
+      href: '/console/redemption',
       icon: Ticket,
     },
     {
       name: '设置',
-      href: '/console/admin/setting',
+      href: '/console/setting',
       icon: Settings,
     },
   ]
