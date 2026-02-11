@@ -11,6 +11,7 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
   const navLinks = [
     { name: '首页', href: '/' },
     { name: '价格', href: '/pricing' },
+    { name: '模型', href: '/models' },
   ]
 
   return (

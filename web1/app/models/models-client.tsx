@@ -39,17 +39,17 @@ function BadgeComponent({ children, variant = 'default', className }: any) {
   )
 }
 
-type PricingClientProps = {
+type ModelsClientProps = {
   initialModels: any[]
   initialGroupRatio: any
   initialStatus: any
 }
 
-export function PricingClient({
+export function ModelsClient({
   initialModels,
   initialGroupRatio,
   initialStatus,
-}: PricingClientProps) {
+}: ModelsClientProps) {
   const [models] = useState<any[]>(initialModels || [])
   const [search, setSearch] = useState('')
   const [groupRatio] = useState<any>(initialGroupRatio || {})
