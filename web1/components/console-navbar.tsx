@@ -63,9 +63,9 @@ export function ConsoleNavbar({ user }: { user: any }) {
       icon: Users,
     },
     {
-      name: '兑换',
-      href: '/console/redemption',
-      icon: Ticket,
+      name: '模型',
+      href: '/console/models',
+      icon: LayoutDashboard,
     },
     {
       name: '设置',
