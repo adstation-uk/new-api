@@ -14,6 +14,7 @@ import { ArrowRight, Coins, Gift, Shield, Unlock, Zap } from 'lucide-react'
 import Link from 'next/link'
 import * as React from 'react'
 import { Footer } from '@/components/footer'
+import { HeroSubtitle, HeroTitle } from '@/components/hero-content'
 import Marquee from '@/components/magicui/marquee'
 import { ServerAddressClient } from '@/components/server-address-client'
 import { api } from '@/lib/api'
@@ -137,14 +138,8 @@ export default async function HomePage() {
                 <Zap size={14} />
                 <span>下一代 API 网关</span>
               </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-foreground mb-6">
-                统一的
-                <br />
-                <span className="text-primary">大模型接口网关</span>
-              </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-xl leading-relaxed">
-                更好的价格，更好的稳定性，只需要将模型基址替换为：
-              </p>
+              <HeroTitle />
+              <HeroSubtitle />
 
               {/* BASE URL */}
               <ServerAddressClient />

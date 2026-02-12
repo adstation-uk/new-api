@@ -2,6 +2,7 @@ import type { UserInfo } from '@/lib/user'
 import { Zap } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { LanguageSwitcher } from './language-switcher'
 import { MainNav } from './main-nav'
 import { MobileNav } from './mobile-nav'
 import { ModeToggle } from './mode-toggle'
@@ -32,6 +33,7 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
 
         <div className="flex items-center gap-2 md:gap-4">
           <ModeToggle />
+          <LanguageSwitcher />
 
           <div className="hidden md:flex items-center gap-3">
             {user

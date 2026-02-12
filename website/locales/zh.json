@@ -1,0 +1,9 @@
+{
+  "home": {
+    "title": "欢迎使用 New API",
+    "subtitle": "高性能大模型 API 管理平台"
+  },
+  "common": {
+    "language": "语言"
+  }
+}
