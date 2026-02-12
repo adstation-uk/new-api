@@ -51,6 +51,7 @@
   --animate-marquee: marquee var(--duration) linear infinite;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
   --animate-border-beam: border-beam var(--duration) infinite linear;
+  --animate-shine: shine var(--duration) infinite linear;
 
   @keyframes marquee {
     from {
@@ -73,6 +74,17 @@
   @keyframes border-beam {
     100% {
       offset-distance: 100%;
+    }
+  }
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;
+    }
+  50% {
+    background-position: 100% 100%;
+    }
+  to {
+    background-position: 0% 0%;
     }
   }
 }
