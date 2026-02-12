@@ -1,16 +1,16 @@
-export interface ModelMetadata {
-  id: string;
-  name?: string;
-  category: 'chat' | 'video' | 'image' | 'music';
-  provider?: string;
-  description?: string;
-  context_window?: string;
-  knowledge_cutoff?: string;
-  capabilities?: string[];
-  tags?: string[];
-  icon?: string;
-  price?: string; // Standardized display price (e.g. "$0.01")
-  market_price?: string; // Standardized market price
+export type ModelMetadata = {
+  id: string
+  name?: string
+  category: 'chat' | 'video' | 'image' | 'music'
+  provider?: string
+  description?: string
+  context_window?: string
+  knowledge_cutoff?: string
+  capabilities?: string[]
+  tags?: string[]
+  icon?: string
+  price?: string // Standardized display price (e.g. "$0.01")
+  market_price?: string // Standardized market price
 }
 
 export const modelConfig: Record<string, Partial<ModelMetadata>> = {
@@ -142,22 +142,26 @@ export const modelConfig: Record<string, Partial<ModelMetadata>> = {
     price: '$0.0001',
     market_price: '$0.0005',
   },
-};
+}
 
 // Heuristic to get category if not explicitly defined
 export function getModelCategory(modelId: string): 'chat' | 'video' | 'image' | 'music' {
-  const id = modelId.toLowerCase();
-  if (modelConfig[modelId]?.category) return modelConfig[modelId].category!;
-  
-  if (id.includes('suno') || id.includes('music') || id.includes('audio')) return 'music';
-  if (id.includes('sora') || id.includes('video') || id.includes('luma') || id.includes('viggle') || id.includes('runway')) return 'video';
-  if (id.includes('dall') || id.includes('midjourney') || id.includes('mj') || id.includes('image') || id.includes('flux') || id.includes('stable-diffusion')) return 'image';
-  
-  return 'chat';
+  const id = modelId.toLowerCase()
+  if (modelConfig[modelId]?.category)
+    return modelConfig[modelId].category!
+
+  if (id.includes('suno') || id.includes('music') || id.includes('audio'))
+    return 'music'
+  if (id.includes('sora') || id.includes('video') || id.includes('luma') || id.includes('viggle') || id.includes('runway'))
+    return 'video'
+  if (id.includes('dall') || id.includes('midjourney') || id.includes('mj') || id.includes('image') || id.includes('flux') || id.includes('stable-diffusion'))
+    return 'image'
+
+  return 'chat'
 }
 
 export function getModelMetadata(modelId: string): ModelMetadata {
-  const config = modelConfig[modelId] || {};
+  const config = modelConfig[modelId] || {}
   return {
     id: modelId,
     name: config.name || modelId,
@@ -169,6 +173,6 @@ export function getModelMetadata(modelId: string): ModelMetadata {
     icon: config.icon || modelId,
     price: config.price,
     market_price: config.market_price,
-    description: config.description
-  };
+    description: config.description,
+  }
 }

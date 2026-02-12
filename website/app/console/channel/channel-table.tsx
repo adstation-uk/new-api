@@ -26,7 +26,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -52,7 +52,7 @@ import {
 } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { getChannelOption } from '@/lib/channel'
-import { toggleChannelStatus, deleteChannel, testChannel, updateChannelBalance, saveChannel } from './actions'
+import { deleteChannel, saveChannel, testChannel, toggleChannelStatus, updateChannelBalance } from './actions'
 
 type Channel = {
   id: number
@@ -106,29 +106,36 @@ export function ChannelTable({
       const result = await toggleChannelStatus(id, newStatus)
       if (result.success) {
         toast.success(result.message || '状态更新成功')
-      } else {
+      }
+      else {
         toast.error(result.message || '状态更新失败')
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error('网络连接错误')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('确定要删除该渠道吗？')) return
+    if (!window.confirm('确定要删除该渠道吗？'))
+      return
     const loadingToast = toast.loading('正在删除...')
     try {
       const result = await deleteChannel(id)
       if (result.success) {
         toast.success('删除成功')
-      } else {
+      }
+      else {
         toast.error(result.message || '删除失败')
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error('网络连接错误')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -139,12 +146,15 @@ export function ChannelTable({
       const result = await testChannel(id)
       if (result.success) {
         toast.success(`测试成功：${result.message}`)
-      } else {
+      }
+      else {
         toast.error(`测试失败：${result.message}`)
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error('测试出错')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -155,12 +165,15 @@ export function ChannelTable({
       const result = await updateChannelBalance(id)
       if (result.success) {
         toast.success(`余额更新成功：${result.message}`)
-      } else {
+      }
+      else {
         toast.error(`余额更新失败：${result.message}`)
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error('更新出错')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -175,12 +188,15 @@ export function ChannelTable({
       if (result.success) {
         toast.success('保存成功')
         setEditingId(null)
-      } else {
+      }
+      else {
         toast.error(result.message || '保存失败')
       }
-    } catch (error) {
+    }
+    catch (error) {
       toast.error('网络连接错误')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -564,36 +580,38 @@ export function ChannelTable({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map(row => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && 'selected'}
-                className="group border-b last:border-0 hover:bg-slate-50/50 transition-colors"
-                onClick={() => row.toggleSelected()}
-              >
-                {row.getVisibleCells().map(cell => (
-                  <TableCell
-                    key={cell.id}
-                    className="py-2 px-4 whitespace-nowrap"
-                    onClick={(e) => {
-                      if (cell.column.id === 'actions' || cell.column.id === 'select' || cell.column.id === 'status' || cell.column.id === 'priority' || cell.column.id === 'weight') {
-                        e.stopPropagation()
-                      }
-                    }}
+          {table.getRowModel().rows?.length
+            ? (
+                table.getRowModel().rows.map(row => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className="group border-b last:border-0 hover:bg-slate-50/50 transition-colors"
+                    onClick={() => row.toggleSelected()}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell
+                        key={cell.id}
+                        className="py-2 px-4 whitespace-nowrap"
+                        onClick={(e) => {
+                          if (cell.column.id === 'actions' || cell.column.id === 'select' || cell.column.id === 'status' || cell.column.id === 'priority' || cell.column.id === 'weight') {
+                            e.stopPropagation()
+                          }
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              )
+            : (
+                <TableRow>
+                  <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                    暂无渠道数据
                   </TableCell>
-                ))}
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                暂无渠道数据
-              </TableCell>
-            </TableRow>
-          )}
+                </TableRow>
+              )}
         </TableBody>
       </Table>
     </div>

@@ -1,7 +1,7 @@
 'use server'
 
-import { api } from '@/lib/api'
 import { revalidatePath } from 'next/cache'
+import { api } from '@/lib/api'
 
 export async function manageUser(id: number, action: 'promote' | 'demote' | 'enable' | 'disable' | 'delete') {
   const res = await api(`/api/user/manage`, {
@@ -52,10 +52,10 @@ export async function resetUserPasskey(id: number) {
 }
 
 export async function resetUserTwoFA(id: number) {
-    const res = await api(`/api/user/reset_twofa`, {
-      method: 'POST',
-      body: JSON.stringify({ id }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-    return await res.json()
+  const res = await api(`/api/user/reset_twofa`, {
+    method: 'POST',
+    body: JSON.stringify({ id }),
+    headers: { 'Content-Type': 'application/json' },
+  })
+  return await res.json()
 }

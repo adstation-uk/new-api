@@ -1,7 +1,7 @@
 'use server'
 
-import { api } from '@/lib/api'
 import { revalidatePath } from 'next/cache'
+import { api } from '@/lib/api'
 
 export async function toggleChannelStatus(id: number, targetStatus: number) {
   const res = await api('/api/channel/', {
@@ -20,7 +20,8 @@ export async function updateChannelField(id: number, field: string, value: any) 
   // First get current channel to avoid overwriting everything with defaults
   const getRes = await api(`/api/channel/${id}`)
   const getData = await getRes.json()
-  if (!getData.success) return getData
+  if (!getData.success)
+    return getData
 
   const updatedChannel = { ...getData.data, [field]: value }
   const res = await api('/api/channel/', {
@@ -73,9 +74,11 @@ export async function batchSetTag(ids: number[], tag: string) {
 export async function testChannel(id: number, model?: string, endpointType?: string) {
   let url = `/api/channel/test/${id}`
   const params = new URLSearchParams()
-  if (model) params.append('model', model)
-  if (endpointType) params.append('endpoint_type', endpointType)
-  
+  if (model)
+    params.append('model', model)
+  if (endpointType)
+    params.append('endpoint_type', endpointType)
+
   const queryString = params.toString()
   if (queryString) {
     url += `?${queryString}`

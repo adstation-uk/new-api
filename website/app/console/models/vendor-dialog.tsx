@@ -1,13 +1,18 @@
 'use client'
 
+import { Pencil, Plus, Save, Trash2, X } from 'lucide-react'
 import * as React from 'react'
+import { toast } from 'sonner'
+import { ModelIcon } from '@/components/model-icon'
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -16,14 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Plus, Pencil, Trash2, Save, X } from 'lucide-react'
-import { saveVendor, deleteVendor } from './actions'
-import { toast } from 'sonner'
-import { ModelIcon } from '@/components/model-icon'
+import { deleteVendor, saveVendor } from './actions'
 
-interface Vendor {
+type Vendor = {
   id: number
   name: string
   icon: string
@@ -31,7 +31,7 @@ interface Vendor {
   status: number
 }
 
-interface VendorDialogProps {
+type VendorDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   vendors: Vendor[]
@@ -59,37 +59,44 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
       toast.error('名称不能为空')
       return
     }
-    
+
     const loadingToast = toast.loading('正在保存...')
     try {
       const result = await saveVendor(formData)
       if (result.success) {
         toast.success(formData.id ? '修改成功' : '添加成功')
         handleCancel()
-      } else {
+      }
+      else {
         toast.error(result.message || '保存失败')
       }
-    } catch (e) {
+    }
+    catch (e) {
       toast.error('网络错误')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('确定要删除这个供应商吗？')) return
-    
+    if (!confirm('确定要删除这个供应商吗？'))
+      return
+
     const loadingToast = toast.loading('正在删除...')
     try {
       const result = await deleteVendor(id)
       if (result.success) {
         toast.success('删除成功')
-      } else {
+      }
+      else {
         toast.error(result.message || '删除失败')
       }
-    } catch (e) {
+    }
+    catch (e) {
       toast.error('网络错误')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -135,23 +142,23 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
                     <RenderIcon icon={formData.icon} name={formData.name} />
                   </TableCell>
                   <TableCell>
-                    <Input 
-                      value={formData.name || ''} 
-                      onChange={e => setFormData({...formData, name: e.target.value})}
+                    <Input
+                      value={formData.name || ''}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
                       placeholder="如: OpenAI"
                       className="h-8 text-xs"
                     />
                   </TableCell>
                   <TableCell className="flex gap-2">
-                    <Input 
-                      value={formData.description || ''} 
-                      onChange={e => setFormData({...formData, description: e.target.value})}
+                    <Input
+                      value={formData.description || ''}
+                      onChange={e => setFormData({ ...formData, description: e.target.value })}
                       placeholder="供应商描述..."
                       className="h-8 text-xs flex-1"
                     />
-                    <Input 
-                      value={formData.icon || ''} 
-                      onChange={e => setFormData({...formData, icon: e.target.value})}
+                    <Input
+                      value={formData.icon || ''}
+                      onChange={e => setFormData({ ...formData, icon: e.target.value })}
                       placeholder="图标标识符"
                       className="h-8 text-xs w-28"
                     />
@@ -169,7 +176,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
                 </TableRow>
               )}
 
-              {vendors.map((v) => (
+              {vendors.map(v => (
                 editingId !== v.id && (
                   <TableRow key={v.id}>
                     <TableCell>
@@ -194,9 +201,9 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
               ))}
               {vendors.length === 0 && !isAdding && (
                 <TableRow>
-                    <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs">
-                        暂无供应商数据
-                    </TableCell>
+                  <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs">
+                    暂无供应商数据
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>

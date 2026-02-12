@@ -1,7 +1,7 @@
 'use server'
 
-import { api } from '@/lib/api'
 import { revalidatePath } from 'next/cache'
+import { api } from '@/lib/api'
 
 export async function manageModel(id: number, action: 'delete' | 'sync' | 'enable' | 'disable') {
   if (action === 'delete') {
@@ -14,7 +14,7 @@ export async function manageModel(id: number, action: 'delete' | 'sync' | 'enabl
     }
     return result
   }
-  
+
   // Custom status update if needed, but current API might suggest using PUT
   return { success: false, message: 'Not implemented' }
 }
@@ -22,7 +22,7 @@ export async function manageModel(id: number, action: 'delete' | 'sync' | 'enabl
 export async function saveModel(model: any) {
   const method = model.id ? 'PUT' : 'POST'
   const endpoint = '/api/models/'
-  
+
   const res = await api(endpoint, {
     method,
     body: JSON.stringify(model),
@@ -40,7 +40,8 @@ export async function fetchVendors() {
     const res = await api('/api/vendors/', { cache: 'no-store' })
     const data = await res.json()
     return data.success ? data.data.items : []
-  } catch (e) {
+  }
+  catch (e) {
     return []
   }
 }

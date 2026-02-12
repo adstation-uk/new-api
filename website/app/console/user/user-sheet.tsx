@@ -1,17 +1,11 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import * as z from 'zod'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -22,16 +16,22 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
-import { toast } from 'sonner'
-import { updateUser, createUser } from './actions'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { createUser, updateUser } from './actions'
 
 const userSchema = z.object({
   id: z.number().optional(),
@@ -45,7 +45,7 @@ const userSchema = z.object({
 
 type UserFormValues = z.infer<typeof userSchema>
 
-interface User {
+type User = {
   id: number
   username: string
   display_name: string
@@ -86,7 +86,8 @@ export function UserSheet({
         group: user.group || 'default',
         remark: user.remark || '',
       })
-    } else {
+    }
+    else {
       form.reset({
         username: '',
         display_name: '',
@@ -101,23 +102,28 @@ export function UserSheet({
   async function onSubmit(values: UserFormValues) {
     const loadingToast = toast.loading(user ? '正在更新用户信息...' : '正在创建用户...')
     try {
-      const payload = { 
+      const payload = {
         ...values,
         quota: Math.round(values.quota * 500000),
       }
-      if (user) payload.id = user.id
-      if (!payload.password && user) delete payload.password
+      if (user)
+        payload.id = user.id
+      if (!payload.password && user)
+        delete payload.password
 
       const result = user ? await updateUser(payload) : await createUser(payload)
       if (result.success) {
         toast.success(user ? '更新成功' : '创建成功')
         onOpenChange(false)
-      } else {
+      }
+      else {
         toast.error(result.message || (user ? '更新失败' : '创建失败'))
       }
-    } catch (e) {
+    }
+    catch (e) {
       toast.error('网络请求失败')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -184,12 +190,12 @@ export function UserSheet({
                 <FormItem>
                   <FormLabel>剩余额度 (单位: $)</FormLabel>
                   <FormControl>
-                    <Input 
-                        {...field} 
-                        type="number" 
-                        step="0.0001"
-                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
-                        value={field.value}
+                    <Input
+                      {...field}
+                      type="number"
+                      step="0.0001"
+                      onChange={e => field.onChange(Number.parseFloat(e.target.value) || 0)}
+                      value={field.value}
                     />
                   </FormControl>
                   <FormMessage />

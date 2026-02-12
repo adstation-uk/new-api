@@ -7,7 +7,6 @@ import {
   Key,
   LayoutDashboard,
   Settings,
-  Ticket,
   Users,
 } from 'lucide-react'
 import Link from 'next/link'

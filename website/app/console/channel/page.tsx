@@ -46,7 +46,7 @@ export default async function ChannelPage({
   const { channels, total } = await getChannels(resolvedSearchParams)
 
   return (
-    <div >
+    <div>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">渠道管理</h1>
         <p className="text-muted-foreground mt-1">

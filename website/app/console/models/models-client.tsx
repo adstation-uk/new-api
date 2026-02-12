@@ -1,44 +1,44 @@
 'use client'
 
-import * as React from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { ModelsTable } from './models-table'
-import { ModelsSheet } from './models-sheet'
-import { VendorDialog } from './vendor-dialog'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Search, 
-  Plus, 
-  RotateCcw,
-  RefreshCw,
+import {
+  ChevronLeft,
+  ChevronRight,
   Filter,
-  Layers
+  Layers,
+  Plus,
+  RefreshCw,
+  RotateCcw,
+  Search,
 } from 'lucide-react'
-import { 
+import { useRouter, useSearchParams } from 'next/navigation'
+import * as React from 'react'
+import { useTransition } from 'react'
+import { toast } from 'sonner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from '@/components/ui/select'
-import { useTransition } from 'react'
 import { syncUpstreamModels } from './actions'
-import { toast } from 'sonner'
+import { ModelsSheet } from './models-sheet'
+import { ModelsTable } from './models-table'
+import { VendorDialog } from './vendor-dialog'
 
-export function ModelsClient({ 
-  data, 
+export function ModelsClient({
+  data,
   total,
   currentPage,
   vendors,
-  vendorCounts
-}: { 
-  data: any[], 
-  total: number,
-  currentPage: number,
-  vendors: any[],
+  vendorCounts,
+}: {
+  data: any[]
+  total: number
+  currentPage: number
+  vendors: any[]
   vendorCounts: Record<string, number>
 }) {
   const router = useRouter()
@@ -47,7 +47,7 @@ export function ModelsClient({
   const [editingModel, setEditingModel] = React.useState<any | null>(null)
   const [isSheetOpen, setIsSheetOpen] = React.useState(false)
   const [isVendorDialogOpen, setIsVendorDialogOpen] = React.useState(false)
-  
+
   const [searchValue, setSearchValue] = React.useState(searchParams.get('keyword') || '')
   const [vendorFilter, setVendorFilter] = React.useState(searchParams.get('vendor') || 'all')
 
@@ -56,14 +56,16 @@ export function ModelsClient({
 
   const updateSearch = (keyword: string, vendor: string, page: number = 1) => {
     const params = new URLSearchParams(searchParams)
-    if (keyword) params.set('keyword', keyword)
+    if (keyword)
+      params.set('keyword', keyword)
     else params.delete('keyword')
-    
-    if (vendor && vendor !== 'all') params.set('vendor', vendor)
+
+    if (vendor && vendor !== 'all')
+      params.set('vendor', vendor)
     else params.delete('vendor')
-    
+
     params.set('p', page.toString())
-    
+
     startTransition(() => {
       router.push(`?${params.toString()}`)
     })
@@ -75,7 +77,8 @@ export function ModelsClient({
   }
 
   const handlePageChange = (newPage: number) => {
-    if (newPage < 1 || newPage > totalPages) return
+    if (newPage < 1 || newPage > totalPages)
+      return
     updateSearch(searchValue, vendorFilter, newPage)
   }
 
@@ -93,12 +96,15 @@ export function ModelsClient({
       const result = await syncUpstreamModels()
       if (result.success) {
         toast.success('同步成功')
-      } else {
+      }
+      else {
         toast.error(result.message || '同步失败')
       }
-    } catch (e) {
+    }
+    catch (e) {
       toast.error('网络请求失败')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -113,20 +119,28 @@ export function ModelsClient({
               placeholder="搜索模型名称、别名或标签..."
               className="pl-8 bg-background"
               value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
+              onChange={e => setSearchValue(e.target.value)}
             />
           </div>
-          
-          <Select value={vendorFilter} onValueChange={(v) => { setVendorFilter(v); updateSearch(searchValue, v); }}>
+
+          <Select value={vendorFilter} onValueChange={(v) => { setVendorFilter(v); updateSearch(searchValue, v) }}>
             <SelectTrigger className="w-[180px] bg-background">
               <Filter className="w-3.5 h-3.5 mr-2 opacity-50" />
               <SelectValue placeholder="所有供应商" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">所有供应商 ({total})</SelectItem>
+              <SelectItem value="all">
+                所有供应商 (
+                {total}
+                )
+              </SelectItem>
               {vendors.map(v => (
                 <SelectItem key={v.id} value={v.id.toString()}>
-                  {v.name} ({vendorCounts[v.id] || 0})
+                  {v.name}
+                  {' '}
+                  (
+                  {vendorCounts[v.id] || 0}
+                  )
                 </SelectItem>
               ))}
             </SelectContent>
@@ -135,39 +149,57 @@ export function ModelsClient({
           <div className="flex items-center gap-1">
             <Button type="submit" size="sm" className="h-10 px-4">搜索</Button>
             <Button type="button" variant="ghost" size="sm" onClick={handleReset} className="h-10 w-10 p-0">
-               <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-4 w-4" />
             </Button>
           </div>
         </form>
 
         <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="h-10 border-dashed" onClick={handleSync}>
-                <RefreshCw className="mr-2 h-4 w-4" /> 同步官方
-            </Button>
-            <Button variant="outline" size="sm" className="h-10" onClick={() => setIsVendorDialogOpen(true)}>
-                <Layers className="mr-2 h-4 w-4" /> 管理供应商
-            </Button>
-            <Button size="sm" className="h-10" onClick={() => { setEditingModel(null); setIsSheetOpen(true); }}>
-                <Plus className="mr-2 h-4 w-4" /> 新增模型
-            </Button>
+          <Button variant="outline" size="sm" className="h-10 border-dashed" onClick={handleSync}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {' '}
+            同步官方
+          </Button>
+          <Button variant="outline" size="sm" className="h-10" onClick={() => setIsVendorDialogOpen(true)}>
+            <Layers className="mr-2 h-4 w-4" />
+            {' '}
+            管理供应商
+          </Button>
+          <Button size="sm" className="h-10" onClick={() => { setEditingModel(null); setIsSheetOpen(true) }}>
+            <Plus className="mr-2 h-4 w-4" />
+            {' '}
+            新增模型
+          </Button>
         </div>
       </div>
 
-      <VendorDialog 
-        open={isVendorDialogOpen} 
-        onOpenChange={setIsVendorDialogOpen} 
+      <VendorDialog
+        open={isVendorDialogOpen}
+        onOpenChange={setIsVendorDialogOpen}
         vendors={vendors}
       />
 
-      <ModelsTable 
-        data={data} 
-        vendors={vendors} 
-        onEdit={(m) => { setEditingModel(m); setIsSheetOpen(true); }} 
+      <ModelsTable
+        data={data}
+        vendors={vendors}
+        onEdit={(m) => { setEditingModel(m); setIsSheetOpen(true) }}
       />
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
         <div className="text-sm text-muted-foreground order-2 sm:order-1">
-          共 {total} 个模型，当前第 {currentPage} / {totalPages || 1} 页
+          共
+          {' '}
+          {total}
+          {' '}
+          个模型，当前第
+          {' '}
+          {currentPage}
+          {' '}
+          /
+          {' '}
+          {totalPages || 1}
+          {' '}
+          页
         </div>
         <div className="flex items-center space-x-2 order-1 sm:order-2">
           <Button
@@ -176,7 +208,9 @@ export function ModelsClient({
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1 || isPending}
           >
-            <ChevronLeft className="h-4 w-4 mr-1" /> 上一页
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            {' '}
+            上一页
           </Button>
           <Button
             variant="outline"
@@ -184,16 +218,18 @@ export function ModelsClient({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages || isPending}
           >
-            下一页 <ChevronRight className="h-4 w-4 ml-1" />
+            下一页
+            {' '}
+            <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
       </div>
 
-      <ModelsSheet 
-        model={editingModel} 
+      <ModelsSheet
+        model={editingModel}
         vendors={vendors}
-        open={isSheetOpen} 
-        onOpenChange={setIsSheetOpen} 
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
       />
     </div>
   )

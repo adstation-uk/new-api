@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { api } from '@/lib/api'
 import { UserClient } from './user-client'
 
@@ -12,7 +11,7 @@ async function getUsers(searchParams: { [key: string]: string | string[] | undef
       params.append(key, val)
       if (key === 'keyword' && val)
         hasKeyword = true
-    } 
+    }
   })
 
   // Backend uses 'p' for page index (1-based)
@@ -50,7 +49,7 @@ export default async function UserPage({
   const { users, total, page } = await getUsers(resolvedSearchParams)
 
   return (
-    <div >
+    <div>
       <div>
         <h1 className="text-2xl font-bold tracking-tight">用户管理</h1>
         <p className="text-muted-foreground mt-1">

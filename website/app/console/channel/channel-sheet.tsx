@@ -1,17 +1,13 @@
 'use client'
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { useEffect, useState } from "react"
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from "@/components/ui/sheet"
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Copy, Trash2, X, Zap } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import * as z from 'zod'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -20,46 +16,50 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { CHANNEL_OPTIONS } from "@/lib/channel"
-import { toast } from "sonner"
-import { saveChannel, fetchChannelModels, fetchChannelModelsById } from "./actions"
-import { Badge } from "@/components/ui/badge"
-import { X, Copy, Trash2, ListFilter, Zap } from "lucide-react"
-import { ModelSelectDialog } from "./model-select-dialog"
+} from '@/components/ui/select'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
+import { Textarea } from '@/components/ui/textarea'
+import { CHANNEL_OPTIONS } from '@/lib/channel'
+import { fetchChannelModels, fetchChannelModelsById, saveChannel } from './actions'
+import { ModelSelectDialog } from './model-select-dialog'
 
 const channelSchema = z.object({
   id: z.number().optional(),
-  name: z.string().min(1, "名称不能为空"),
+  name: z.string().min(1, '名称不能为空'),
   type: z.coerce.number(),
   key: z.string(),
-  base_url: z.string().optional().default(""),
-  models: z.string().min(1, "请至少选择一个模型"),
-  group: z.string().default("default"),
+  base_url: z.string().optional().default(''),
+  models: z.string().min(1, '请至少选择一个模型'),
+  group: z.string().default('default'),
   priority: z.coerce.number().default(0),
   weight: z.coerce.number().default(0),
-  test_model: z.string().optional().default(""),
-  other: z.string().optional().default(""),
-  tag: z.string().optional().default(""),
+  test_model: z.string().optional().default(''),
+  other: z.string().optional().default(''),
+  tag: z.string().optional().default(''),
 }).refine((data) => {
   if (!data.id && !data.key) {
-    return false;
+    return false
   }
-  return true;
+  return true
 }, {
-  message: "新建渠道必须填写密钥",
-  path: ["key"],
-});
+  message: '新建渠道必须填写密钥',
+  path: ['key'],
+})
 
 type ChannelFormValues = z.infer<typeof channelSchema>
 
@@ -80,17 +80,17 @@ export function ChannelSheet({
   const form = useForm<ChannelFormValues>({
     resolver: zodResolver(channelSchema),
     defaultValues: {
-      name: "",
+      name: '',
       type: 1,
-      key: "",
-      base_url: "",
-      models: "",
-      group: "default",
+      key: '',
+      base_url: '',
+      models: '',
+      group: 'default',
       priority: 0,
       weight: 0,
-      test_model: "",
-      other: "",
-      tag: "",
+      test_model: '',
+      other: '',
+      tag: '',
     },
   })
 
@@ -98,31 +98,32 @@ export function ChannelSheet({
     if (editingChannel) {
       form.reset({
         id: editingChannel.id,
-        name: editingChannel.name || "",
+        name: editingChannel.name || '',
         type: editingChannel.type || 1,
-        key: editingChannel.key || "",
-        base_url: editingChannel.base_url || "",
-        models: editingChannel.models || "",
-        group: editingChannel.group || "default",
+        key: editingChannel.key || '',
+        base_url: editingChannel.base_url || '',
+        models: editingChannel.models || '',
+        group: editingChannel.group || 'default',
         priority: editingChannel.priority || 0,
         weight: editingChannel.weight || 0,
-        test_model: editingChannel.test_model || "",
-        other: editingChannel.other || "",
-        tag: editingChannel.tag || "",
+        test_model: editingChannel.test_model || '',
+        other: editingChannel.other || '',
+        tag: editingChannel.tag || '',
       })
-    } else {
+    }
+    else {
       form.reset({
-        name: "",
+        name: '',
         type: 1,
-        key: "",
-        base_url: "",
-        models: "",
-        group: "default",
+        key: '',
+        base_url: '',
+        models: '',
+        group: 'default',
         priority: 0,
         weight: 0,
-        test_model: "",
-        other: "",
-        tag: "",
+        test_model: '',
+        other: '',
+        tag: '',
       })
     }
   }, [editingChannel, form])
@@ -130,80 +131,85 @@ export function ChannelSheet({
   async function onSubmit(values: ChannelFormValues) {
     const result = await saveChannel(values)
     if (result.success) {
-      toast.success(values.id ? "更新成功" : "添加成功")
+      toast.success(values.id ? '更新成功' : '添加成功')
       onOpenChange(false)
       onSuccess()
-    } else {
-      toast.error(result.message || "操作失败")
+    }
+    else {
+      toast.error(result.message || '操作失败')
     }
   }
 
   const handleModelAdd = (model: string) => {
-    const currentModels = form.getValues("models").split(",").filter(Boolean)
+    const currentModels = form.getValues('models').split(',').filter(Boolean)
     if (!currentModels.includes(model)) {
-      form.setValue("models", [...currentModels, model].join(","))
+      form.setValue('models', [...currentModels, model].join(','))
     }
   }
 
   const handleModelRemove = (model: string) => {
-    const currentModels = form.getValues("models").split(",").filter(Boolean)
-    form.setValue("models", currentModels.filter((m) => m !== model).join(","))
+    const currentModels = form.getValues('models').split(',').filter(Boolean)
+    form.setValue('models', currentModels.filter(m => m !== model).join(','))
   }
 
   const handleFetchModels = async () => {
-    const type = form.getValues("type")
-    const key = form.getValues("key")
-    const baseUrl = form.getValues("base_url")
-    
-    const loadingToast = toast.loading("正在获取模型列表...")
-    try {
-        let result;
-        if (editingChannel?.id) {
-            result = await fetchChannelModelsById(editingChannel.id)
-        } else {
-            if (!key) {
-                toast.error("请先填入密钥")
-                toast.dismiss(loadingToast)
-                return
-            }
-            result = await fetchChannelModels({ type, key, base_url: baseUrl })
-        }
+    const type = form.getValues('type')
+    const key = form.getValues('key')
+    const baseUrl = form.getValues('base_url')
 
-        if (result.success && Array.isArray(result.data)) {
-            setFetchedModels(result.data)
-            setIsSelectDialogOpen(true)
-            toast.success(`成功获取 ${result.data.length} 个模型`)
-        } else {
-            toast.error(result.message || "获取失败")
+    const loadingToast = toast.loading('正在获取模型列表...')
+    try {
+      let result
+      if (editingChannel?.id) {
+        result = await fetchChannelModelsById(editingChannel.id)
+      }
+      else {
+        if (!key) {
+          toast.error('请先填入密钥')
+          toast.dismiss(loadingToast)
+          return
         }
-    } catch (e) {
-        toast.error("网络错误")
-    } finally {
-        toast.dismiss(loadingToast)
+        result = await fetchChannelModels({ type, key, base_url: baseUrl })
+      }
+
+      if (result.success && Array.isArray(result.data)) {
+        setFetchedModels(result.data)
+        setIsSelectDialogOpen(true)
+        toast.success(`成功获取 ${result.data.length} 个模型`)
+      }
+      else {
+        toast.error(result.message || '获取失败')
+      }
+    }
+    catch (e) {
+      toast.error('网络错误')
+    }
+    finally {
+      toast.dismiss(loadingToast)
     }
   }
 
   const handleSelectConfirm = (selected: string[]) => {
-    const currentModels = form.getValues("models").split(",").filter(Boolean)
+    const currentModels = form.getValues('models').split(',').filter(Boolean)
     const newModels = Array.from(new Set([...currentModels, ...selected]))
-    form.setValue("models", newModels.join(","))
+    form.setValue('models', newModels.join(','))
   }
 
   const handleCopyModels = () => {
-    const models = form.getValues("models")
+    const models = form.getValues('models')
     if (!models) {
-        toast.error("没有模型可以复制")
-        return
+      toast.error('没有模型可以复制')
+      return
     }
     navigator.clipboard.writeText(models)
-    toast.success("已复制到剪贴板")
+    toast.success('已复制到剪贴板')
   }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{editingChannel ? "编辑渠道" : "添加渠道"}</SheetTitle>
+          <SheetTitle>{editingChannel ? '编辑渠道' : '添加渠道'}</SheetTitle>
           <SheetDescription>
             配置渠道的基本信息、模型和密钥。
           </SheetDescription>
@@ -223,7 +229,7 @@ export function ChannelSheet({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-[300px] overflow-y-auto">
-                      {CHANNEL_OPTIONS.map((option) => (
+                      {CHANNEL_OPTIONS.map(option => (
                         <SelectItem key={option.value} value={String(option.value)}>
                           {option.label}
                         </SelectItem>
@@ -272,60 +278,66 @@ export function ChannelSheet({
                   <FormLabel>模型</FormLabel>
                   <FormControl>
                     <div className="space-y-2">
-                       <Input 
-                        placeholder="输入模型名称并回车添加，或逗号分隔" 
+                      <Input
+                        placeholder="输入模型名称并回车添加，或逗号分隔"
                         onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                e.preventDefault()
-                                const val = (e.currentTarget as HTMLInputElement).value.trim()
-                                if (val) {
-                                    handleModelAdd(val)
-                                    e.currentTarget.value = ""
-                                }
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            const val = (e.currentTarget as HTMLInputElement).value.trim()
+                            if (val) {
+                              handleModelAdd(val)
+                              e.currentTarget.value = ''
                             }
+                          }
                         }}
-                       />
-                       <div className="flex flex-wrap gap-1 min-h-[40px] p-2 border rounded-md bg-slate-50">
-                          {field.value.split(',').filter(Boolean).map(model => (
-                            <Badge key={model} variant="secondary" className="flex items-center gap-1">
-                                {model}
-                                <X 
-                                    className="w-3 h-3 cursor-pointer hover:text-red-500" 
-                                    onClick={() => handleModelRemove(model)}
-                                />
-                            </Badge>
-                          ))}
-                          {!field.value && <span className="text-xs text-muted-foreground">未选择模型</span>}
-                       </div>
-                       <div className="flex flex-wrap gap-2 mt-2">
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-7 text-[10px]"
-                                onClick={handleFetchModels}
-                            >
-                                <Zap className="w-3 h-3 mr-1" /> 获取模型列表
-                            </Button>
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-7 text-[10px]"
-                                onClick={() => form.setValue("models", "")}
-                            >
-                                <Trash2 className="w-3 h-3 mr-1" /> 清除所有模型
-                            </Button>
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm" 
-                                className="h-7 text-[10px]"
-                                onClick={handleCopyModels}
-                            >
-                                <Copy className="w-3 h-3 mr-1" /> 复制所有模型
-                            </Button>
-                       </div>
+                      />
+                      <div className="flex flex-wrap gap-1 min-h-[40px] p-2 border rounded-md bg-slate-50">
+                        {field.value.split(',').filter(Boolean).map(model => (
+                          <Badge key={model} variant="secondary" className="flex items-center gap-1">
+                            {model}
+                            <X
+                              className="w-3 h-3 cursor-pointer hover:text-red-500"
+                              onClick={() => handleModelRemove(model)}
+                            />
+                          </Badge>
+                        ))}
+                        {!field.value && <span className="text-xs text-muted-foreground">未选择模型</span>}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[10px]"
+                          onClick={handleFetchModels}
+                        >
+                          <Zap className="w-3 h-3 mr-1" />
+                          {' '}
+                          获取模型列表
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[10px]"
+                          onClick={() => form.setValue('models', '')}
+                        >
+                          <Trash2 className="w-3 h-3 mr-1" />
+                          {' '}
+                          清除所有模型
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-[10px]"
+                          onClick={handleCopyModels}
+                        >
+                          <Copy className="w-3 h-3 mr-1" />
+                          {' '}
+                          复制所有模型
+                        </Button>
+                      </div>
                     </div>
                   </FormControl>
                   <FormMessage />
@@ -348,62 +360,62 @@ export function ChannelSheet({
             />
 
             <div className="grid grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="group"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>分组</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormDescription>逗号分隔</FormDescription>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="tag"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>标签</FormLabel>
-                        <FormControl>
-                            <Input placeholder="渠道标签" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
+              <FormField
+                control={form.control}
+                name="group"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>分组</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>逗号分隔</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="tag"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>标签</FormLabel>
+                    <FormControl>
+                      <Input placeholder="渠道标签" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <FormField
-                    control={form.control}
-                    name="priority"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>优先级</FormLabel>
-                        <FormControl>
-                            <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>权重</FormLabel>
-                        <FormControl>
-                            <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                />
+              <FormField
+                control={form.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>优先级</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="weight"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>权重</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormField
@@ -427,10 +439,10 @@ export function ChannelSheet({
                 <FormItem>
                   <FormLabel>其他配置 (JSON)</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="部分渠道需要的额外配置，例如 Azure 的版本等" 
+                    <Textarea
+                      placeholder="部分渠道需要的额外配置，例如 Azure 的版本等"
                       className="font-mono text-xs"
-                      {...field} 
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
@@ -444,11 +456,11 @@ export function ChannelSheet({
           </form>
         </Form>
         <ModelSelectDialog
-            open={isSelectDialogOpen}
-            onOpenChange={setIsSelectDialogOpen}
-            models={fetchedModels}
-            selectedModels={form.getValues("models").split(",").filter(Boolean)}
-            onConfirm={handleSelectConfirm}
+          open={isSelectDialogOpen}
+          onOpenChange={setIsSelectDialogOpen}
+          models={fetchedModels}
+          selectedModels={form.getValues('models').split(',').filter(Boolean)}
+          onConfirm={handleSelectConfirm}
         />
       </SheetContent>
     </Sheet>

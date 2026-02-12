@@ -1,22 +1,23 @@
-import { Suspense } from 'react'
 import { api } from '@/lib/api'
-import { ModelsClient } from './models-client'
 import { fetchVendors } from './actions'
+import { ModelsClient } from './models-client'
 
 async function getModels(searchParams: { [key: string]: string | string[] | undefined }) {
   const params = new URLSearchParams()
   let hasKeyword = false
-  
+
   Object.entries(searchParams).forEach(([key, value]) => {
     if (value) {
       const val = Array.isArray(value) ? value[0] : String(value)
       params.append(key, val)
-      if ((key === 'keyword' || key === 'vendor') && val) hasKeyword = true
+      if ((key === 'keyword' || key === 'vendor') && val)
+        hasKeyword = true
     }
   })
 
-  if (!params.has('p')) params.set('p', '1')
-  
+  if (!params.has('p'))
+    params.set('p', '1')
+
   const endpoint = hasKeyword ? '/api/models/search' : '/api/models/'
 
   try {
@@ -28,12 +29,13 @@ async function getModels(searchParams: { [key: string]: string | string[] | unde
       return {
         models: data.data.items || [],
         total: data.data.total || 0,
-        page: parseInt(params.get('p') || '1'),
-        vendorCounts: data.data.vendor_counts || {}
+        page: Number.parseInt(params.get('p') || '1'),
+        vendorCounts: data.data.vendor_counts || {},
       }
     }
     return { models: [], total: 0, page: 1, vendorCounts: {} }
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Failed to fetch models:', error)
     return { models: [], total: 0, page: 1, vendorCounts: {} }
   }
@@ -47,11 +49,11 @@ export default async function ModelsPage({
   const resolvedSearchParams = await searchParams
   const [{ models, total, page, vendorCounts }, vendors] = await Promise.all([
     getModels(resolvedSearchParams),
-    fetchVendors()
+    fetchVendors(),
   ])
 
   return (
-    <div >
+    <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">模型库</h1>
@@ -61,10 +63,10 @@ export default async function ModelsPage({
         </div>
       </div>
 
-      <ModelsClient 
-        data={models} 
-        total={total} 
-        currentPage={page} 
+      <ModelsClient
+        data={models}
+        total={total}
+        currentPage={page}
         vendors={vendors}
         vendorCounts={vendorCounts}
       />

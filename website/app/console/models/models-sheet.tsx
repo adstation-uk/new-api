@@ -1,17 +1,12 @@
 'use client'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
 import * as z from 'zod'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetFooter,
-} from '@/components/ui/sheet'
+import { ModelIcon } from '@/components/model-icon'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -22,19 +17,24 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet'
 import { Switch } from '@/components/ui/switch'
-import { toast } from 'sonner'
+import { Textarea } from '@/components/ui/textarea'
 import { saveModel } from './actions'
-import { ModelIcon } from '@/components/model-icon'
 
 const modelSchema = z.object({
   id: z.number().optional(),
@@ -91,7 +91,8 @@ export function ModelsSheet({
         sync_official: model.sync_official || 1,
         name_rule: model.name_rule ?? 0,
       })
-    } else {
+    }
+    else {
       form.reset({
         model_name: '',
         description: '',
@@ -113,12 +114,15 @@ export function ModelsSheet({
       if (result.success) {
         toast.success(model ? '更新成功' : '创建成功')
         onOpenChange(false)
-      } else {
+      }
+      else {
         toast.error(result.message || '操作失败')
       }
-    } catch (e) {
+    }
+    catch (e) {
       toast.error('网络请求失败')
-    } finally {
+    }
+    finally {
       toast.dismiss(loadingToast)
     }
   }
@@ -140,35 +144,35 @@ export function ModelsSheet({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 py-6">
             <div className="flex gap-4 items-start">
-                <div className="flex-1">
-                    <FormField
-                    control={form.control}
-                    name="model_name"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>模型名称</FormLabel>
-                        <FormControl>
-                            <Input {...field} placeholder="如: gpt-4o-2024-05-13" />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
-                <div className="w-20">
-                    <FormField
-                    control={form.control}
-                    name="icon"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>预览</FormLabel>
-                        <div className="flex flex-col items-center gap-2 px-3 py-2 border rounded-md bg-muted/20 min-h-[40px]">
-                            <ModelIcon symbol={selectedIcon || selectedVendor?.icon || 'Layers'} size={32} />
-                        </div>
-                        </FormItem>
-                    )}
-                    />
-                </div>
+              <div className="flex-1">
+                <FormField
+                  control={form.control}
+                  name="model_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>模型名称</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="如: gpt-4o-2024-05-13" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="w-20">
+                <FormField
+                  control={form.control}
+                  name="icon"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>预览</FormLabel>
+                      <div className="flex flex-col items-center gap-2 px-3 py-2 border rounded-md bg-muted/20 min-h-[40px]">
+                        <ModelIcon symbol={selectedIcon || selectedVendor?.icon || 'Layers'} size={32} />
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             <FormField
@@ -177,7 +181,7 @@ export function ModelsSheet({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>名称匹配类型</FormLabel>
-                  <Select onValueChange={(v) => field.onChange(parseInt(v))} value={field.value.toString()}>
+                  <Select onValueChange={v => field.onChange(Number.parseInt(v))} value={field.value.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="选择名称匹配类型" />
@@ -213,10 +217,10 @@ export function ModelsSheet({
                     <SelectContent>
                       {vendors.map(v => (
                         <SelectItem key={v.id} value={v.id.toString()}>
-                           <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2">
                             <ModelIcon symbol={v.icon || 'Layers'} size={14} />
                             {v.name}
-                           </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -271,43 +275,43 @@ export function ModelsSheet({
             />
 
             <div className="grid grid-cols-2 gap-4 border p-4 rounded-lg bg-muted/10">
-                <FormField
+              <FormField
                 control={form.control}
                 name="status"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
-                        <div className="space-y-0.5">
-                            <FormLabel>启用模型</FormLabel>
-                            <div className="text-[10px] text-muted-foreground">控制模型是否在列表中可见</div>
-                        </div>
-                        <FormControl>
-                            <Switch 
-                                checked={field.value === 1} 
-                                onCheckedChange={(c) => field.onChange(c ? 1 : 2)} 
-                            />
-                        </FormControl>
-                    </FormItem>
+                  <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
+                    <div className="space-y-0.5">
+                      <FormLabel>启用模型</FormLabel>
+                      <div className="text-[10px] text-muted-foreground">控制模型是否在列表中可见</div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value === 1}
+                        onCheckedChange={c => field.onChange(c ? 1 : 2)}
+                      />
+                    </FormControl>
+                  </FormItem>
                 )}
-                />
-                
-                <FormField
+              />
+
+              <FormField
                 control={form.control}
                 name="sync_official"
                 render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
-                        <div className="space-y-0.5">
-                            <FormLabel>官方同步</FormLabel>
-                            <div className="text-[10px] text-muted-foreground">是否允许通过官方 API 自动发现</div>
-                        </div>
-                        <FormControl>
-                            <Switch 
-                                checked={field.value === 1} 
-                                onCheckedChange={(c) => field.onChange(c ? 1 : 0)} 
-                            />
-                        </FormControl>
-                    </FormItem>
+                  <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
+                    <div className="space-y-0.5">
+                      <FormLabel>官方同步</FormLabel>
+                      <div className="text-[10px] text-muted-foreground">是否允许通过官方 API 自动发现</div>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value === 1}
+                        onCheckedChange={c => field.onChange(c ? 1 : 0)}
+                      />
+                    </FormControl>
+                  </FormItem>
                 )}
-                />
+              />
             </div>
 
             <FormField
@@ -317,10 +321,10 @@ export function ModelsSheet({
                 <FormItem>
                   <FormLabel>自定义端点 (JSON 格式)</FormLabel>
                   <FormControl>
-                    <Textarea 
-                        {...field} 
-                        className="font-mono text-xs h-24" 
-                        placeholder='{"openai": "https://api.openai.com/v1"}' 
+                    <Textarea
+                      {...field}
+                      className="font-mono text-xs h-24"
+                      placeholder='{"openai": "https://api.openai.com/v1"}'
                     />
                   </FormControl>
                   <FormDescription>为特定供应商设置覆盖原始地址的 URL</FormDescription>
