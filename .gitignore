@@ -7,7 +7,6 @@ upload
 build
 *.db-journal
 logs
-web/dist
 .env
 one-api
 new-api
@@ -18,7 +17,10 @@ tiktoken_cache
 .gocache
 .gomodcache/
 .cache
-web/bun.lock
+admin/dist
+website/dist
+admin/bun.lock
+website/bun.lock
 plans
 
 electron/node_modules
