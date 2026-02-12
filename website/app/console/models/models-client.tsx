@@ -101,7 +101,7 @@ export function ModelsClient({
         toast.error(result.message || '同步失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {
@@ -119,11 +119,19 @@ export function ModelsClient({
               placeholder="搜索模型名称、别名或标签..."
               className="pl-8 bg-background"
               value={searchValue}
-              onChange={e => setSearchValue(e.target.value)}
+              onChange={(e) => {
+                setSearchValue(e.target.value)
+              }}
             />
           </div>
 
-          <Select value={vendorFilter} onValueChange={(v) => { setVendorFilter(v); updateSearch(searchValue, v) }}>
+          <Select
+            value={vendorFilter}
+            onValueChange={(v) => {
+              setVendorFilter(v)
+              updateSearch(searchValue, v)
+            }}
+          >
             <SelectTrigger className="w-[180px] bg-background">
               <Filter className="w-3.5 h-3.5 mr-2 opacity-50" />
               <SelectValue placeholder="所有供应商" />
@@ -165,7 +173,14 @@ export function ModelsClient({
             {' '}
             管理供应商
           </Button>
-          <Button size="sm" className="h-10" onClick={() => { setEditingModel(null); setIsSheetOpen(true) }}>
+          <Button
+            size="sm"
+            className="h-10"
+            onClick={() => {
+              setEditingModel(null)
+              setIsSheetOpen(true)
+            }}
+          >
             <Plus className="mr-2 h-4 w-4" />
             {' '}
             新增模型
@@ -182,7 +197,10 @@ export function ModelsClient({
       <ModelsTable
         data={data}
         vendors={vendors}
-        onEdit={(m) => { setEditingModel(m); setIsSheetOpen(true) }}
+        onEdit={(m) => {
+          setEditingModel(m)
+          setIsSheetOpen(true)
+        }}
       />
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">

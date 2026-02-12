@@ -25,7 +25,6 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -94,7 +93,6 @@ export function ChannelTable({
   onEdit: (channel: Channel) => void
   onTest?: (channel: Channel) => void
 }) {
-  const router = useRouter()
   const [sorting, setSorting] = useState<SortingState>([])
 
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -111,7 +109,7 @@ export function ChannelTable({
         toast.error(result.message || '状态更新失败')
       }
     }
-    catch (error) {
+    catch {
       toast.error('网络连接错误')
     }
     finally {
@@ -120,6 +118,7 @@ export function ChannelTable({
   }
 
   const handleDelete = async (id: number) => {
+    // eslint-disable-next-line no-alert
     if (!window.confirm('确定要删除该渠道吗？'))
       return
     const loadingToast = toast.loading('正在删除...')
@@ -132,7 +131,7 @@ export function ChannelTable({
         toast.error(result.message || '删除失败')
       }
     }
-    catch (error) {
+    catch {
       toast.error('网络连接错误')
     }
     finally {
@@ -151,7 +150,7 @@ export function ChannelTable({
         toast.error(`测试失败：${result.message}`)
       }
     }
-    catch (error) {
+    catch {
       toast.error('测试出错')
     }
     finally {
@@ -170,7 +169,7 @@ export function ChannelTable({
         toast.error(`余额更新失败：${result.message}`)
       }
     }
-    catch (error) {
+    catch {
       toast.error('更新出错')
     }
     finally {
@@ -193,7 +192,7 @@ export function ChannelTable({
         toast.error(result.message || '保存失败')
       }
     }
-    catch (error) {
+    catch {
       toast.error('网络连接错误')
     }
     finally {

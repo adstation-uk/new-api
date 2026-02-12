@@ -29,6 +29,7 @@ const packages = [
 ]
 
 declare global {
+  // eslint-disable-next-line ts/consistent-type-definitions
   interface Window {
     paypal: any
     gtag?: (...args: any[]) => void
@@ -74,6 +75,7 @@ export function PayPalRecharge({
       document.body.appendChild(script)
     }
     else if (window.paypal) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setPaypalLoaded(true)
     }
   }, [])
@@ -88,7 +90,7 @@ export function PayPalRecharge({
           try {
             window.paypal
               .Buttons({
-                createOrder: async (data: any, actions: any) => {
+                createOrder: async (_data: any, _actions: any) => {
                   try {
                     const response = await fetch(
                       `${API_BASE}/api/paypal/orders`,
@@ -183,9 +185,9 @@ export function PayPalRecharge({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {packages.map((pkg, index) => (
+        {packages.map(pkg => (
           <Card
-            key={index}
+            key={pkg.amount}
             onClick={() => setSelectedPackage(pkg)}
             className={cn(
               'relative cursor-pointer transition-all hover:border-primary/50 overflow-hidden border-2',

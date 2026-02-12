@@ -92,7 +92,13 @@ export function UserClient({
           </Button>
         </form>
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={() => { setEditingUser(null); setIsSheetOpen(true) }}>
+          <Button
+            size="sm"
+            onClick={() => {
+              setEditingUser(null)
+              setIsSheetOpen(true)
+            }}
+          >
             <UserPlus className="mr-2 h-4 w-4" />
             {' '}
             添加用户

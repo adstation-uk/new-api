@@ -75,7 +75,7 @@ export function UserTable({
         toast.error(result.message || `${label}失败`)
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {
@@ -94,7 +94,7 @@ export function UserTable({
         toast.error(result.message || `${label}重置失败`)
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {

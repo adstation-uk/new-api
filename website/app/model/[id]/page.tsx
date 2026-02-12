@@ -39,7 +39,7 @@ export default async function ModelDetailPage({ params }: Props) {
   const calculateDiscount = (currentStr: string, marketStr: string) => {
     const current = Number.parseFloat(currentStr.replace('$', ''))
     const market = Number.parseFloat(marketStr.replace('$', ''))
-    if (isNaN(current) || isNaN(market) || market <= 0)
+    if (Number.isNaN(current) || Number.isNaN(market) || market <= 0)
       return null
     const discount = Math.round((1 - current / market) * 100)
     return discount > 0 ? `${discount}% 优惠` : null

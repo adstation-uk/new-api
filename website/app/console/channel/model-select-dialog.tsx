@@ -127,6 +127,7 @@ export function ModelSelectDialog({
 
   React.useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setSelected(initialSelected)
     }
   }, [open, initialSelected])
@@ -186,15 +187,19 @@ export function ModelSelectDialog({
     }
   }
 
-  const currentModels = activeTab === 'new' ? newModelsData : existingModelsData
   const currentCategorized = activeTab === 'new' ? newCategorized : existingCategorized
 
   // Automatic tab switching
   React.useEffect(() => {
     if (open) {
-      if (newModelsData.length > 0)
+      if (newModelsData.length > 0) {
+        // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
         setActiveTab('new')
-      else setActiveTab('existing')
+      }
+      else {
+        // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
+        setActiveTab('existing')
+      }
     }
   }, [open, newModelsData.length])
 

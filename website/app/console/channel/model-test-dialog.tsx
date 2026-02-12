@@ -88,7 +88,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
         },
       }))
     }
-    catch (error) {
+    catch {
       setResults(prev => ({
         ...prev,
         [model]: {
@@ -126,8 +126,11 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
   // Effect to clear results when channel changes
   React.useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setResults({})
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setTesting({})
+      // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setIsBatchTesting(false)
     }
   }, [channel?.id, open])

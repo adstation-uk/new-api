@@ -41,7 +41,7 @@ export async function fetchVendors() {
     const data = await res.json()
     return data.success ? data.data.items : []
   }
-  catch (e) {
+  catch {
     return []
   }
 }

@@ -119,7 +119,7 @@ export function ModelsSheet({
         toast.error(result.message || '操作失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {
@@ -163,7 +163,7 @@ export function ModelsSheet({
                 <FormField
                   control={form.control}
                   name="icon"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel>预览</FormLabel>
                       <div className="flex flex-col items-center gap-2 px-3 py-2 border rounded-md bg-muted/20 min-h-[40px]">

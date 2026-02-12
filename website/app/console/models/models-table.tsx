@@ -72,11 +72,14 @@ export function ModelsTable({
 }) {
   const vendorMap = React.useMemo(() => {
     const map: Record<number, Vendor> = {}
-    vendors.forEach((v) => { map[v.id] = v })
+    vendors.forEach((v) => {
+      map[v.id] = v
+    })
     return map
   }, [vendors])
 
   const handleDelete = async (id: number) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('确定要删除这个模型吗？此操作无法撤销。'))
       return
 
@@ -90,7 +93,7 @@ export function ModelsTable({
         toast.error(result.message || '删除失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {

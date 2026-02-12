@@ -33,7 +33,7 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
   // 2. 解析组件路径与点号链式属性
   const segments = String(iconName).split('.')
   const baseKey = segments[0]
-  // @ts-ignore
+  // @ts-expect-error LobeIcons index access
   const BaseIcon = LobeIcons[baseKey]
 
   let IconComponent: any
@@ -44,7 +44,7 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
     propStartIndex = 2
   }
   else {
-    // @ts-ignore
+    // @ts-expect-error LobeIcons index access
     IconComponent = LobeIcons[baseKey]
     propStartIndex = 1
   }

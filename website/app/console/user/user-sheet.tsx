@@ -120,7 +120,7 @@ export function UserSheet({
         toast.error(result.message || (user ? '更新失败' : '创建失败'))
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络请求失败')
     }
     finally {

@@ -24,9 +24,9 @@ type TopupClientProps = {
 
 export function TopupClient({
   user,
-  topupInfo,
+  topupInfo: _topupInfo,
 }: TopupClientProps) {
-  const router = useRouter()
+  const _router = useRouter()
 
   return (
     <div className="space-y-6">

@@ -71,7 +71,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
         toast.error(result.message || '保存失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络错误')
     }
     finally {
@@ -80,6 +80,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
   }
 
   const handleDelete = async (id: number) => {
+    // eslint-disable-next-line no-alert
     if (!confirm('确定要删除这个供应商吗？'))
       return
 
@@ -93,17 +94,12 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
         toast.error(result.message || '删除失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络错误')
     }
     finally {
       toast.dismiss(loadingToast)
     }
-  }
-
-  // Fallback icon component
-  const RenderIcon = ({ icon, name, size = 18 }: { icon?: string, name?: string, size?: number }) => {
-    return <ModelIcon symbol={icon} size={size} />
   }
 
   return (
@@ -139,7 +135,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
               {(isAdding || editingId) && (
                 <TableRow className="bg-muted/30">
                   <TableCell>
-                    <RenderIcon icon={formData.icon} name={formData.name} />
+                    <ModelIcon symbol={formData.icon} size={18} />
                   </TableCell>
                   <TableCell>
                     <Input
@@ -180,7 +176,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
                 editingId !== v.id && (
                   <TableRow key={v.id}>
                     <TableCell>
-                      <RenderIcon icon={v.icon} name={v.name} />
+                      <ModelIcon symbol={v.icon} size={18} />
                     </TableCell>
                     <TableCell className="font-medium text-xs">{v.name}</TableCell>
                     <TableCell className="text-xs text-muted-foreground truncate max-w-[200px]">

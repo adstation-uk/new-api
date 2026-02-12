@@ -181,7 +181,7 @@ export function ChannelSheet({
         toast.error(result.message || '获取失败')
       }
     }
-    catch (e) {
+    catch {
       toast.error('网络错误')
     }
     finally {
