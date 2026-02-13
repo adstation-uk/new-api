@@ -5,5 +5,8 @@
   },
   "common": {
     "language": "语言"
+  },
+  "ProfilePage": {
+    "title": "欢迎回来，{username}"
   }
 }

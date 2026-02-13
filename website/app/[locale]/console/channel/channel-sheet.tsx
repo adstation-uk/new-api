@@ -41,13 +41,13 @@ import { ModelSelectDialog } from './model-select-dialog'
 const channelSchema = z.object({
   id: z.number().optional(),
   name: z.string().min(1, '名称不能为空'),
-  type: z.coerce.number(),
+  type: z.number(),
   key: z.string(),
   base_url: z.string().optional().default(''),
   models: z.string().min(1, '请至少选择一个模型'),
   group: z.string().default('default'),
-  priority: z.coerce.number().default(0),
-  weight: z.coerce.number().default(0),
+  priority: z.number().default(0),
+  weight: z.number().default(0),
   test_model: z.string().optional().default(''),
   other: z.string().optional().default(''),
   tag: z.string().optional().default(''),
@@ -61,7 +61,8 @@ const channelSchema = z.object({
   path: ['key'],
 })
 
-type ChannelFormValues = z.infer<typeof channelSchema>
+type ChannelFormInput = z.input<typeof channelSchema>
+type ChannelFormValues = z.output<typeof channelSchema>
 
 export function ChannelSheet({
   open,
@@ -77,7 +78,7 @@ export function ChannelSheet({
   const [fetchedModels, setFetchedModels] = useState<string[]>([])
   const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false)
 
-  const form = useForm<ChannelFormValues>({
+  const form = useForm<ChannelFormInput, any, ChannelFormValues>({
     resolver: zodResolver(channelSchema),
     defaultValues: {
       name: '',
@@ -222,7 +223,7 @@ export function ChannelSheet({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>渠道类型</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={String(field.value)} value={String(field.value)}>
+                  <Select onValueChange={v => field.onChange(Number(v))} defaultValue={String(field.value)} value={String(field.value)}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="选择渠道类型" />
@@ -397,7 +398,11 @@ export function ChannelSheet({
                   <FormItem>
                     <FormLabel>优先级</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        value={field.value}
+                        onChange={e => field.onChange(Number(e.target.value) || 0)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -410,7 +415,11 @@ export function ChannelSheet({
                   <FormItem>
                     <FormLabel>权重</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input
+                        type="number"
+                        value={field.value}
+                        onChange={e => field.onChange(Number(e.target.value) || 0)}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

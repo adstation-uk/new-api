@@ -193,7 +193,7 @@ export function ChannelClient({
   return (
     <div className="flex flex-col gap-6">
       <ChannelSearch
-        isAdmin={isAdmin}
+        _isAdmin={isAdmin}
         onBatchDelete={onBatchDelete}
         onBatchTag={() => setShowTagDialog(true)}
         onAdd={handleAdd}

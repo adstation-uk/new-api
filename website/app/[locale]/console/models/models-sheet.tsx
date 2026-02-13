@@ -42,7 +42,7 @@ const modelSchema = z.object({
   description: z.string().optional(),
   icon: z.string().optional(),
   tags: z.string().optional(),
-  vendor_id: z.coerce.number().min(1, '请选择供应商'),
+  vendor_id: z.number().min(1, '请选择供应商'),
   endpoints: z.string().optional(),
   status: z.number().default(1),
   sync_official: z.number().default(1),
@@ -208,7 +208,7 @@ export function ModelsSheet({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>供应商</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value.toString()}>
+                  <Select onValueChange={v => field.onChange(Number(v))} value={field.value.toString()}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="选择模型所属供应商" />

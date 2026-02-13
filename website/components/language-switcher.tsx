@@ -1,7 +1,7 @@
 'use client'
 
 import { Languages } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,13 +9,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import '@/lib/i18n'
+import { routing } from '@/i18n/routing'
 
 export function LanguageSwitcher() {
-  const { i18n, t } = useTranslation()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng)
+  const changeLanguage = (nextLocale: string) => {
+    const segments = pathname.split('/').filter(Boolean)
+    const firstSegment = segments[0]
+
+    if (firstSegment && routing.locales.includes(firstSegment as (typeof routing.locales)[number])) {
+      segments.shift()
+    }
+
+    const basePath = `/${segments.join('/')}` || '/'
+    const localizedPath = `/${nextLocale}${basePath === '/' ? '' : basePath}`
+
+    const query = searchParams.toString()
+    router.replace(query ? `${localizedPath}?${query}` : localizedPath)
   }
 
   return (
@@ -23,7 +36,7 @@ export function LanguageSwitcher() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Languages className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">{t('common.language')}</span>
+          <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

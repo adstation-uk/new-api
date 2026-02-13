@@ -13,7 +13,7 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { logout } from '@/app/actions/auth'
+import { logout } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 

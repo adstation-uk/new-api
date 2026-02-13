@@ -24,6 +24,7 @@ import {
   Zap,
 } from 'lucide-react'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { Footer } from '@/components/footer'
 import { DotPattern } from '@/components/magicui/dot-pattern'
 import Marquee from '@/components/magicui/marquee'
@@ -40,6 +41,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { api } from '@/lib/api'
+import { getOptionalUserInfo } from '@/lib/user'
 import { cn } from '@/lib/utils'
 
 const MODEL_GROUPS_ITEMS = [
@@ -155,6 +157,9 @@ const FAQ_ITEMS = [
 ]
 
 export default async function HomePage() {
+  const user = await getOptionalUserInfo()
+  const t = await getTranslations('ProfilePage')
+
   let homeContent = ''
   try {
     const res = await api('/api/home_page_content')
@@ -182,7 +187,7 @@ export default async function HomePage() {
                 一站式访问最佳的视频、图像和音乐模型
               </Badge>
               <h1 className="text-4xl font-bold leading-tight md:text-6xl">
-                为您提供全面的视频、图像、音乐和聊天 AI API 服务
+                {t('title', { username: user?.username ?? 'Guest' })}
               </h1>
               <p className="text-base leading-7 text-muted-foreground md:text-lg">
                 成本低于同类平台，运行速度更快，开发者体验更友好。您可以直接用现有 OpenAI 风格调用方式快速接入多模型能力。

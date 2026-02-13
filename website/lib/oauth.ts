@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { getOAuthStateAction } from '@/app/actions/auth'
+import { getOAuthStateAction } from '@/actions/auth-actions'
 
 export async function onGitHubOAuthClicked(github_client_id: string) {
   const data = await getOAuthStateAction()

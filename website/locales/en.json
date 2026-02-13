@@ -5,5 +5,8 @@
   },
   "common": {
     "language": "Language"
+  },
+  "ProfilePage": {
+    "title": "Welcome back, {username}"
   }
 }

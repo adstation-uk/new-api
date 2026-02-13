@@ -1,5 +1,9 @@
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
+import createMiddleware from 'next-intl/middleware'
+import { routing } from '@/i18n/routing'
+
+const handleI18nRouting = createMiddleware(routing)
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -22,7 +26,7 @@ export async function proxy(request: NextRequest) {
 
   // 2. Allow everything else to pass through to Next.js
   // Protection is now handled at the page/layout level using getUserInfo()
-  return NextResponse.next()
+  return handleI18nRouting(request)
 }
 
 export const config = {
