@@ -1,7 +1,8 @@
 'use client'
 
 import { CircleDollarSign, FlaskConical, MoreVertical, Plus, Search, Tag, Trash2, Wrench, XCircle } from 'lucide-react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {

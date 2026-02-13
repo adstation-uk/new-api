@@ -2,7 +2,7 @@
 
 import type { UserInfo } from '@/lib/user'
 import { LayoutDashboard, LogOut, Settings } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { logout } from '@/actions/auth-actions'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'

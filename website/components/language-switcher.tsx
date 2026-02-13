@@ -1,7 +1,7 @@
 'use client'
 
 import { Languages } from 'lucide-react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { usePathname, useRouter } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
 
 export function LanguageSwitcher() {
@@ -17,18 +18,12 @@ export function LanguageSwitcher() {
   const searchParams = useSearchParams()
 
   const changeLanguage = (nextLocale: string) => {
-    const segments = pathname.split('/').filter(Boolean)
-    const firstSegment = segments[0]
+    const query = Object.fromEntries(searchParams.entries())
 
-    if (firstSegment && routing.locales.includes(firstSegment as (typeof routing.locales)[number])) {
-      segments.shift()
-    }
-
-    const basePath = `/${segments.join('/')}` || '/'
-    const localizedPath = `/${nextLocale}${basePath === '/' ? '' : basePath}`
-
-    const query = searchParams.toString()
-    router.replace(query ? `${localizedPath}?${query}` : localizedPath)
+    router.replace(
+      { pathname, query },
+      { locale: nextLocale as (typeof routing.locales)[number] },
+    )
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { Copy, Edit, Eye, EyeOff, Play, Square, Trash2 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {

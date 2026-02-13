@@ -23,7 +23,7 @@ import {
   Timer,
   Zap,
 } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Footer } from '@/components/footer'
 import { DotPattern } from '@/components/magicui/dot-pattern'

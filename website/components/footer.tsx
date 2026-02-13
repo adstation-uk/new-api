@@ -1,7 +1,7 @@
 'use client'
 
 import { FileText, Github, Globe, Mail, Shield, Zap } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()

@@ -10,8 +10,8 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link } from '@/i18n/navigation'
+import { usePathname } from '@/i18n/navigation'
 import { useState } from 'react'
 import { logout } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'

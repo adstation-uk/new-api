@@ -1,7 +1,7 @@
 'use server'
 
 import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { redirect } from '@/i18n/navigation'
 import { api } from '@/lib/api'
 
 export async function getOAuthStateAction() {

@@ -1,8 +1,8 @@
 'use client'
 
 import type { UserInfo } from '@/lib/user'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { Link } from '@/i18n/navigation'
+import { usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 type NavLink = {

@@ -1,6 +1,6 @@
 'use server'
 
-import { redirect } from 'next/navigation'
+import { redirect } from '@/i18n/navigation'
 import { api } from '@/lib/api'
 
 export type UserInfo = {
