@@ -5,21 +5,20 @@ Use this model with OpenAI-compatible SDKs.
 ## Endpoint
 
 - Base URL: <code>{props.baseUrl}</code>
-- Model key: `{props.modelId}`
+- Model key: <code>{props.modelId}</code>
 
 ## JavaScript / TypeScript (Official OpenAI SDK)
 
-<pre>
-  <code className="language-ts">
-    {`import OpenAI from 'openai'
+```ts
+import OpenAI from 'openai'
 
 const client = new OpenAI({
   apiKey: process.env.NEW_API_KEY,
-  baseURL: '${props.baseUrl}'
+  baseURL: 'YOUR_BASE_URL'
 })
 
 const completion = await client.chat.completions.create({
-  model: '${props.modelId}',
+  model: 'YOUR_MODEL_ID',
   messages: [
     { role: 'system', content: 'You are a helpful assistant.' },
     { role: 'user', content: 'Give me a quick intro for this model.' }
@@ -27,23 +26,20 @@ const completion = await client.chat.completions.create({
 })
 
 console.log(completion.choices[0]?.message?.content)
-`}
-  </code>
-</pre>
+```
 
 ## Python (Official OpenAI SDK)
 
-<pre>
-  <code className="language-python">
-    {`from openai import OpenAI
+```python
+from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_NEW_API_KEY",
-    base_url="${props.baseUrl}"
+    base_url="YOUR_BASE_URL"
 )
 
 resp = client.chat.completions.create(
-    model="${props.modelId}",
+    model="YOUR_MODEL_ID",
     messages=[
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "Hello!"}
@@ -51,6 +47,4 @@ resp = client.chat.completions.create(
 )
 
 print(resp.choices[0].message.content)
-`}
-  </code>
-</pre>
+```
