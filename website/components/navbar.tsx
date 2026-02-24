@@ -20,7 +20,7 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
       <div className="container mx-auto flex  h-full items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 group no-underline">
-            <Image src="/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
+            <Image src="/zh/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
             <span className="text-xl font-bold tracking-tight text-foreground">
               Broadscene
             </span>

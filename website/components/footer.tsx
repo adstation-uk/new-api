@@ -16,7 +16,7 @@ export function Footer() {
               href="/"
               className="flex items-center gap-2 mb-6 group no-underline"
             >
-              <Image src="/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
+              <Image src="/zh/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
               <span className="text-xl font-bold tracking-tight text-foreground">
                 Broadscene
               </span>
