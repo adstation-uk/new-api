@@ -24,7 +24,7 @@ export function AnnouncementsPanel({
   loading,
 }: AnnouncementsPanelProps) {
   return (
-    <Card className="lg:col-span-2">
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-yellow-500" />
@@ -35,7 +35,7 @@ export function AnnouncementsPanel({
         </div>
       </CardHeader>
       <CardContent className="pt-6">
-        <div className="relative h-[400px] overflow-y-auto pr-2">
+        <div className="relative overflow-y-auto pr-2">
           {loading
             ? (
                 <div className="space-y-4">

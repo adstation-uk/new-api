@@ -3,7 +3,7 @@
 export function HeroTitle() {
   return (
     <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight text-foreground mb-6">
-      欢迎使用 New API
+      欢迎使用 Broadscene
     </h1>
   )
 }

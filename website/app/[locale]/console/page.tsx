@@ -1,63 +1,32 @@
-import { Calendar, LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard } from 'lucide-react'
 import { AnnouncementsPanel } from '@/components/dashboard/announcements-panel'
 import { ApiInfoPanel } from '@/components/dashboard/api-info-panel'
 import { ChartsPanel } from '@/components/dashboard/charts-panel'
 import { RefreshButton } from '@/components/dashboard/refresh-button'
 import { StatsCards } from '@/components/dashboard/stats-cards'
-import { UptimePanel } from '@/components/dashboard/uptime-panel'
-import { Button } from '@/components/ui/button'
 import { api } from '@/lib/api'
 import { processDashboardData } from '@/lib/dashboard-utils'
 
 async function getDashboardData() {
   try {
-    const [userRes, quotaRes, statusRes, uptimeRes] = await Promise.all([
+    const [userRes, quotaRes, statusRes] = await Promise.all([
       api('/api/user/self'),
       api('/api/data/self/?default_time=today'),
       api('/api/status'),
-      api('/api/uptime/status').catch(() => ({
-        json: async () => ({ success: false }),
-        ok: false,
-      })),
     ])
 
     const userJson = await userRes.json()
     const quotaJson = await quotaRes.json()
     const statusJson = await statusRes.json()
 
-    // Safety check for uptime response
-    let uptimeJson = { success: false, data: [] }
-    try {
-      if (uptimeRes && typeof uptimeRes.json === 'function') {
-        uptimeJson = await uptimeRes.json()
-      }
-    }
-    catch {
-      // ignore uptime parse errors
-    }
-
     const userData = userJson.success ? userJson.data : null
     const quotaData = quotaJson.success ? quotaJson.data || [] : []
     const statusData = statusJson.success ? statusJson.data : null
-
-    let uptimeData = []
-    if (uptimeJson.success && Array.isArray(uptimeJson.data)) {
-      // Flatten uptime data if it's grouped
-      uptimeData
-        = uptimeJson.data.flatMap((group: any) =>
-          group.monitors.map((m: any) => ({
-            name: m.name,
-            status: m.status === 1 ? 'up' : 'down',
-            uptime: m.uptime,
-          })),
-        ) || []
-    }
 
     return {
       user: userData,
       quotaData,
       status: statusData,
-      uptimeData,
     }
   }
   catch (e) {
@@ -66,32 +35,40 @@ async function getDashboardData() {
       user: null,
       quotaData: [],
       status: null,
-      uptimeData: [],
     }
   }
 }
 
 export default async function DashboardPage() {
-  const { user, quotaData, status, uptimeData } = await getDashboardData()
+  const { user, quotaData, status } = await getDashboardData()
   const processedChartData = processDashboardData(quotaData)
+
+  const todayQuota = Array.isArray(quotaData)
+    ? quotaData.reduce((acc, curr) => acc + (curr?.quota || 0), 0)
+    : 0
+  const todayTimes = Array.isArray(quotaData)
+    ? quotaData.reduce((acc, curr) => acc + (curr?.count || 0), 0)
+    : 0
 
   const dashboardStats = {
     quota: user?.quota || 0,
-    today_quota: quotaData.reduce((acc, curr) => acc + curr.quota, 0),
+    today_quota: todayQuota,
     times: user?.request_count || 0,
-    today_times: quotaData.reduce((acc, curr) => acc + curr.count, 0),
+    today_times: todayTimes,
     trend: processedChartData.trend,
   }
 
-  const announcements = status?.notice
-    ? [
-        {
-          content: status.notice,
-          time: '当前',
-          type: 'info',
-        },
-      ]
-    : []
+  const announcementsRaw = status?.announcements || status?.status?.announcements || []
+  const announcements = Array.isArray(announcementsRaw)
+    ? announcementsRaw.map((item: any, index: number) => ({
+        content: item?.content || item?.description || '',
+        time: item?.publishDate || item?.created_at || `公告 ${index + 1}`,
+        type: item?.type || 'info',
+        extra: item?.extra,
+      }))
+    : status?.notice
+      ? [{ content: status.notice, time: '当前', type: 'info' }]
+      : []
 
   return (
     <div className="space-y-6">
@@ -111,31 +88,19 @@ export default async function DashboardPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
-            <Calendar className="w-4 h-4" />
-            今日数据
-          </Button>
           <RefreshButton />
         </div>
       </div>
 
       {/* Basic Stats */}
-      <StatsCards data={dashboardStats} />
+      <StatsCards data={dashboardStats} loading={false} />
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Col: Charts */}
-        <ChartsPanel data={processedChartData} />
-
-        {/* Right Col: Info & Announcements */}
-        <div className="lg:col-span-2 space-y-6">
-          <ApiInfoPanel apiKey={user?.access_token || 'sk-...'} />
-          <AnnouncementsPanel data={announcements} />
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ApiInfoPanel />
+        <AnnouncementsPanel data={announcements} loading={false} />
       </div>
 
-      {/* Uptime Section */}
-      <UptimePanel data={uptimeData} />
+      <ChartsPanel data={processedChartData} loading={false} />
     </div>
   )
 }

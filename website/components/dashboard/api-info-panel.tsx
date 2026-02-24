@@ -1,27 +1,16 @@
 'use client'
 
-import { Check, Copy, ExternalLink, Terminal } from 'lucide-react'
-import * as React from 'react'
-import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
+import { ExternalLink, Terminal } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { API_BASE_URL } from '@/config/models'
 
 type ApiInfoPanelProps = {
   apiKey?: string
 }
 
-export function ApiInfoPanel({ apiKey = 'sk-...' }: ApiInfoPanelProps) {
-  const [copied, setCopied] = React.useState(false)
-
-  const copyKey = () => {
-    navigator.clipboard.writeText(apiKey)
-    setCopied(true)
-    toast.success('API Key 已复制')
-    setTimeout(() => setCopied(false), 2000)
-  }
-
+export function ApiInfoPanel({ apiKey: _apiKey }: ApiInfoPanelProps) {
   return (
-    <Card className="lg:col-span-3">
+    <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-purple-500" />
@@ -30,31 +19,6 @@ export function ApiInfoPanel({ apiKey = 'sk-...' }: ApiInfoPanelProps) {
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
-          <div>
-            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">
-              您的个人令牌 (默认)
-            </label>
-            <div className="flex items-center gap-2 p-2 bg-muted rounded-lg border">
-              <code className="flex-1 text-xs font-mono break-all line-clamp-1">
-                {apiKey}
-              </code>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8"
-                onClick={copyKey}
-              >
-                {copied
-                  ? (
-                      <Check className="h-4 h-4 text-green-500" />
-                    )
-                  : (
-                      <Copy className="h-4 h-4" />
-                    )}
-              </Button>
-            </div>
-          </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <a
               href="/console/token"
@@ -70,7 +34,9 @@ export function ApiInfoPanel({ apiKey = 'sk-...' }: ApiInfoPanelProps) {
             </a>
 
             <a
-              href="/docs"
+              href="https://docs.newapi.pro"
+              target="_blank"
+              rel="noreferrer"
               className="flex items-center justify-between p-4 rounded-xl border hover:bg-muted transition-colors group"
             >
               <div className="flex flex-col">
@@ -90,8 +56,7 @@ export function ApiInfoPanel({ apiKey = 'sk-...' }: ApiInfoPanelProps) {
             <p className="text-xs text-foreground/80 leading-relaxed font-mono">
               Base URL:
               {' '}
-              {typeof window !== 'undefined' ? window.location.origin : ''}
-              /v1
+              {API_BASE_URL}
             </p>
           </div>
         </div>

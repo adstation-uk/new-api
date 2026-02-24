@@ -46,7 +46,7 @@ export function UserMenu({ user }: UserMenuProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/console/settings" className="cursor-pointer">
+          <Link href="/console/personal" className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
             <span>个人设置</span>
           </Link>

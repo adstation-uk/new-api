@@ -2,19 +2,17 @@
 
 import {
   CreditCard,
-  Database,
   History,
   Key,
   LayoutDashboard,
   Settings,
-  Users,
 } from 'lucide-react'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 export function ConsoleNavbar({ user }: { user: any }) {
   const pathname = usePathname()
-  const isAdmin = user?.role >= 10
+  void user
 
   const links = [
     {
@@ -49,29 +47,6 @@ export function ConsoleNavbar({ user }: { user: any }) {
     },
   ]
 
-  const adminLinks = [
-    {
-      name: '渠道',
-      href: '/console/channel',
-      icon: Database,
-    },
-    {
-      name: '用户',
-      href: '/console/user',
-      icon: Users,
-    },
-    {
-      name: '模型',
-      href: '/console/models',
-      icon: LayoutDashboard,
-    },
-    {
-      name: '设置',
-      href: '/console/setting',
-      icon: Settings,
-    },
-  ]
-
   return (
     <div className="w-full border-b sticky top-16 z-40 bg-background/60 backdrop-blur">
       <div className="container mx-auto px-4 md:px-8">
@@ -91,30 +66,6 @@ export function ConsoleNavbar({ user }: { user: any }) {
               {link.name}
             </Link>
           ))}
-
-          {isAdmin && (
-            <>
-              <div className="w-px h-4 bg-border mx-2" />
-              <span className="text-xs font-semibold text-muted-foreground px-2">
-                管理
-              </span>
-              {adminLinks.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    'flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap bg-transparent',
-                    pathname.startsWith(link.href)
-                      ? 'bg-secondary text-secondary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent',
-                  )}
-                >
-                  <link.icon size={16} />
-                  {link.name}
-                </Link>
-              ))}
-            </>
-          )}
         </div>
       </div>
     </div>

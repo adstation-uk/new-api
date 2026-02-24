@@ -1,5 +1,5 @@
 import type { UserInfo } from '@/lib/user'
-import { Zap } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/navigation'
 import { LanguageSwitcher } from './language-switcher'
@@ -20,11 +20,9 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
       <div className="container mx-auto flex  h-full items-center justify-between px-4 md:px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2 group no-underline">
-            <div className="p-1.5 rounded-lg bg-primary text-primary-foreground">
-              <Zap size={20} fill="currentColor" />
-            </div>
+            <Image src="/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
             <span className="text-xl font-bold tracking-tight text-foreground">
-              New API
+              Broadscene
             </span>
           </Link>
 

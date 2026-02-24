@@ -1,6 +1,7 @@
 'use client'
 
-import { FileText, Github, Globe, Mail, Shield, Zap } from 'lucide-react'
+import { Github, Globe, Mail } from 'lucide-react'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 
 export function Footer() {
@@ -15,16 +16,14 @@ export function Footer() {
               href="/"
               className="flex items-center gap-2 mb-6 group no-underline"
             >
-              <div className="p-1.5 rounded-lg bg-primary text-primary-foreground group-hover:scale-110 transition-transform">
-                <Zap size={20} fill="currentColor" />
-              </div>
+              <Image src="/icon.png" alt="Broadscene" width={32} height={32} className="rounded-md" />
               <span className="text-xl font-bold tracking-tight text-foreground">
-                New API
+                Broadscene
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              下一代大模型中转管理系统，提供统一、稳定、高效的 API
-              集成解决方案。助力开发者和企业快速接入顶尖 AI 性能。
+              下一代大模型 API 服务平台，提供统一、稳定、高效的接口接入能力，
+              助力开发者和企业快速构建 AI 应用。
             </p>
             <div className="flex items-center gap-4">
               <Link
@@ -79,18 +78,18 @@ export function Footer() {
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <Link
-                  href="/about"
+                  href="/login"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  关于我们
+                  登录
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/status"
+                  href="/register"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  服务状态
+                  注册
                 </Link>
               </li>
               <li>
@@ -110,20 +109,20 @@ export function Footer() {
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <Link
-                  href="/terms"
-                  className="text-muted-foreground hover:text-primary no-underline transition-colors flex items-center gap-2"
+                  href="https://docs.newapi.pro"
+                  target="_blank"
+                  className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  <Shield size={14} />
-                  用户协议
+                  使用文档
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/privacy"
-                  className="text-muted-foreground hover:text-primary no-underline transition-colors flex items-center gap-2"
+                  href="https://github.com/nps-z/new-api"
+                  target="_blank"
+                  className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  <FileText size={14} />
-                  隐私政策
+                  开源仓库
                 </Link>
               </li>
             </ul>
@@ -136,7 +135,7 @@ export function Footer() {
             {' '}
             {currentYear}
             {' '}
-            New API Project. 保留所有权利。
+            Broadscene. 保留所有权利。
           </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">

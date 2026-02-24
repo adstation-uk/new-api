@@ -22,8 +22,13 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'New API',
-  description: 'Next.js Console for New API',
+  title: 'Broadscene',
+  description: 'Broadscene AI API 平台',
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/icon.png',
+  },
 }
 
 type Props = {
