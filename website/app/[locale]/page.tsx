@@ -12,7 +12,6 @@ import {
 } from '@lobehub/icons'
 import {
   ArrowRight,
-  Check,
   Coins,
   FileText,
   Lock,
@@ -42,7 +41,6 @@ import {
 import { Link } from '@/i18n/navigation'
 import { api } from '@/lib/api'
 import { getOptionalUserInfo } from '@/lib/user'
-import { cn } from '@/lib/utils'
 
 const MODEL_GROUPS_ITEMS = [
   { name: 'OpenAI', icon: <OpenAI size={22} />, desc: 'GPT-4o / GPT-5 / o3' },
