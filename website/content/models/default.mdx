@@ -1,0 +1,56 @@
+# {props.modelName} Documentation
+
+Use this model with OpenAI-compatible SDKs.
+
+## Endpoint
+
+- Base URL: <code>{props.baseUrl}</code>
+- Model key: `{props.modelId}`
+
+## JavaScript / TypeScript (Official OpenAI SDK)
+
+<pre>
+  <code>
+    {`import OpenAI from 'openai'
+
+const client = new OpenAI({
+  apiKey: process.env.NEW_API_KEY,
+  baseURL: '${props.baseUrl}'
+})
+
+const completion = await client.chat.completions.create({
+  model: '${props.modelId}',
+  messages: [
+    { role: 'system', content: 'You are a helpful assistant.' },
+    { role: 'user', content: 'Give me a quick intro for this model.' }
+  ]
+})
+
+console.log(completion.choices[0]?.message?.content)
+`}
+  </code>
+</pre>
+
+## Python (Official OpenAI SDK)
+
+<pre>
+  <code>
+    {`from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_NEW_API_KEY",
+    base_url="${props.baseUrl}"
+)
+
+resp = client.chat.completions.create(
+    model="${props.modelId}",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(resp.choices[0].message.content)
+`}
+  </code>
+</pre>

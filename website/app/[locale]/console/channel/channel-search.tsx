@@ -2,7 +2,6 @@
 
 import { CircleDollarSign, FlaskConical, MoreVertical, Plus, Search, Tag, Trash2, Wrench, XCircle } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { useRouter } from '@/i18n/navigation'
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { useRouter } from '@/i18n/navigation'
 
 export function ChannelSearch({
   _isAdmin,

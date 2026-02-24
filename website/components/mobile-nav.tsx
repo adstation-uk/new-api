@@ -10,11 +10,10 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
 import { useState } from 'react'
 import { logout } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
+import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 const consoleLinks = [

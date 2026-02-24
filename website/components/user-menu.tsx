@@ -2,7 +2,6 @@
 
 import type { UserInfo } from '@/lib/user'
 import { LayoutDashboard, LogOut, Settings } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
 import { logout } from '@/actions/auth-actions'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -14,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Link } from '@/i18n/navigation'
 
 type UserMenuProps = {
   user: UserInfo

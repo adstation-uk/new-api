@@ -1,7 +1,7 @@
 import type { UserInfo } from '@/lib/user'
 import { Zap } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
+import { Link } from '@/i18n/navigation'
 import { LanguageSwitcher } from './language-switcher'
 import { MainNav } from './main-nav'
 import { MobileNav } from './mobile-nav'

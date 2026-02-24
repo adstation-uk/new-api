@@ -12,7 +12,6 @@ import {
   Loader2,
   Shield,
 } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -61,6 +60,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { useRouter } from '@/i18n/navigation'
 import { cn, renderQuota } from '@/lib/utils'
 import { createToken, getGroups, getModels, updateToken } from './actions'
 

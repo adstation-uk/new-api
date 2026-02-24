@@ -6,7 +6,6 @@ import {
   Mail,
   RefreshCw,
 } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
 import * as React from 'react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -20,6 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { useRouter } from '@/i18n/navigation'
 import {
   onDiscordOAuthClicked,
   onGitHubOAuthClicked,

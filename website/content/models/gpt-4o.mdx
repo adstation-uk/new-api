@@ -1,0 +1,29 @@
+# GPT-4o Documentation
+
+This is a dedicated document loaded by dynamic import for model key `gpt-4o`.
+
+## Endpoint
+
+- Base URL: `https://your-domain.com/v1`
+- Model key: `gpt-4o`
+
+## JavaScript (OpenAI SDK)
+
+```ts
+import OpenAI from 'openai'
+
+const client = new OpenAI({
+  apiKey: process.env.NEW_API_KEY,
+  baseURL: 'https://your-domain.com/v1'
+})
+
+const result = await client.chat.completions.create({
+  model: 'gpt-4o',
+  messages: [
+    { role: 'system', content: 'You are a helpful assistant.' },
+    { role: 'user', content: 'Hello GPT-4o' }
+  ]
+})
+
+console.log(result.choices[0]?.message?.content)
+```

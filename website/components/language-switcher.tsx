@@ -1,5 +1,6 @@
 'use client'
 
+import type { routing } from '@/i18n/routing'
 import { Languages } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -10,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { usePathname, useRouter } from '@/i18n/navigation'
-import { routing } from '@/i18n/routing'
 
 export function LanguageSwitcher() {
   const router = useRouter()

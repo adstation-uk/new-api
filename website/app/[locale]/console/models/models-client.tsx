@@ -11,7 +11,6 @@ import {
   Search,
 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { useRouter } from '@/i18n/navigation'
 import * as React from 'react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useRouter } from '@/i18n/navigation'
 import { syncUpstreamModels } from './actions'
 import { ModelsSheet } from './models-sheet'
 import { ModelsTable } from './models-table'

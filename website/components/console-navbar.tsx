@@ -9,8 +9,7 @@ import {
   Settings,
   Users,
 } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
-import { usePathname } from '@/i18n/navigation'
+import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 export function ConsoleNavbar({ user }: { user: any }) {

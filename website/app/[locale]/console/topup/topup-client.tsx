@@ -1,10 +1,10 @@
 'use client'
 
 import { Coins, User as UserIcon } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
 import * as React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card } from '@/components/ui/card'
+import { useRouter } from '@/i18n/navigation'
 import { renderQuota } from '@/lib/utils'
 import { PayPalRecharge } from './paypal-recharge'
 

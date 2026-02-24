@@ -1,8 +1,8 @@
 'use client'
 
-import { useRouter } from '@/i18n/navigation'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { useRouter } from '@/i18n/navigation'
 
 export function LogoutButton() {
   const router = useRouter()

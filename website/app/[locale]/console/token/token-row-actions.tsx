@@ -1,7 +1,6 @@
 'use client'
 
 import { Copy, Edit, Eye, EyeOff, Play, Square, Trash2 } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -16,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { useRouter } from '@/i18n/navigation'
 import { deleteToken, toggleTokenStatus } from './actions'
 import { TokenDrawer } from './token-drawer'
 

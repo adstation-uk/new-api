@@ -23,7 +23,6 @@ import {
   Timer,
   Zap,
 } from 'lucide-react'
-import { Link } from '@/i18n/navigation'
 import { getTranslations } from 'next-intl/server'
 import { Footer } from '@/components/footer'
 import { DotPattern } from '@/components/magicui/dot-pattern'
@@ -40,6 +39,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Link } from '@/i18n/navigation'
 import { api } from '@/lib/api'
 import { getOptionalUserInfo } from '@/lib/user'
 import { cn } from '@/lib/utils'
@@ -223,7 +223,7 @@ export default async function HomePage() {
             </div>
 
             <Card className="relative overflow-hidden border-none">
-              <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
+              <ShineBorder shineColor={['#A07CFE', '#FE8FB5', '#FFBE7B']} />
               <CardHeader>
                 <CardTitle>热门接入模型</CardTitle>
                 <CardDescription>一个密钥，统一访问多家模型生态</CardDescription>
@@ -259,7 +259,7 @@ export default async function HomePage() {
           <div className="grid gap-6 lg:grid-cols-2">
             {API_USE_CASES.map((item, index) => (
               <Card key={item.title} className="relative overflow-hidden rounded-2xl">
-                {index === 0 && <ShineBorder shineColor={["#ffaa40", "#9c40ff"]} duration={10} />}
+                {index === 0 && <ShineBorder shineColor={['#ffaa40', '#9c40ff']} duration={10} />}
                 <CardHeader>
                   <CardTitle className="text-2xl">{item.title}</CardTitle>
                   <CardDescription className="leading-7">{item.desc}</CardDescription>

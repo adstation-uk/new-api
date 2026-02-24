@@ -1,7 +1,6 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { useRouter } from '@/i18n/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -23,6 +22,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
+import { useRouter } from '@/i18n/navigation'
 import {
   batchDeleteChannels,
   batchSetTag,

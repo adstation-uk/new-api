@@ -8,11 +8,11 @@ import {
   UserPlus,
 } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
-import { useRouter } from '@/i18n/navigation'
 import * as React from 'react'
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useRouter } from '@/i18n/navigation'
 import { UserSheet } from './user-sheet'
 import { UserTable } from './user-table'
 

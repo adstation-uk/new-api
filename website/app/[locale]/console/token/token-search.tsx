@@ -1,10 +1,10 @@
 'use client'
 
 import { Search } from 'lucide-react'
-import { useRouter } from '@/i18n/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useRouter } from '@/i18n/navigation'
 
 export function TokenSearch({
   initialKeyword,
