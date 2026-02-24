@@ -16,5 +16,6 @@ export default antfu({
     'build/**',
     'next-env.d.ts',
     'components/ui/**',
+    '.agents/**',
   ],
 })
