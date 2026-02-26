@@ -7,6 +7,7 @@ export default antfu({
   typescript: true,
   rules: {
     'react-refresh/only-export-components': 'off',
+    'react-hooks/incompatible-library': 'off',
     'ts/consistent-type-definitions': ['error', 'type'],
     'node/prefer-global/process': 'off',
   },

@@ -3,7 +3,7 @@ import { getIronSession } from 'iron-session'
 import { cookies } from 'next/headers'
 import { sessionOptions } from './session'
 
-const BACKEND_URL = 'http://localhost:3000'
+const BACKEND_URL = process.env.BACKEND_URL ?? 'http://localhost:3000'
 
 export async function getSession() {
   const cookieStore = await cookies()
@@ -42,6 +42,7 @@ export async function api(path: string, options: RequestInit = {}) {
 
   return fetch(url, {
     ...options,
+    cache: options.cache ?? 'no-store',
     headers,
   })
 }

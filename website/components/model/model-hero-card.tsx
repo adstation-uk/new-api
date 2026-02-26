@@ -128,7 +128,6 @@ export function ModelHeroCard({
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border bg-muted/40 p-4">
-                <p className="text-xs text-muted-foreground">{t('ourPrice')}</p>
                 <p className="mt-1 text-2xl font-bold">
                   {price || t('contactSales')}
                   {billingUnit ? <span className="ml-1 text-sm font-medium text-muted-foreground">{billingUnit}</span> : null}

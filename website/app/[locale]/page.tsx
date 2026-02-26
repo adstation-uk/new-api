@@ -24,6 +24,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import Script from 'next/script'
 import { Footer } from '@/components/footer'
 import { DotPattern } from '@/components/magicui/dot-pattern'
 import Marquee from '@/components/magicui/marquee'
@@ -204,10 +205,9 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <div className="w-full overflow-x-hidden bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <Script id="home-jsonld" type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </Script>
       <section className="relative overflow-hidden border-b">
         <DotPattern
           width={22}
