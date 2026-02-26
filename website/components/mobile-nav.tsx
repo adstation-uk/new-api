@@ -10,7 +10,7 @@ import {
   Menu,
   X,
 } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { logout } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,7 @@ type MobileNavProps = {
 export function MobileNav({ navLinks, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const locale = useLocale()
   const t = useTranslations('Common')
   const consoleLinks = [
     { name: t('nav.overview'), href: '/console', icon: LayoutDashboard },
@@ -86,7 +87,7 @@ export function MobileNav({ navLinks, user }: MobileNavProps) {
                 <button
                   onClick={() => {
                     setIsOpen(false)
-                    logout()
+                    logout(locale)
                   }}
                   className="flex w-full items-center gap-3 py-2 text-destructive no-underline"
                 >

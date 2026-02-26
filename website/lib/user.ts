@@ -12,37 +12,41 @@ export type UserInfo = {
   // Add more fields here if needed.
 }
 
+function redirectWithLocale(locale: string, path: '/login' | '/forbidden') {
+  redirect({ href: path, locale })
+}
+
 /**
  * Get current logged-in user information.
  * Redirects to login when unauthenticated or session is invalid.
  * Redirects to /forbidden when role is insufficient.
  * Intended for Server Components.
  */
-export async function getUserInfo(minRole: number = 1): Promise<UserInfo> {
+export async function getUserInfo(minRole: number = 1, locale: string): Promise<UserInfo> {
   const res = await api('/api/user/self')
 
   if (res.status === 401) {
     // Handle authentication failure and redirect to login.
-    redirect('/login')
+    redirectWithLocale(locale, '/login')
   }
 
   if (!res.ok) {
     const text = await res.text()
     console.error(`Status ${res.status}: ${text}`)
     // Handle non-401 errors by redirecting to login.
-    redirect('/login')
+    redirectWithLocale(locale, '/login')
   }
 
   const data = await res.json()
   if (!data.success) {
-    redirect('/login')
+    redirectWithLocale(locale, '/login')
   }
 
   const user = data.data
 
   // Role guard: Admin is 10, regular user is usually 1.
   if (user.role < minRole) {
-    redirect('/forbidden')
+    redirectWithLocale(locale, '/forbidden')
   }
 
   return user

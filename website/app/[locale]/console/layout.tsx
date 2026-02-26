@@ -24,8 +24,10 @@ export async function generateMetadata({ params }: Omit<Props, 'children'>): Pro
 
 export default async function ConsoleLayout({
   children,
+  params,
 }: Props) {
-  const user = await getUserInfo()
+  const { locale } = await params
+  const user = await getUserInfo(1, locale)
 
   return (
     <div className="min-h-screen">

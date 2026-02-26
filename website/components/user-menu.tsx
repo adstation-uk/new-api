@@ -2,7 +2,7 @@
 
 import type { UserInfo } from '@/lib/user'
 import { LayoutDashboard, LogOut, Settings } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { logout } from '@/actions/auth-actions'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,7 @@ type UserMenuProps = {
 
 export function UserMenu({ user }: UserMenuProps) {
   const t = useTranslations('Common')
+  const locale = useLocale()
 
   return (
     <DropdownMenu>
@@ -57,7 +58,7 @@ export function UserMenu({ user }: UserMenuProps) {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="text-red-600 focus:text-red-600 cursor-pointer"
-          onClick={() => logout()}
+          onClick={() => logout(locale)}
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>{t('action.logout')}</span>

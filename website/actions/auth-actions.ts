@@ -16,12 +16,12 @@ export async function getOAuthStateAction() {
   }
 }
 
-export async function logout() {
+export async function logout(locale: string) {
   await api('/api/user/logout')
 
   // Clear session cookie
   const cookieStore = await cookies()
   cookieStore.delete('new_api_session')
 
-  redirect('/login')
+  redirect({ href: '/login', locale })
 }
