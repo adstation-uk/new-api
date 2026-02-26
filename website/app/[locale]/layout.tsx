@@ -9,7 +9,6 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { routing } from '@/i18n/routing'
 import { getSiteUrl, SITE_NAME } from '@/lib/seo'
-import { getOptionalUserInfo } from '@/lib/user'
 import '../globals.css'
 
 const geistSans = Geist({
@@ -62,7 +61,6 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({ children, params }: Props) {
   const { locale } = await params
-  const user = await getOptionalUserInfo()
 
   if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
     notFound()
@@ -83,7 +81,7 @@ export default async function LocaleLayout({ children, params }: Props) {
             enableSystem
             disableTransitionOnChange
           >
-            <Navbar user={user} />
+            <Navbar />
             <main className="flex-1">{children}</main>
             <Toaster position="top-right" />
           </ThemeProvider>

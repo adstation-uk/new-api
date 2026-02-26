@@ -1,4 +1,4 @@
-import type { UserInfo } from '@/lib/user'
+import { getOptionalUserInfo, type UserInfo } from '@/lib/user'
 import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -9,7 +9,9 @@ import { MobileNav } from './mobile-nav'
 import { ModeToggle } from './mode-toggle'
 import { UserMenu } from './user-menu'
 
-export async function Navbar({ user }: { user: UserInfo | null }) {
+export async function Navbar() {
+
+  const user = await getOptionalUserInfo()
   const t = await getTranslations('Page.Marketing.Navbar')
 
   const navLinks = [

@@ -41,9 +41,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Link } from '@/i18n/navigation'
-import { api } from '@/lib/api'
 import { buildPageMetadata, getLocaleUrl, getSiteUrl } from '@/lib/seo'
-import { getOptionalUserInfo } from '@/lib/user'
 
 const MODEL_GROUPS_ITEMS = [
   { name: 'OpenAI', icon: <OpenAI size={22} />, desc: 'GPT-4o / GPT-5 / o3' },
@@ -143,6 +141,8 @@ type Props = {
   params: Promise<{ locale: string }>
 }
 
+export const dynamic = 'force-static'
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
   const isZh = locale === 'zh'
@@ -162,18 +162,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params
-  const user = await getOptionalUserInfo()
   const t = await getTranslations('Page.Home')
-
-  let homeContent = ''
-  try {
-    const res = await api('/api/home_page_content')
-    const json = await res.json()
-    if (json.success) {
-      homeContent = json.data
-    }
-  }
-  catch {}
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -223,7 +212,7 @@ export default async function HomePage({ params }: Props) {
                 {t('hero.badge')}
               </Badge>
               <h1 className="text-4xl font-bold leading-tight md:text-6xl">
-                {t('hero.title', { username: user?.username ?? 'Guest' })}
+                {t('hero.title', { username: 'Guest' })}
               </h1>
               <p className="text-base leading-7 text-muted-foreground md:text-lg">
                 {t('hero.subtitle')}
@@ -417,18 +406,6 @@ export default async function HomePage({ params }: Props) {
           </Card>
         </div>
       </section>
-
-      {homeContent && (
-        <section className="border-b py-16">
-          <div className="container mx-auto px-6">
-            <div
-              className="prose prose-slate dark:prose-invert max-w-none"
-              // eslint-disable-next-line react-dom/no-dangerously-set-innerhtml
-              dangerouslySetInnerHTML={{ __html: homeContent }}
-            />
-          </div>
-        </section>
-      )}
 
       <Footer />
     </div>

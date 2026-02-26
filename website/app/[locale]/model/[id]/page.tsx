@@ -17,6 +17,8 @@ type Props = {
   params: Promise<{ locale: string, id: string }>
 }
 
+export const dynamic = 'force-static'
+
 export function generateStaticParams() {
   const contentDir = path.join(process.cwd(), 'content', 'models')
   if (!fs.existsSync(contentDir)) {

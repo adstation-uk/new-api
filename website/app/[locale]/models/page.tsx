@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
-import { api } from '@/lib/api'
+import { getModelMetadata, modelConfig } from '@/config/models'
 import { buildPageMetadata } from '@/lib/seo'
 import { ModelsClient } from './models-client'
 
 type Props = {
   params: Promise<{ locale: string }>
 }
+
+export const dynamic = 'force-static'
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params
@@ -24,42 +26,34 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   })
 }
 
-async function getPricingData() {
-  const [pricingRes, statusRes] = await Promise.all([
-    api('/api/pricing'),
-    api('/api/status'),
-  ])
+function toStaticModels() {
+  return Object.keys(modelConfig).map((id) => {
+    const metadata = getModelMetadata(id)
+    const price = Number.parseFloat((metadata.price || '$0').replace('$', ''))
 
-  let models = []
-  let groupRatio = {}
-  let status = {}
-
-  try {
-    const pricingJson = await pricingRes.json()
-    if (pricingJson.success) {
-      models = pricingJson.data || []
-      groupRatio = pricingJson.group_ratio || {}
+    return {
+      model_name: id,
+      vendor_name: metadata.provider || 'Other',
+      tags: [metadata.category, metadata.provider].filter(Boolean).join(','),
+      quota_type: metadata.billing_type === 'request' ? 1 : 0,
+      model_price: Number.isFinite(price) ? Math.round(price * 500000) : 0,
+      model_ratio: Number.isFinite(price) ? price / 2 : 0,
+      completion_ratio: 1,
+      enable_groups: ['default'],
     }
-  }
-  catch (e) {
-    console.error('Failed to parse pricing data', e)
-  }
-
-  try {
-    const statusJson = await statusRes.json()
-    if (statusJson.success) {
-      status = statusJson.data || {}
-    }
-  }
-  catch (e) {
-    console.error('Failed to parse status data', e)
-  }
-
-  return { models, groupRatio, status }
+  })
 }
 
 export default async function ModelsPage() {
-  const { models, groupRatio, status } = await getPricingData()
+  const models = toStaticModels()
+  const groupRatio = { default: 1 }
+  const status = {
+    quota_display_type: 'USD',
+    price: 1,
+    usd_exchange_rate: 1,
+    custom_currency_exchange_rate: 1,
+    custom_currency_symbol: '$',
+  }
 
   return (
     <ModelsClient

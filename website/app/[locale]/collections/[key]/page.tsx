@@ -12,6 +12,8 @@ type Props = {
   params: Promise<{ locale: string, key: string }>
 }
 
+export const dynamic = 'force-static'
+
 function toModelListByCollectionKey(key: string) {
   const collection = getCollectionMetadata(key)
   if (!collection)

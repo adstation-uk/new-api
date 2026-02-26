@@ -22,8 +22,9 @@ import { buildPageMetadata } from '@/lib/seo'
 
 type PricingPageProps = {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
+
+export const dynamic = 'force-static'
 
 export async function generateMetadata({ params }: PricingPageProps): Promise<Metadata> {
   const { locale } = await params
@@ -42,10 +43,8 @@ export async function generateMetadata({ params }: PricingPageProps): Promise<Me
   })
 }
 
-export default async function PricingPage({ searchParams }: PricingPageProps) {
+export default async function PricingPage() {
   const t = await getTranslations('Page.Pricing')
-  const params = await searchParams
-  const keyword = (params.keyword as string)?.toLowerCase() || ''
 
   const allModels = Object.entries(modelConfig).map(([id, config]) => {
     const billingType = config.billing_type || (config.category === 'video' || config.category === 'music' ? 'request' : 'token')
@@ -63,12 +62,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
   })
 
   const filteredModels = allModels.filter((m: any) => {
-    const matchesKeyword = !keyword
-      || m.displayName.toLowerCase().includes(keyword)
-      || m.id.toLowerCase().includes(keyword)
-      || m.vendor.toLowerCase().includes(keyword)
-      || m.billingType.toLowerCase().includes(keyword)
-    return matchesKeyword
+    return Boolean(m.displayName)
   })
 
   const groups: Record<string, any[]> = {}
@@ -96,7 +90,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
               name="keyword"
               placeholder={t('searchPlaceholder')}
               className="h-10 pl-9"
-              defaultValue={keyword}
+              defaultValue=""
             />
           </form>
           <Link href="/models">
