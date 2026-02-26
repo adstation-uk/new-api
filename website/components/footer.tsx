@@ -1,10 +1,12 @@
 'use client'
 
 import { Github, Globe, Mail } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 
 export function Footer() {
+  const t = useTranslations('Page.Marketing.Footer')
   const currentYear = new Date().getFullYear()
 
   return (
@@ -22,8 +24,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              下一代大模型 API 服务平台，提供统一、稳定、高效的接口接入能力，
-              助力开发者和企业快速构建 AI 应用。
+              {t('description')}
             </p>
             <div className="flex items-center gap-4">
               <Link
@@ -43,14 +44,14 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-foreground mb-6">产品</h4>
+            <h4 className="font-bold text-foreground mb-6">{t('product')}</h4>
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <Link
                   href="/pricing"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  价格方案
+                  {t('pricing')}
                 </Link>
               </li>
               <li>
@@ -58,7 +59,7 @@ export function Footer() {
                   href="/models"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  支持模型
+                  {t('models')}
                 </Link>
               </li>
               <li>
@@ -67,21 +68,21 @@ export function Footer() {
                   target="_blank"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  接口文档
+                  {t('docs')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-foreground mb-6">资源</h4>
+            <h4 className="font-bold text-foreground mb-6">{t('resource')}</h4>
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <Link
                   href="/login"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  登录
+                  {t('login')}
                 </Link>
               </li>
               <li>
@@ -89,7 +90,7 @@ export function Footer() {
                   href="/register"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  注册
+                  {t('register')}
                 </Link>
               </li>
               <li>
@@ -98,14 +99,14 @@ export function Footer() {
                   target="_blank"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  反馈建议
+                  {t('feedback')}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-bold text-foreground mb-6">法律</h4>
+            <h4 className="font-bold text-foreground mb-6">{t('legal')}</h4>
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <Link
@@ -113,7 +114,7 @@ export function Footer() {
                   target="_blank"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  使用文档
+                  {t('guide')}
                 </Link>
               </li>
               <li>
@@ -122,7 +123,7 @@ export function Footer() {
                   target="_blank"
                   className="text-muted-foreground hover:text-primary no-underline transition-colors"
                 >
-                  开源仓库
+                  {t('repo')}
                 </Link>
               </li>
             </ul>
@@ -135,12 +136,12 @@ export function Footer() {
             {' '}
             {currentYear}
             {' '}
-            Broadscene. 保留所有权利。
+            {t('copyright')}
           </p>
           <div className="flex items-center gap-6">
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Globe size={14} />
-              简体中文
+              {t('locale')}
             </span>
           </div>
         </div>

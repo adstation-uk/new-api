@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, Copy } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
@@ -14,6 +15,7 @@ type MdxCodeBlockProps = {
 }
 
 export function MdxCodeBlock({ code, language = 'text', className }: MdxCodeBlockProps) {
+  const t = useTranslations('Page.Marketing.Mdx')
   const [copied, setCopied] = useState(false)
 
   const normalizedCode = useMemo(() => code.replace(/\n$/, ''), [code])
@@ -38,13 +40,13 @@ export function MdxCodeBlock({ code, language = 'text', className }: MdxCodeBloc
             ? (
                 <>
                   <Check className="h-3.5 w-3.5" />
-                  已复制
+                  {t('copied')}
                 </>
               )
             : (
                 <>
                   <Copy className="h-3.5 w-3.5" />
-                  复制
+                  {t('copy')}
                 </>
               )}
         </Button>

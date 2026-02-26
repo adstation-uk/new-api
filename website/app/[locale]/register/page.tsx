@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { RegisterForm } from '@/components/register-form'
 import {
@@ -9,6 +10,7 @@ import {
 import { api } from '@/lib/api'
 
 export default async function RegisterPage() {
+  const t = await getTranslations('Page.Register')
   const statusRes = await api('/api/status')
   const statusJson = await statusRes.json()
   const status = statusJson.success ? statusJson.data : {}
@@ -18,13 +20,13 @@ export default async function RegisterPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            注册 New API
+            {t('title')}
           </CardTitle>
           <CardDescription className="text-center">
-            创建一个新账号以开始使用
+            {t('subtitle')}
           </CardDescription>
         </CardHeader>
-        <Suspense fallback={<div className="p-6 text-center">加载中...</div>}>
+        <Suspense fallback={<div className="p-6 text-center">{t('loading')}</div>}>
           <RegisterForm status={status} />
         </Suspense>
       </Card>

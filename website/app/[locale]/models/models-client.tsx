@@ -1,6 +1,7 @@
 'use client'
 
 import { LayoutGrid, List, Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
@@ -50,6 +51,7 @@ export function ModelsClient({
   initialGroupRatio,
   initialStatus,
 }: ModelsClientProps) {
+  const t = useTranslations('Page.Models.List')
   const [models] = useState<any[]>(initialModels || [])
   const [search, setSearch] = useState('')
   const [groupRatio] = useState<any>(initialGroupRatio || {})
@@ -199,12 +201,12 @@ export function ModelsClient({
           <aside className="w-full lg:w-64 space-y-6 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-120px)] lg:overflow-y-auto">
             <div className="space-y-4">
               <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">
-                筛选排序
+                {t('sidebar.title')}
               </h3>
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground">
-                  价格分组 (Group)
+                  {t('sidebar.group')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -216,7 +218,7 @@ export function ModelsClient({
                         : 'bg-background border-input text-muted-foreground hover:bg-muted',
                     )}
                   >
-                    最优分组
+                    {t('sidebar.bestGroup')}
                   </button>
                   {Object.keys(groupRatio).map(group => (
                     <button
@@ -237,7 +239,7 @@ export function ModelsClient({
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground">
-                  供应商 (Vendor)
+                  {t('sidebar.vendor')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {vendors.map(v => (
@@ -264,7 +266,7 @@ export function ModelsClient({
 
               <div className="space-y-2">
                 <label className="text-xs font-bold text-muted-foreground">
-                  标签 (Tags)
+                  {t('sidebar.tags')}
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {tagsList.map(t => (
@@ -295,11 +297,10 @@ export function ModelsClient({
           <div className="flex-1 flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                模型定价费率
+                {t('title')}
               </h1>
               <p className="text-muted-foreground text-sm">
-                查看不同模型、不同分组下的费率详情。支持按量和按次计费，一站式调用全球领先
-                AI 能力。
+                {t('subtitle')}
               </p>
             </div>
 
@@ -307,7 +308,7 @@ export function ModelsClient({
               <div className="relative w-full md:w-96">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="搜索模型、供应商、标签..."
+                  placeholder={t('searchPlaceholder')}
                   className="pl-9 bg-background shadow-sm h-10 rounded-lg"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
@@ -341,7 +342,7 @@ export function ModelsClient({
                       : 'bg-background border-input text-muted-foreground hover:bg-muted',
                   )}
                 >
-                  {showWithRecharge ? '显示折后' : '显示原价'}
+                  {showWithRecharge ? t('showDiscounted') : t('showOriginal')}
                 </button>
 
                 <div className="flex bg-background p-1 rounded-lg border shadow-sm ml-2">
@@ -378,10 +379,10 @@ export function ModelsClient({
                       <TableHeader>
                         <TableRow className="bg-muted/50 hover:bg-muted/50">
                           <TableHead className="py-4 px-6 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-                            模型信息
+                            {t('table.modelInfo')}
                           </TableHead>
                           <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-                            计费模式
+                            {t('table.billingMode')}
                           </TableHead>
                           <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
                             Prompt (1M)
@@ -390,7 +391,7 @@ export function ModelsClient({
                             Completion (1M)
                           </TableHead>
                           <TableHead className="py-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">
-                            详细参数
+                            {t('table.details')}
                           </TableHead>
                         </TableRow>
                       </TableHeader>
@@ -481,7 +482,7 @@ export function ModelsClient({
                                   colSpan={5}
                                   className="h-40 text-center text-muted-foreground"
                                 >
-                                  暂无符合条件的模型
+                                  {t('empty')}
                                 </TableCell>
                               </TableRow>
                             )}
@@ -509,7 +510,7 @@ export function ModelsClient({
                                       {model.model_name}
                                     </div>
                                     <div className="text-xs text-muted-foreground mt-0.5">
-                                      {model.vendor_name || 'Unknown Vendor'}
+                                      {model.vendor_name || t('unknownVendor')}
                                     </div>
                                   </div>
                                 </div>
@@ -532,14 +533,14 @@ export function ModelsClient({
                                 <div className="space-y-3">
                                   <div className="flex justify-between items-center text-sm p-3 bg-muted/30 rounded-lg">
                                     <span className="text-muted-foreground font-medium text-xs">
-                                      计费模式
+                                      {t('card.billingMode')}
                                     </span>
                                     <BadgeComponent
                                       variant={
                                         model.quota_type === 0 ? 'default' : 'success'
                                       }
                                     >
-                                      {model.quota_type === 0 ? '按量' : '按次'}
+                                      {model.quota_type === 0 ? t('billing.perToken') : t('billing.perRequest')}
                                     </BadgeComponent>
                                   </div>
 
@@ -548,7 +549,7 @@ export function ModelsClient({
                                         <div className="space-y-2 px-1">
                                           <div className="flex justify-between items-center text-xs">
                                             <span className="text-muted-foreground">
-                                              提示 (Prompt)
+                                              {t('card.prompt')}
                                             </span>
                                             <span className="font-mono font-bold">
                                               {priceData.input}
@@ -558,7 +559,7 @@ export function ModelsClient({
                                           </div>
                                           <div className="flex justify-between items-center text-xs">
                                             <span className="text-muted-foreground">
-                                              补全 (Completion)
+                                              {t('card.completion')}
                                             </span>
                                             <span className="font-mono font-bold">
                                               {priceData.output}
@@ -571,23 +572,22 @@ export function ModelsClient({
                                     : (
                                         <div className="flex justify-between items-center text-sm px-1">
                                           <span className="text-muted-foreground text-xs">
-                                            价格
+                                            {t('card.price')}
                                           </span>
                                           <span className="font-mono font-bold">
                                             {priceData.price}
-                                            {' '}
-                                            / 次
+                                            {t('card.perRequestSuffix')}
                                           </span>
                                         </div>
                                       )}
 
                                   <div className="pt-3 border-t border-dashed flex justify-between items-center text-[10px] text-muted-foreground">
                                     <span>
-                                      分组倍率:
+                                      {t('card.groupRatio')}
                                       {priceData.usedGroupRatio}
                                     </span>
                                     <span>
-                                      模型倍率:
+                                      {t('card.modelRatio')}
                                       {model.model_ratio}
                                     </span>
                                   </div>
@@ -600,7 +600,7 @@ export function ModelsClient({
                           <div className="col-span-full py-20 text-center opacity-50">
                             <Search className="h-10 w-10 text-muted-foreground mx-auto mb-4" />
                             <span className="text-muted-foreground font-medium">
-                              暂无符合条件的模型
+                              {t('empty')}
                             </span>
                           </div>
                         )}

@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { ModelIcon } from '@/components/model-icon'
@@ -70,6 +71,8 @@ export function ModelsTable({
   vendors: Vendor[]
   onEdit: (model: ModelMeta) => void
 }) {
+  const t = useTranslations('Page.Console.Models.table')
+  const commonT = useTranslations('Common')
   const vendorMap = React.useMemo(() => {
     const map: Record<number, Vendor> = {}
     vendors.forEach((v) => {
@@ -80,21 +83,21 @@ export function ModelsTable({
 
   const handleDelete = async (id: number) => {
     // eslint-disable-next-line no-alert
-    if (!confirm('确定要删除这个模型吗？此操作无法撤销。'))
+    if (!confirm(t('confirmDelete')))
       return
 
-    const loadingToast = toast.loading('正在删除...')
+    const loadingToast = toast.loading(t('toast.deleting'))
     try {
       const result = await manageModel(id, 'delete')
       if (result.success) {
-        toast.success('删除成功')
+        toast.success(t('toast.deleteSuccess'))
       }
       else {
-        toast.error(result.message || '删除失败')
+        toast.error(result.message || t('toast.deleteFailed'))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -106,19 +109,19 @@ export function ModelsTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[80px]">图标</TableHead>
-            <TableHead>模型名称 / 别名</TableHead>
-            <TableHead>供应商</TableHead>
-            <TableHead>适用范围 / 分组</TableHead>
-            <TableHead>状态</TableHead>
-            <TableHead className="text-right">操作</TableHead>
+            <TableHead className="w-[80px]">{t('columns.icon')}</TableHead>
+            <TableHead>{t('columns.model')}</TableHead>
+            <TableHead>{t('columns.vendor')}</TableHead>
+            <TableHead>{t('columns.scope')}</TableHead>
+            <TableHead>{t('columns.status')}</TableHead>
+            <TableHead className="text-right">{t('columns.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((model) => {
             const vendor = vendorMap[model.vendor_id]
             const tags = model.tags ? model.tags.split(',').filter(Boolean) : []
-            const nameRuleLabels = ['精确', '前缀', '包含', '后缀']
+            const nameRuleLabels = [t('nameRule.exact'), t('nameRule.prefix'), t('nameRule.contains'), t('nameRule.suffix')]
 
             return (
               <TableRow key={model.id}>
@@ -135,7 +138,7 @@ export function ModelsTable({
                     <div className="flex items-center gap-1.5">
                       <span className="font-semibold text-sm">{model.model_name}</span>
                       <Badge variant="outline" className="text-[10px] py-0 h-4 px-1 font-normal bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-900">
-                        {nameRuleLabels[model.name_rule] || '精确'}
+                        {nameRuleLabels[model.name_rule] || t('nameRule.exact')}
                       </Badge>
                     </div>
                     <div className="flex items-center gap-1">
@@ -149,11 +152,7 @@ export function ModelsTable({
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Badge variant="secondary" className="text-[10px] py-0 h-4 px-1 font-normal cursor-help">
-                                匹配
-                                {' '}
-                                {model.matched_count}
-                                {' '}
-                                款
+                                {t('matchedCount', { count: model.matched_count })}
                               </Badge>
                             </TooltipTrigger>
                             <TooltipContent className="max-w-[300px]">
@@ -173,7 +172,7 @@ export function ModelsTable({
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="bg-background font-normal flex items-center gap-1.5 py-1 px-2 border-dashed">
                       <ModelIcon symbol={vendor?.icon || 'Layers'} size={14} />
-                      {vendor?.name || '未知供应商'}
+                      {vendor?.name || t('unknownVendor')}
                     </Badge>
                   </div>
                 </TableCell>
@@ -188,7 +187,7 @@ export function ModelsTable({
                           ))
                         )
                       : (
-                          <span className="text-xs text-muted-foreground italic">全部可用</span>
+                          <span className="text-xs text-muted-foreground italic">{t('allGroups')}</span>
                         )}
                   </div>
                 </TableCell>
@@ -199,14 +198,14 @@ export function ModelsTable({
                           <Badge className="bg-green-50 text-green-700 border-green-100 font-normal hover:bg-green-100 dark:bg-green-950 dark:text-green-400 dark:border-green-900">
                             <CircleCheck className="w-3 h-3 mr-1" />
                             {' '}
-                            已启用
+                            {commonT('status.enabled')}
                           </Badge>
                         )
                       : (
                           <Badge variant="destructive" className="font-normal opacity-80">
                             <CircleDashed className="w-3 h-3 mr-1" />
                             {' '}
-                            已下架
+                            {t('archived')}
                           </Badge>
                         )}
                     {model.sync_official === 1 && (
@@ -215,7 +214,7 @@ export function ModelsTable({
                           <TooltipTrigger asChild>
                             <Globe className="w-3.5 h-3.5 text-sky-500" />
                           </TooltipTrigger>
-                          <TooltipContent>同步官方</TooltipContent>
+                          <TooltipContent>{t('syncOfficial')}</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     )}
@@ -233,11 +232,10 @@ export function ModelsTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>模型管理</DropdownMenuLabel>
+                        <DropdownMenuLabel>{t('menu.title')}</DropdownMenuLabel>
                         <DropdownMenuItem onClick={() => onEdit(model)}>
                           <Info className="w-4 h-4 mr-2" />
-                          {' '}
-                          查看详情
+                          {t('menu.view')}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -245,8 +243,7 @@ export function ModelsTable({
                           onClick={() => handleDelete(model.id)}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
-                          {' '}
-                          删除模型
+                          {t('menu.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -260,7 +257,7 @@ export function ModelsTable({
       {data.length === 0 && (
         <div className="py-20 text-center text-muted-foreground flex flex-col items-center gap-2">
           <Layers className="w-10 h-10 opacity-20" />
-          <p>未找到匹配的模型记录</p>
+          <p>{t('empty')}</p>
         </div>
       )}
     </div>

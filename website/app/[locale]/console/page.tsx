@@ -1,4 +1,5 @@
 import { LayoutDashboard } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { AnnouncementsPanel } from '@/components/dashboard/announcements-panel'
 import { ApiInfoPanel } from '@/components/dashboard/api-info-panel'
 import { ChartsPanel } from '@/components/dashboard/charts-panel'
@@ -40,6 +41,8 @@ async function getDashboardData() {
 }
 
 export default async function DashboardPage() {
+  const t = await getTranslations('Page.Console.Dashboard')
+  const commonT = await getTranslations('Common')
   const { user, quotaData, status } = await getDashboardData()
   const processedChartData = processDashboardData(quotaData)
 
@@ -62,12 +65,12 @@ export default async function DashboardPage() {
   const announcements = Array.isArray(announcementsRaw)
     ? announcementsRaw.map((item: any, index: number) => ({
         content: item?.content || item?.description || '',
-        time: item?.publishDate || item?.created_at || `公告 ${index + 1}`,
+        time: item?.publishDate || item?.created_at || `${t('announcementFallback')} ${index + 1}`,
         type: item?.type || 'info',
         extra: item?.extra,
       }))
     : status?.notice
-      ? [{ content: status.notice, time: '当前', type: 'info' }]
+      ? [{ content: status.notice, time: commonT('status.current'), type: 'info' }]
       : []
 
   return (
@@ -79,11 +82,9 @@ export default async function DashboardPage() {
             <LayoutDashboard className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">数据看板</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{t('title')}</h2>
             <p className="text-sm text-muted-foreground">
-              欢迎回来，
-              {user?.username || '用户'}
-              。这是您的账户活跃情况概览。
+              {t('welcome', { username: user?.username || commonT('status.user') })}
             </p>
           </div>
         </div>

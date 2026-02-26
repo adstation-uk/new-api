@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { Pagination } from '@/components/ui-pagination'
 import { Card } from '@/components/ui/card'
 import { api } from '@/lib/api'
@@ -45,6 +46,7 @@ export default async function TokenPage({
 }: {
   searchParams: Promise<{ p?: string, keyword?: string, token?: string }>
 }) {
+  const t = await getTranslations('Page.Console.Token.page')
   const params = await searchParams
   const page = Number.parseInt(params.p || '1')
   const keyword = params.keyword || ''
@@ -57,7 +59,7 @@ export default async function TokenPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">我的令牌</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <TokenCreate />
         </div>
 

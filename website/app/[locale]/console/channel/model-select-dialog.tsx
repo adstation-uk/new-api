@@ -15,6 +15,7 @@ import {
   Zhipu,
 } from '@lobehub/icons'
 import { Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -64,13 +65,13 @@ const CATEGORIES = [
   },
   {
     id: 'qwen',
-    label: '通义千问',
+    labelKey: 'vendor.qwen',
     icon: <Qwen.Color size={18} />,
     filter: (m: string) => /qwen/i.test(m),
   },
   {
     id: 'zhipu',
-    label: '智谱',
+    labelKey: 'vendor.zhipu',
     icon: <Zhipu.Color size={18} />,
     filter: (m: string) => /chatglm|glm-|cogview|cogvideo/i.test(m),
   },
@@ -88,13 +89,13 @@ const CATEGORIES = [
   },
   {
     id: 'baidu',
-    label: '文心一言',
+    labelKey: 'vendor.baidu',
     icon: <Wenxin.Color size={18} />,
     filter: (m: string) => /ernie/i.test(m),
   },
   {
     id: 'doubao',
-    label: '豆包',
+    labelKey: 'vendor.doubao',
     icon: <Doubao.Color size={18} />,
     filter: (m: string) => /doubao/i.test(m),
   },
@@ -119,11 +120,13 @@ export function ModelSelectDialog({
   selectedModels: initialSelected,
   onConfirm,
 }: ModelSelectDialogProps) {
+  const t = useTranslations('Page.Console.Channel.modelSelect')
   const [search, setSearch] = React.useState('')
   const [selected, setSelected] = React.useState<string[]>([])
   const [activeTab, setActiveTab] = React.useState<'new' | 'existing'>('new')
 
   const existingSet = React.useMemo(() => new Set(initialSelected), [initialSelected])
+  const categories = React.useMemo(() => CATEGORIES.map(cat => ({ ...cat, label: cat.labelKey ? t(cat.labelKey) : cat.label })), [t])
 
   React.useEffect(() => {
     if (open) {
@@ -139,13 +142,13 @@ export function ModelSelectDialog({
   const newModelsData = React.useMemo(() => filteredModels.filter(m => !existingSet.has(m)), [filteredModels, existingSet])
   const existingModelsData = React.useMemo(() => filteredModels.filter(m => existingSet.has(m)), [filteredModels, existingSet])
 
-  const categorize = (modelList: string[]) => {
+  const categorize = React.useCallback((modelList: string[]) => {
     const results: Record<string, { label: string, icon: React.ReactNode, models: string[] }> = {}
     const uncategorized: string[] = []
 
     modelList.forEach((m) => {
       let matched = false
-      for (const cat of CATEGORIES) {
+      for (const cat of categories) {
         if (cat.filter(m)) {
           if (!results[cat.id]) {
             results[cat.id] = { label: cat.label, icon: cat.icon, models: [] }
@@ -160,13 +163,13 @@ export function ModelSelectDialog({
     })
 
     if (uncategorized.length > 0) {
-      results.other = { label: '其他', icon: null, models: uncategorized }
+      results.other = { label: t('other'), icon: null, models: uncategorized }
     }
     return results
-  }
+  }, [categories, t])
 
-  const newCategorized = React.useMemo(() => categorize(newModelsData), [newModelsData])
-  const existingCategorized = React.useMemo(() => categorize(existingModelsData), [existingModelsData])
+  const newCategorized = React.useMemo(() => categorize(newModelsData), [categorize, newModelsData])
+  const existingCategorized = React.useMemo(() => categorize(existingModelsData), [categorize, existingModelsData])
 
   const toggleModel = (model: string) => {
     setSelected(prev =>
@@ -208,13 +211,15 @@ export function ModelSelectDialog({
       <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col p-0">
         <DialogHeader className="p-6 pb-0">
           <div className="flex items-center justify-between gap-4">
-            <DialogTitle>选择模型</DialogTitle>
+            <DialogTitle>{t('title')}</DialogTitle>
             <div className="flex bg-slate-100 p-1 rounded-lg">
               <button
                 className={`px-3 py-1 text-xs rounded-md transition-all ${activeTab === 'new' ? 'bg-white shadow-sm font-medium' : 'text-slate-500 hover:text-slate-700'}`}
                 onClick={() => setActiveTab('new')}
               >
-                新获取 (
+                {t('new')}
+                {' '}
+                (
                 {newModelsData.length}
                 )
               </button>
@@ -222,7 +227,9 @@ export function ModelSelectDialog({
                 className={`px-3 py-1 text-xs rounded-md transition-all ${activeTab === 'existing' ? 'bg-white shadow-sm font-medium' : 'text-slate-500 hover:text-slate-700'}`}
                 onClick={() => setActiveTab('existing')}
               >
-                已存在 (
+                {t('existing')}
+                {' '}
+                (
                 {existingModelsData.length}
                 )
               </button>
@@ -234,7 +241,7 @@ export function ModelSelectDialog({
           <div className="relative">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="搜索模型内容..."
+              placeholder={t('searchPlaceholder')}
               className="pl-8"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -252,7 +259,7 @@ export function ModelSelectDialog({
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] text-muted-foreground">
-                      已选
+                      {t('selected')}
                       {' '}
                       {cat.models.filter(m => selected.includes(m)).length}
                       {' '}
@@ -288,7 +295,7 @@ export function ModelSelectDialog({
 
             {Object.keys(currentCategorized).length === 0 && (
               <div className="text-center py-20 bg-slate-50 rounded-lg border border-dashed">
-                <p className="text-sm text-muted-foreground">没有发现匹配的模型</p>
+                <p className="text-sm text-muted-foreground">{t('empty')}</p>
               </div>
             )}
           </div>
@@ -296,22 +303,21 @@ export function ModelSelectDialog({
 
         <DialogFooter className="p-6 pt-2 flex items-center justify-between sm:justify-between border-t bg-slate-50">
           <div className="text-sm">
-            总计已选择
+            {t('totalSelected')}
             {' '}
             <span className="font-bold text-blue-600">{selected.length}</span>
-            {' '}
-            个模型
+            {t('models')}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>
-              取消
+              {t('cancel')}
             </Button>
             <Button onClick={() => {
               onConfirm(selected)
               onOpenChange(false)
             }}
             >
-              确认并更新列表
+              {t('confirm')}
             </Button>
           </div>
         </DialogFooter>

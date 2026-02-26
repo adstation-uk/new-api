@@ -1,12 +1,14 @@
 'use client'
 
 import { RefreshCw } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 export function RefreshButton() {
+  const t = useTranslations('Page.Console.Dashboard')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
@@ -25,7 +27,7 @@ export function RefreshButton() {
       disabled={isPending}
     >
       <RefreshCw className={cn('w-4 h-4', isPending && 'animate-spin')} />
-      刷新
+      {t('refresh')}
     </Button>
   )
 }

@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { enUS, zhCN } from 'date-fns/locale'
 import {
   CalendarIcon,
   Check,
@@ -12,6 +12,7 @@ import {
   Loader2,
   Shield,
 } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -64,23 +65,18 @@ import { useRouter } from '@/i18n/navigation'
 import { cn, renderQuota } from '@/lib/utils'
 import { createToken, getGroups, getModels, updateToken } from './actions'
 
-const tokenSchema = z.object({
-  name: z.string().min(1, '请输入名称'),
-  remain_quota: z.string().refine((val) => {
-    const n = Number(val)
-    return !Number.isNaN(n) && n >= 0
-  }, '额度必须是大于等于 0 的数字'),
-  unlimited_quota: z.boolean(),
-  expired_time: z.date().optional(),
-  model_limits_enabled: z.boolean(),
-  model_limits: z.array(z.string()).optional().default([]),
-  allow_ips: z.string().optional(),
-  group: z.string().optional(),
-  cross_group_retry: z.boolean(),
-  tokenCount: z.number().min(1).max(100),
-})
-
-type TokenFormValues = z.infer<typeof tokenSchema>
+type TokenFormValues = {
+  name: string
+  remain_quota: string
+  unlimited_quota: boolean
+  expired_time?: Date
+  model_limits_enabled: boolean
+  model_limits: string[]
+  allow_ips?: string
+  group?: string
+  cross_group_retry: boolean
+  tokenCount: number
+}
 
 type TokenDrawerProps = {
   isOpen: boolean
@@ -93,11 +89,29 @@ export function TokenDrawer({
   onClose,
   editingToken,
 }: TokenDrawerProps) {
+  const t = useTranslations('Page.Console.Token.drawer')
+  const locale = useLocale()
   const isEdit = !!editingToken
   const router = useRouter()
   const [models, setModels] = useState<string[]>([])
   const [groups, setGroups] = useState<{ label: string, value: string }[]>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  const tokenSchema = z.object({
+    name: z.string().min(1, t('validation.nameRequired')),
+    remain_quota: z.string().refine((val) => {
+      const n = Number(val)
+      return !Number.isNaN(n) && n >= 0
+    }, t('validation.quotaInvalid')),
+    unlimited_quota: z.boolean(),
+    expired_time: z.date().optional(),
+    model_limits_enabled: z.boolean(),
+    model_limits: z.array(z.string()).optional().default([]),
+    allow_ips: z.string().optional(),
+    group: z.string().optional(),
+    cross_group_retry: z.boolean(),
+    tokenCount: z.number().min(1).max(100),
+  })
 
   const form = useForm<TokenFormValues>({
     resolver: zodResolver(tokenSchema),
@@ -210,12 +224,12 @@ export function TokenDrawer({
           id: editingToken.id,
         })
         if (res.success) {
-          toast.success('更新成功')
+          toast.success(t('toast.updateSuccess'))
           onClose()
           router.refresh()
         }
         else {
-          toast.error(res.message || '更新失败')
+          toast.error(res.message || t('toast.updateFailed'))
         }
       }
       else {
@@ -236,19 +250,19 @@ export function TokenDrawer({
         }
 
         if (successCount === count) {
-          toast.success(`成功创建 ${count} 个令牌`)
+          toast.success(t('toast.createSuccess', { count }))
           onClose()
           router.refresh()
         }
         else {
-          toast.error(`创建完成，成功 ${successCount}/${count}`)
+          toast.error(t('toast.createPartial', { success: successCount, count }))
           onClose()
           router.refresh()
         }
       }
     }
     catch {
-      toast.error('操作失败')
+      toast.error(t('toast.actionFailed'))
     }
     finally {
       setIsLoading(false)
@@ -270,10 +284,10 @@ export function TokenDrawer({
           </div>
           <div className="flex flex-col gap-0.5">
             <SheetTitle className="text-lg font-bold leading-none">
-              {isEdit ? '编辑令牌' : '创建令牌'}
+              {isEdit ? t('titleEdit') : t('titleCreate')}
             </SheetTitle>
             <SheetDescription className="text-xs text-muted-foreground leading-none">
-              {isEdit ? '修改令牌配置' : '配置并发布新的 API 令牌'}
+              {isEdit ? t('descEdit') : t('descCreate')}
             </SheetDescription>
           </div>
         </SheetHeader>
@@ -284,11 +298,10 @@ export function TokenDrawer({
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4"
             >
-              {/* 基本信息 */}
               <Card className="p-4 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div className="w-1 h-4 bg-primary rounded-full" />
-                  <h4 className="font-semibold">基本信息</h4>
+                  <h4 className="font-semibold">{t('section.basic')}</h4>
                 </div>
 
                 <FormField
@@ -296,9 +309,9 @@ export function TokenDrawer({
                   name="name"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>名称</FormLabel>
+                      <FormLabel>{t('fields.name')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="令牌名称" {...field} />
+                        <Input placeholder={t('fields.namePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -310,20 +323,20 @@ export function TokenDrawer({
                   name="group"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>令牌分组</FormLabel>
+                      <FormLabel>{t('fields.group')}</FormLabel>
                       <Select
                         onValueChange={val => field.onChange(val === 'default' ? '' : val)}
                         value={field.value || 'default'}
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="默认分组" />
+                            <SelectValue placeholder={t('fields.defaultGroup')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent shadow-none="true">
                           <SelectItem key="default_option" value="default">
                             <div className="flex items-center justify-between w-full gap-2">
-                              <span>默认分组</span>
+                              <span>{t('fields.defaultGroup')}</span>
                             </div>
                           </SelectItem>
                           {groups.filter(g => g.value !== 'default').map(g => (
@@ -340,7 +353,7 @@ export function TokenDrawer({
                         </SelectContent>
                       </Select>
                       <FormDescription>
-                        留空则跟随用户默认分组
+                        {t('fields.groupDescription')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -360,9 +373,9 @@ export function TokenDrawer({
                           />
                         </FormControl>
                         <div className="space-y-1 leading-none">
-                          <FormLabel>跨分组重试</FormLabel>
+                          <FormLabel>{t('fields.crossGroupRetry')}</FormLabel>
                           <FormDescription>
-                            开启后失败会自动尝试其他可用分组
+                            {t('fields.crossGroupRetryDescription')}
                           </FormDescription>
                         </div>
                       </FormItem>
@@ -375,7 +388,7 @@ export function TokenDrawer({
                   name="expired_time"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>过期时间</FormLabel>
+                      <FormLabel>{t('fields.expiredTime')}</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -388,10 +401,10 @@ export function TokenDrawer({
                             >
                               {field.value
                                 ? (
-                                    format(field.value, 'PPP HH:mm:ss', { locale: zhCN })
+                                    format(field.value, 'PPP HH:mm:ss', { locale: locale === 'zh' ? zhCN : enUS })
                                   )
                                 : (
-                                    <span>永不过期</span>
+                                    <span>{t('fields.neverExpire')}</span>
                                   )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -406,11 +419,11 @@ export function TokenDrawer({
                             disabled={date =>
                               date < new Date(new Date().setHours(0, 0, 0, 0))}
                             initialFocus
-                            locale={zhCN}
+                            locale={locale === 'zh' ? zhCN : enUS}
                           />
                           <Separator />
                           <div className="p-3">
-                            <Label className="text-[10px] text-muted-foreground uppercase mb-1 block text-center">选择精确时间</Label>
+                            <Label className="text-[10px] text-muted-foreground uppercase mb-1 block text-center">{t('fields.selectExactTime')}</Label>
                             <Input
                               type="time"
                               step="1"
@@ -434,7 +447,7 @@ export function TokenDrawer({
                           className="h-7 text-xs"
                           onClick={() => field.onChange(undefined)}
                         >
-                          永不过期
+                          {t('fields.neverExpire')}
                         </Button>
                         <Button
                           type="button"
@@ -447,7 +460,7 @@ export function TokenDrawer({
                             field.onChange(d)
                           }}
                         >
-                          一个月
+                          {t('fields.oneMonth')}
                         </Button>
                         <Button
                           type="button"
@@ -460,7 +473,7 @@ export function TokenDrawer({
                             field.onChange(d)
                           }}
                         >
-                          一天
+                          {t('fields.oneDay')}
                         </Button>
                         <Button
                           type="button"
@@ -473,10 +486,10 @@ export function TokenDrawer({
                             field.onChange(d)
                           }}
                         >
-                          一小时
+                          {t('fields.oneHour')}
                         </Button>
                       </div>
-                      <FormDescription>留空为永不过期</FormDescription>
+                      <FormDescription>{t('fields.expiredDescription')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -488,7 +501,7 @@ export function TokenDrawer({
                     name="tokenCount"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>新建数量</FormLabel>
+                        <FormLabel>{t('fields.tokenCount')}</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
@@ -500,7 +513,7 @@ export function TokenDrawer({
                           />
                         </FormControl>
                         <FormDescription>
-                          批量创建时会在名称后添加随机后缀
+                          {t('fields.tokenCountDescription')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -509,11 +522,10 @@ export function TokenDrawer({
                 )}
               </Card>
 
-              {/* 额度设置 */}
               <Card className="p-4 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                   <CreditCard className="w-4 h-4 text-primary" />
-                  <h4 className="font-semibold">额度设置</h4>
+                  <h4 className="font-semibold">{t('section.quota')}</h4>
                 </div>
 
                 <FormField
@@ -528,7 +540,7 @@ export function TokenDrawer({
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel>不限额度</FormLabel>
+                        <FormLabel>{t('fields.unlimitedQuota')}</FormLabel>
                       </div>
                     </FormItem>
                   )}
@@ -541,9 +553,10 @@ export function TokenDrawer({
                     render={({ field }) => (
                       <FormItem className="flex flex-col animate-in slide-in-from-top-1 duration-200">
                         <div className="flex items-center justify-between">
-                          <FormLabel>可用额度</FormLabel>
+                          <FormLabel>{t('fields.remainQuota')}</FormLabel>
                           <span className="text-xs text-muted-foreground">
-                            等价金额:
+                            {t('fields.equivalent')}
+                            :
                             {' '}
                             {renderQuota(Number.parseInt(field.value || '0'))}
                           </span>
@@ -579,11 +592,10 @@ export function TokenDrawer({
                 )}
               </Card>
 
-              {/* 访问限制 */}
               <Card className="p-4 space-y-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Shield className="w-4 h-4 text-primary" />
-                  <h4 className="font-semibold">访问限制</h4>
+                  <h4 className="font-semibold">{t('section.access')}</h4>
                 </div>
 
                 <FormField
@@ -591,7 +603,7 @@ export function TokenDrawer({
                   name="model_limits"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>模型限制</FormLabel>
+                      <FormLabel>{t('fields.modelLimits')}</FormLabel>
                       <Popover modal={true}>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -617,7 +629,7 @@ export function TokenDrawer({
                                       ))
                                     )
                                   : (
-                                      '选择模型...'
+                                      t('fields.selectModels')
                                     )}
                               </div>
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -626,9 +638,9 @@ export function TokenDrawer({
                         </PopoverTrigger>
                         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
                           <Command>
-                            <CommandInput placeholder="搜索模型..." />
+                            <CommandInput placeholder={t('fields.searchModels')} />
                             <CommandList>
-                              <CommandEmpty>未找到模型</CommandEmpty>
+                              <CommandEmpty>{t('fields.modelNotFound')}</CommandEmpty>
                               <CommandGroup>
                                 {models.map(model => (
                                   <CommandItem
@@ -659,7 +671,7 @@ export function TokenDrawer({
                         </PopoverContent>
                       </Popover>
                       <FormDescription>
-                        留空支持所有模型。不建议启用模型限制。
+                        {t('fields.modelLimitsDescription')}
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -671,14 +683,14 @@ export function TokenDrawer({
                   name="allow_ips"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>IP 白名单</FormLabel>
+                      <FormLabel>{t('fields.ipWhitelist')}</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="例如: 127.0.0.1, 每行一个"
+                          placeholder={t('fields.ipPlaceholder')}
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>留空则不限制 IP</FormDescription>
+                      <FormDescription>{t('fields.ipDescription')}</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -692,7 +704,7 @@ export function TokenDrawer({
                   className="flex-1"
                   onClick={onClose}
                 >
-                  取消
+                  {t('actions.cancel')}
                 </Button>
                 <Button
                   type="submit"
@@ -702,7 +714,7 @@ export function TokenDrawer({
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isEdit ? '保存更改' : '立即创建'}
+                  {isEdit ? t('actions.save') : t('actions.create')}
                 </Button>
               </div>
             </form>

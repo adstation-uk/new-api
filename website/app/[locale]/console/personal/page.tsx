@@ -1,4 +1,5 @@
 import { User as UserIcon } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -26,20 +27,21 @@ async function getPersonalData() {
   }
 }
 
-function getRoleLabel(role: number) {
+function getRoleLabel(role: number, t: (key: string) => string) {
   switch (role) {
     case 1:
-      return '普通用户'
+      return t('role.user')
     case 10:
-      return '管理员'
+      return t('role.admin')
     case 100:
-      return '超级管理员'
+      return t('role.superAdmin')
     default:
-      return '未知'
+      return t('role.unknown')
   }
 }
 
 export default async function PersonalPage() {
+  const t = await getTranslations('Page.Console.Personal.page')
   const { user, status } = await getPersonalData()
 
   if (!user) {
@@ -50,9 +52,9 @@ export default async function PersonalPage() {
     <div className="space-y-6 w-full">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">个人设置</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            管理您的个人资料和账户安全
+            {t('subtitle')}
           </p>
         </div>
         <PersonalClient user={user} status={status || {}} onlyLogout />
@@ -62,8 +64,8 @@ export default async function PersonalPage() {
         {/* Profile Card - Server Component Part */}
         <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle>基本信息</CardTitle>
-            <CardDescription>您的公开个人资料信息</CardDescription>
+            <CardTitle>{t('profile.title')}</CardTitle>
+            <CardDescription>{t('profile.description')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8">
             <div className="flex items-center gap-6 p-4 rounded-xl bg-muted/30 border border-border/50">
@@ -80,7 +82,7 @@ export default async function PersonalPage() {
                   {user.display_name || user.username}
                 </h3>
                 <div className="flex gap-2">
-                  <Badge variant="secondary" className="px-3">{getRoleLabel(user.role)}</Badge>
+                  <Badge variant="secondary" className="px-3">{getRoleLabel(user.role, t)}</Badge>
                   <Badge variant="outline" className="px-3">{user.group}</Badge>
                 </div>
               </div>
@@ -88,21 +90,21 @@ export default async function PersonalPage() {
 
             <div className="grid gap-6 px-2">
               <div className="flex flex-col gap-1.5">
-                <span className="text-sm font-semibold text-muted-foreground px-0.5">用户 ID</span>
+                <span className="text-sm font-semibold text-muted-foreground px-0.5">{t('profile.userId')}</span>
                 <div className="p-3 rounded-lg bg-background border font-mono text-sm leading-none tabular-nums">
                   {user.id}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <span className="text-sm font-semibold text-muted-foreground px-0.5">用户名</span>
+                <span className="text-sm font-semibold text-muted-foreground px-0.5">{t('profile.username')}</span>
                 <div className="p-3 rounded-lg bg-background border text-sm leading-none">
                   {user.username}
                 </div>
               </div>
 
               <div className="flex flex-col gap-1.5">
-                <span className="text-sm font-semibold text-muted-foreground px-0.5">当前余额</span>
+                <span className="text-sm font-semibold text-muted-foreground px-0.5">{t('profile.balance')}</span>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 p-3 rounded-lg bg-background border font-mono text-sm font-bold text-primary leading-none">
                     $

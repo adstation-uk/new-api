@@ -1,6 +1,7 @@
 'use client'
 
 import { Copy, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -29,6 +30,7 @@ export function TokenContainer({
   keyword: string
   token: string
 }) {
+  const t = useTranslations('Page.Console.Token.container')
   const [rowSelection, setRowSelection] = useState<Record<string, boolean>>({})
   const router = useRouter()
 
@@ -48,7 +50,7 @@ export function TokenContainer({
     }
 
     if (successCount > 0) {
-      toast.success(`成功删除 ${successCount} 个令牌`)
+      toast.success(t('batchDeleteSuccess', { count: successCount }))
       setRowSelection({})
       router.refresh()
     }
@@ -64,10 +66,10 @@ export function TokenContainer({
 
     try {
       await navigator.clipboard.writeText(keys)
-      toast.success(`已复制 ${selectedIds.length} 个令牌密钥`)
+      toast.success(t('batchCopySuccess', { count: selectedIds.length }))
     }
     catch {
-      toast.error('复制失败')
+      toast.error(t('copyFailed'))
     }
   }
 
@@ -83,7 +85,7 @@ export function TokenContainer({
             className="h-9"
           >
             <Copy className="mr-2 h-4 w-4" />
-            复制所选
+            {t('copySelected')}
           </Button>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -94,27 +96,23 @@ export function TokenContainer({
                 className="h-9 text-destructive hover:text-destructive"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                删除所选
+                {t('deleteSelected')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>确认删除</AlertDialogTitle>
+                <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  确定删除选中的
-                  {' '}
-                  {selectedIds.length}
-                  {' '}
-                  个令牌吗？此操作无法撤销。
+                  {t('confirmDescription', { count: selectedIds.length })}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>取消</AlertDialogCancel>
+                <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleBulkDelete}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  确认删除
+                  {t('confirmDelete')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

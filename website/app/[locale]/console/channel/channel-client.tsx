@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -45,6 +46,7 @@ export function ChannelClient({
   total: number
   isAdmin: boolean
 }) {
+  const t = useTranslations('Page.Console.Channel.client')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -86,17 +88,17 @@ export function ChannelClient({
     if (!selectedIds.length)
       return
     // eslint-disable-next-line no-alert
-    if (!window.confirm(`确定要删除选中的 ${selectedIds.length} 个渠道吗？`))
+    if (!window.confirm(t('confirmBatchDelete', { count: selectedIds.length })))
       return
 
     const res = await batchDeleteChannels(selectedIds)
     if (res.success) {
-      toast.success(`成功删除 ${selectedIds.length} 个渠道`)
+      toast.success(t('batchDeleteSuccess', { count: selectedIds.length }))
       setSelectedIds([])
       router.refresh()
     }
     else {
-      toast.error(res.message || '批量删除失败')
+      toast.error(res.message || t('batchDeleteFailed'))
     }
   }
 
@@ -105,72 +107,72 @@ export function ChannelClient({
       return
     const res = await batchSetTag(selectedIds, newTag)
     if (res.success) {
-      toast.success('批量设置标签成功')
+      toast.success(t('batchTagSuccess'))
       setShowTagDialog(false)
       setNewTag('')
       setSelectedIds([])
       router.refresh()
     }
     else {
-      toast.error(res.message || '批量设置失败')
+      toast.error(res.message || t('batchTagFailed'))
     }
   }
 
   const onTestAll = async () => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm('确定要测试所有通道吗？'))
+    if (!window.confirm(t('confirmTestAll')))
       return
-    toast.info('正在启动全量测试...')
+    toast.info(t('testingAll'))
     const res = await testAllChannels()
     if (res.success) {
-      toast.success('全量测试任务已启动')
+      toast.success(t('testAllStarted'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '启动测试失败')
+      toast.error(res.message || t('testAllFailed'))
     }
   }
 
   const onUpdateBalances = async () => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm('确定要更新所有通道余额吗？'))
+    if (!window.confirm(t('confirmUpdateBalanceAll')))
       return
-    toast.info('正在更新余额...')
+    toast.info(t('updatingBalance'))
     const res = await updateAllBalances()
     if (res.success) {
-      toast.success('余额更新成功')
+      toast.success(t('updateBalanceSuccess'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '更新失败')
+      toast.error(res.message || t('updateBalanceFailed'))
     }
   }
 
   const onFixAbilities = async () => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm('确定要修复数据库一致性吗？'))
+    if (!window.confirm(t('confirmFixDb')))
       return
     const res = await fixChannelAbilities()
     if (res.success) {
-      toast.success('数据库修复成功')
+      toast.success(t('fixDbSuccess'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '修复失败')
+      toast.error(res.message || t('fixDbFailed'))
     }
   }
 
   const onDeleteDisabled = async () => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm('确定要删除所有已禁用的渠道吗？此操作不可逆！'))
+    if (!window.confirm(t('confirmDeleteDisabled')))
       return
     const res = await deleteDisabledChannels()
     if (res.success) {
-      toast.success('已删除所有禁用渠道')
+      toast.success(t('deleteDisabledSuccess'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '删除失败')
+      toast.error(res.message || t('deleteFailed'))
     }
   }
 
@@ -276,28 +278,27 @@ export function ChannelClient({
       <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>批量设置标签</DialogTitle>
+            <DialogTitle>{t('tagDialogTitle')}</DialogTitle>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <Label>标签名称</Label>
+              <Label>{t('tagLabel')}</Label>
               <Input
-                placeholder="名称..."
+                placeholder={t('tagPlaceholder')}
                 value={newTag}
                 onChange={e => setNewTag(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && onBatchTag()}
               />
               <p className="text-xs text-muted-foreground">
-                将选中的
+                {t('tagDialogPrefix')}
                 {selectedIds.length}
-                {' '}
-                个渠道设置为此标签
+                {t('tagDialogSuffix')}
               </p>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowTagDialog(false)}>取消</Button>
-            <Button onClick={onBatchTag} disabled={!newTag}>确定</Button>
+            <Button variant="outline" onClick={() => setShowTagDialog(false)}>{t('cancel')}</Button>
+            <Button onClick={onBatchTag} disabled={!newTag}>{t('confirm')}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

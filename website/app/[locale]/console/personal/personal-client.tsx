@@ -6,6 +6,7 @@ import {
   Mail,
   RefreshCw,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -79,6 +80,8 @@ export function PersonalClient({
   onlyLogout,
   onlyTopup,
 }: PersonalClientProps) {
+  const t = useTranslations('Page.Console.Personal.client')
+  const commonT = useTranslations('Common')
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [accessToken, setAccessToken] = useState('')
@@ -89,14 +92,14 @@ export function PersonalClient({
       const data = await generateTokenAction()
       if (data.success) {
         setAccessToken(data.data)
-        toast.success('访问令牌已生成')
+        toast.success(t('toast.tokenGenerated'))
       }
       else {
-        toast.error(data.message || '生成失败')
+        toast.error(data.message || t('toast.generateFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(commonT('errors.network'))
     }
     finally {
       setLoading(false)
@@ -106,10 +109,10 @@ export function PersonalClient({
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text)
-      toast.success('已复制到剪贴板')
+      toast.success(commonT('toast.copied'))
     }
     catch {
-      toast.error('复制失败')
+      toast.error(t('toast.copyFailed'))
     }
   }
 
@@ -124,7 +127,7 @@ export function PersonalClient({
         onClick={() => router.push('/console/topup')}
         className="shrink-0"
       >
-        去充值
+        {t('topup')}
       </Button>
     )
   }
@@ -133,13 +136,13 @@ export function PersonalClient({
     return (
       <Card className="flex flex-col shadow-sm">
         <CardHeader>
-          <CardTitle>账户安全 & 访问</CardTitle>
-          <CardDescription>管理您的账户绑定和访问令牌</CardDescription>
+          <CardTitle>{t('security.title')}</CardTitle>
+          <CardDescription>{t('security.description')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex-1">
           <div className="space-y-4">
             <h4 className="text-sm font-medium text-muted-foreground mb-3">
-              账号绑定
+              {t('security.bindings')}
             </h4>
 
             {/* Email */}
@@ -147,14 +150,14 @@ export function PersonalClient({
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium">邮箱</span>
+                  <span className="text-sm font-medium">{t('provider.email')}</span>
                   <span className="text-xs text-muted-foreground">
-                    {user.email || '未绑定'}
+                    {user.email || t('status.unbound')}
                   </span>
                 </div>
               </div>
               <Button variant="ghost" size="sm" disabled>
-                {user.email ? '已绑定' : '去绑定'}
+                {user.email ? t('status.bound') : t('action.bindNow')}
               </Button>
             </div>
 
@@ -166,7 +169,7 @@ export function PersonalClient({
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">GitHub</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.github_id ? '已绑定' : '未绑定'}
+                      {user.github_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
@@ -176,7 +179,7 @@ export function PersonalClient({
                   disabled={!!user.github_id}
                   onClick={() => onGitHubOAuthClicked(status.github_client_id)}
                 >
-                  {user.github_id ? '已绑定' : '绑定'}
+                  {user.github_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -189,14 +192,14 @@ export function PersonalClient({
                     WC
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium">微信</span>
+                    <span className="text-sm font-medium">{t('provider.wechat')}</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.wechat_id ? '已绑定' : '未绑定'}
+                      {user.wechat_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" disabled={!!user.wechat_id}>
-                  {user.wechat_id ? '已绑定' : '绑定'}
+                  {user.wechat_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -211,7 +214,7 @@ export function PersonalClient({
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">Discord</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.discord_id ? '已绑定' : '未绑定'}
+                      {user.discord_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
@@ -221,7 +224,7 @@ export function PersonalClient({
                   disabled={!!user.discord_id}
                   onClick={() => onDiscordOAuthClicked(status.discord_client_id)}
                 >
-                  {user.discord_id ? '已绑定' : '绑定'}
+                  {user.discord_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -236,7 +239,7 @@ export function PersonalClient({
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">Linux DO</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.linux_do_id ? '已绑定' : '未绑定'}
+                      {user.linux_do_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
@@ -246,7 +249,7 @@ export function PersonalClient({
                   disabled={!!user.linux_do_id}
                   onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id)}
                 >
-                  {user.linux_do_id ? '已绑定' : '绑定'}
+                  {user.linux_do_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -261,7 +264,7 @@ export function PersonalClient({
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">OIDC</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.oidc_id ? '已绑定' : '未绑定'}
+                      {user.oidc_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
@@ -275,7 +278,7 @@ export function PersonalClient({
                       status.oidc_client_id,
                     )}
                 >
-                  {user.oidc_id ? '已绑定' : '绑定'}
+                  {user.oidc_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -290,12 +293,12 @@ export function PersonalClient({
                   <div className="flex flex-col">
                     <span className="text-sm font-medium">Telegram</span>
                     <span className="text-xs text-muted-foreground">
-                      {user.telegram_id ? '已绑定' : '未绑定'}
+                      {user.telegram_id ? t('status.bound') : t('status.unbound')}
                     </span>
                   </div>
                 </div>
                 <Button variant="ghost" size="sm" disabled={!!user.telegram_id}>
-                  {user.telegram_id ? '已绑定' : '绑定'}
+                  {user.telegram_id ? t('status.bound') : t('action.bind')}
                 </Button>
               </div>
             )}
@@ -306,7 +309,7 @@ export function PersonalClient({
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h4 className="text-sm font-medium text-muted-foreground">
-                访问令牌 (Access Token)
+                {t('token.title')}
               </h4>
               <Button
                 variant="ghost"
@@ -317,7 +320,7 @@ export function PersonalClient({
                 <RefreshCw
                   className={cn('h-4 w-4 mr-1', loading && 'animate-spin')}
                 />
-                {accessToken ? '重新生成' : '生成'}
+                {accessToken ? t('token.regenerate') : t('token.generate')}
               </Button>
             </div>
             {accessToken
@@ -338,7 +341,7 @@ export function PersonalClient({
                 )
               : (
                   <div className="text-xs text-muted-foreground text-center py-4 border border-dashed rounded-md bg-muted/30">
-                    点击生成获取用于 OpenAI 客户端连接的系统级令牌
+                    {t('token.emptyHint')}
                   </div>
                 )}
           </div>
@@ -346,13 +349,13 @@ export function PersonalClient({
         <CardFooter className="p-6 pt-0 border-t bg-transparent">
           <div className="w-full flex gap-2 pt-6">
             <Button variant="outline" className="w-full">
-              修改密码
+              {t('action.changePassword')}
             </Button>
             <Button
               variant="outline"
               className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
-              删除账号
+              {t('action.deleteAccount')}
             </Button>
           </div>
         </CardFooter>

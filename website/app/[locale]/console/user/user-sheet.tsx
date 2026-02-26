@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -33,17 +34,15 @@ import {
 } from '@/components/ui/sheet'
 import { createUser, updateUser } from './actions'
 
-const userSchema = z.object({
-  id: z.number().optional(),
-  username: z.string().min(1, '用户名不能为空'),
-  display_name: z.string().optional(),
-  password: z.string().optional(),
-  quota: z.coerce.number().min(0, '额度不能为负'),
-  group: z.string().default('default'),
-  remark: z.string().optional(),
-})
-
-type UserFormValues = z.infer<typeof userSchema>
+type UserFormValues = {
+  id?: number
+  username: string
+  display_name?: string
+  password?: string
+  quota: number
+  group: string
+  remark?: string
+}
 
 type User = {
   id: number
@@ -63,6 +62,18 @@ export function UserSheet({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const t = useTranslations('Page.Console.User.sheet')
+  const commonT = useTranslations('Common')
+  const userSchema = React.useMemo(() => z.object({
+    id: z.number().optional(),
+    username: z.string().min(1, t('validation.usernameRequired')),
+    display_name: z.string().optional(),
+    password: z.string().optional(),
+    quota: z.coerce.number().min(0, t('validation.quotaNonNegative')),
+    group: z.string().default('default'),
+    remark: z.string().optional(),
+  }), [t])
+
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -100,7 +111,7 @@ export function UserSheet({
   }, [user, form])
 
   async function onSubmit(values: UserFormValues) {
-    const loadingToast = toast.loading(user ? '正在更新用户信息...' : '正在创建用户...')
+    const loadingToast = toast.loading(user ? t('toast.updating') : t('toast.creating'))
     try {
       const payload = {
         ...values,
@@ -113,15 +124,15 @@ export function UserSheet({
 
       const result = user ? await updateUser(payload) : await createUser(payload)
       if (result.success) {
-        toast.success(user ? '更新成功' : '创建成功')
+        toast.success(user ? t('toast.updateSuccess') : t('toast.createSuccess'))
         onOpenChange(false)
       }
       else {
-        toast.error(result.message || (user ? '更新失败' : '创建失败'))
+        toast.error(result.message || (user ? t('toast.updateFailed') : t('toast.createFailed')))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -132,9 +143,9 @@ export function UserSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[500px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{user ? '编辑用户' : '添加用户'}</SheetTitle>
+          <SheetTitle>{user ? t('titleEdit') : t('titleCreate')}</SheetTitle>
           <SheetDescription>
-            修改用户的基本信息、额度和权限组。
+            {t('description')}
           </SheetDescription>
         </SheetHeader>
 
@@ -145,9 +156,9 @@ export function UserSheet({
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>用户名</FormLabel>
+                  <FormLabel>{t('fields.username')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="输入用户名" />
+                    <Input {...field} placeholder={t('fields.usernamePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,9 +170,9 @@ export function UserSheet({
               name="display_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>显示名称</FormLabel>
+                  <FormLabel>{t('fields.displayName')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="输入用于显示的名称" />
+                    <Input {...field} placeholder={t('fields.displayNamePlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,11 +184,11 @@ export function UserSheet({
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>重置密码</FormLabel>
+                  <FormLabel>{t('fields.password')}</FormLabel>
                   <FormControl>
-                    <Input {...field} type="password" placeholder="留空则不修改密码" />
+                    <Input {...field} type="password" placeholder={t('fields.passwordPlaceholder')} />
                   </FormControl>
-                  <FormDescription>如果不打算修改密码，请保持此项为空</FormDescription>
+                  <FormDescription>{t('fields.passwordDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -188,7 +199,7 @@ export function UserSheet({
               name="quota"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>剩余额度 (单位: $)</FormLabel>
+                  <FormLabel>{t('fields.quota')}</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -208,20 +219,20 @@ export function UserSheet({
               name="group"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>用户分组</FormLabel>
+                  <FormLabel>{t('fields.group')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择用户分组" />
+                        <SelectValue placeholder={t('fields.groupPlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="default">默认分组 (default)</SelectItem>
-                      <SelectItem value="vip">高级用户 (vip)</SelectItem>
-                      <SelectItem value="svip">超级用户 (svip)</SelectItem>
+                      <SelectItem value="default">{t('group.default')}</SelectItem>
+                      <SelectItem value="vip">{t('group.vip')}</SelectItem>
+                      <SelectItem value="svip">{t('group.svip')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormDescription>这会影响渠道的优先级和倍率计算</FormDescription>
+                  <FormDescription>{t('fields.groupDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -232,9 +243,9 @@ export function UserSheet({
               name="remark"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>备注</FormLabel>
+                  <FormLabel>{t('fields.remark')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="输入备注信息" />
+                    <Input {...field} placeholder={t('fields.remarkPlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -242,7 +253,7 @@ export function UserSheet({
             />
 
             <SheetFooter className="pt-4">
-              <Button type="submit">保存更改</Button>
+              <Button type="submit">{t('save')}</Button>
             </SheetFooter>
           </form>
         </Form>

@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { LoginForm } from '@/components/login-form'
 import {
   Card,
@@ -8,6 +9,7 @@ import {
 import { api } from '@/lib/api'
 
 export default async function LoginPage() {
+  const t = await getTranslations('Page.Login')
   const statusRes = await api('/api/status')
   const statusJson = await statusRes.json()
   const status = statusJson.success ? statusJson.data : {}
@@ -17,10 +19,10 @@ export default async function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">
-            登录 New API
+            {t('title')}
           </CardTitle>
           <CardDescription className="text-center">
-            请输入您的凭据以访问控制台
+            {t('subtitle')}
           </CardDescription>
         </CardHeader>
         <LoginForm status={status} />

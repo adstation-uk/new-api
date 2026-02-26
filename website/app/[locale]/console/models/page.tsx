@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { api } from '@/lib/api'
 import { fetchVendors } from './actions'
 import { ModelsClient } from './models-client'
@@ -46,6 +47,7 @@ export default async function ModelsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const t = await getTranslations('Page.Console.Models.page')
   const resolvedSearchParams = await searchParams
   const [{ models, total, page, vendorCounts }, vendors] = await Promise.all([
     getModels(resolvedSearchParams),
@@ -56,9 +58,9 @@ export default async function ModelsPage({
     <div>
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">模型库</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground mt-1">
-            浏览与管理系统中支持的所有 AI 模型。
+            {t('description')}
           </p>
         </div>
       </div>

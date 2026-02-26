@@ -1,8 +1,9 @@
 'use client'
 
 import { endOfDay, format, startOfDay, startOfMonth, startOfWeek, subDays } from 'date-fns'
-import { zhCN } from 'date-fns/locale'
+import { enUS, zhCN } from 'date-fns/locale'
 import { Calendar as CalendarIcon, Eraser, Search } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,8 @@ import { useRouter } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
+  const t = useTranslations('Page.Console.Log.search')
+  const locale = useLocale()
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -26,7 +29,7 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
     group: searchParams.get('group') || '',
   })
 
-  // 内部状态处理日期和具体时间
+  // Internal state for date and time handling.
   const [dateRange, setDateRange] = useState<{
     from: Date | undefined
     to: Date | undefined
@@ -126,29 +129,29 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <Input
-          placeholder="令牌"
+          placeholder={t('token')}
           className="w-[120px] h-9"
           value={filters.token_name}
           onChange={e => setFilters(f => ({ ...f, token_name: e.target.value }))}
         />
         <Input
-          placeholder="模型"
+          placeholder={t('model')}
           className="w-[140px] h-9"
           value={filters.model_name}
           onChange={e => setFilters(f => ({ ...f, model_name: e.target.value }))}
         />
         <Select value={filters.type} onValueChange={v => setFilters(f => ({ ...f, type: v }))}>
           <SelectTrigger className="w-[100px] h-9">
-            <SelectValue placeholder="类型" />
+            <SelectValue placeholder={t('type')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="0">全部</SelectItem>
-            <SelectItem value="1">充值</SelectItem>
-            <SelectItem value="2">消费</SelectItem>
-            <SelectItem value="3">管理</SelectItem>
-            <SelectItem value="4">系统</SelectItem>
-            <SelectItem value="5">错误</SelectItem>
-            <SelectItem value="6">退款</SelectItem>
+            <SelectItem value="0">{t('all')}</SelectItem>
+            <SelectItem value="1">{t('recharge')}</SelectItem>
+            <SelectItem value="2">{t('consume')}</SelectItem>
+            <SelectItem value="3">{t('manage')}</SelectItem>
+            <SelectItem value="4">{t('system')}</SelectItem>
+            <SelectItem value="5">{t('error')}</SelectItem>
+            <SelectItem value="6">{t('refund')}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -158,19 +161,19 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
               <CalendarIcon className="mr-2 h-4 w-4" />
               {dateRange.from
                 ? (
-                    dateRange.to ? `${format(dateRange.from, 'MM-dd')} ${startTimeStr} 至 ${format(dateRange.to, 'MM-dd')} ${endTimeStr}` : format(dateRange.from, 'PPP')
+                    dateRange.to ? `${format(dateRange.from, 'MM-dd')} ${startTimeStr} - ${format(dateRange.to, 'MM-dd')} ${endTimeStr}` : format(dateRange.from, 'PPP')
                   )
-                : <span>选择时间范围</span>}
+                : <span>{t('selectRange')}</span>}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
             <div className="p-3 border-b border-border flex flex-col gap-2">
               <div className="flex items-center gap-2">
-                <Input size={1} className="h-8 text-xs px-2" value={dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : ''} readOnly placeholder="开始日期" />
+                <Input size={1} className="h-8 text-xs px-2" value={dateRange.from ? format(dateRange.from, 'yyyy-MM-dd') : ''} readOnly placeholder={t('startDate')} />
                 <Input className="h-8 text-xs px-2 w-24" value={startTimeStr} onChange={e => setStartTimeStr(e.target.value)} placeholder="00:00:00" />
               </div>
               <div className="flex items-center gap-2">
-                <Input size={1} className="h-8 text-xs px-2" value={dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : ''} readOnly placeholder="结束日期" />
+                <Input size={1} className="h-8 text-xs px-2" value={dateRange.to ? format(dateRange.to, 'yyyy-MM-dd') : ''} readOnly placeholder={t('endDate')} />
                 <Input className="h-8 text-xs px-2 w-24" value={endTimeStr} onChange={e => setEndTimeStr(e.target.value)} placeholder="23:59:59" />
               </div>
             </div>
@@ -179,32 +182,31 @@ export function LogSearch({ isAdmin }: { isAdmin: boolean }) {
               mode="range"
               selected={{ from: dateRange.from, to: dateRange.to }}
               onSelect={(range) => { setDateRange({ from: range?.from, to: range?.to }) }}
-              locale={zhCN}
+              locale={locale === 'zh' ? zhCN : enUS}
               numberOfMonths={2}
             />
             <div className="p-3 border-t border-border grid grid-cols-3 gap-1">
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('today')}>今天</Button>
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('yesterday')}>昨天</Button>
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('7days')}>近7天</Button>
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('week')}>本周</Button>
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('30days')}>近30天</Button>
-              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('month')}>本月</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('today')}>{t('today')}</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('yesterday')}>{t('yesterday')}</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('7days')}>{t('last7Days')}</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('week')}>{t('thisWeek')}</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('30days')}>{t('last30Days')}</Button>
+              <Button variant="ghost" size="sm" className="text-[11px] h-7" onClick={() => applyPreset('month')}>{t('thisMonth')}</Button>
             </div>
           </PopoverContent>
         </Popover>
 
         {isAdmin && (
           <>
-            <Input placeholder="渠道ID" className="w-[80px] h-9" value={filters.channel} onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))} />
-            <Input placeholder="用户" className="w-[100px] h-9" value={filters.username} onChange={e => setFilters(f => ({ ...f, username: e.target.value }))} />
+            <Input placeholder={t('channelId')} className="w-[80px] h-9" value={filters.channel} onChange={e => setFilters(f => ({ ...f, channel: e.target.value }))} />
+            <Input placeholder={t('user')} className="w-[100px] h-9" value={filters.username} onChange={e => setFilters(f => ({ ...f, username: e.target.value }))} />
           </>
         )}
 
         <div className="flex items-center gap-1 ml-auto">
           <Button size="sm" onClick={handleSearch} className="h-9 px-4">
             <Search className="mr-2 h-4 w-4" />
-            {' '}
-            查询
+            {t('search')}
           </Button>
           <Button variant="ghost" size="sm" onClick={handleReset} className="h-9 px-3 text-muted-foreground">
             <Eraser className="h-4 w-4" />

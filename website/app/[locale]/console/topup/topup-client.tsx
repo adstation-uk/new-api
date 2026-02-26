@@ -1,6 +1,7 @@
 'use client'
 
 import { Coins, User as UserIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card } from '@/components/ui/card'
@@ -26,13 +27,14 @@ export function TopupClient({
   user,
   topupInfo: _topupInfo,
 }: TopupClientProps) {
-  const _router = useRouter()
+  const t = useTranslations('Page.Console.Topup')
+  const router = useRouter()
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight">钱包管理</h1>
-        <p className="text-muted-foreground">管理您的账户余额和充值</p>
+        <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
+        <p className="text-muted-foreground">{t('subtitle')}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -49,7 +51,7 @@ export function TopupClient({
 
           <div className="space-y-1 mb-8">
             <h2 className="text-xl font-bold tracking-tight">{user?.username}</h2>
-            <p className="text-sm text-muted-foreground">{user?.email || '未绑定邮箱'}</p>
+            <p className="text-sm text-muted-foreground">{user?.email || t('emailNotBound')}</p>
           </div>
 
           <div className="w-full h-px bg-border/60 mb-8" />
@@ -60,7 +62,7 @@ export function TopupClient({
                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                   <Coins size={18} />
                 </div>
-                <span className="text-sm font-medium text-muted-foreground">当前余额</span>
+                <span className="text-sm font-medium text-muted-foreground">{t('balance')}</span>
               </div>
               <span className="text-2xl font-black text-primary">
                 {renderQuota(user?.quota || 0)}
@@ -69,7 +71,7 @@ export function TopupClient({
 
             <div className="px-4 text-left">
               <p className="text-xs text-muted-foreground flex justify-between items-center">
-                <span>精确额度</span>
+                <span>{t('exactQuota')}</span>
                 <span className="font-mono text-foreground/80">{user?.quota?.toLocaleString() || 0}</span>
               </p>
             </div>
@@ -78,7 +80,7 @@ export function TopupClient({
 
         {/* Topup Action Card */}
         <Card className="col-span-1 md:col-span-2 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold mb-6 border-b pb-2">在线充值</h3>
+          <h3 className="text-lg font-semibold mb-6 border-b pb-2">{t('onlineRecharge')}</h3>
           <div className="pt-2">
             <PayPalRecharge
               user={user}

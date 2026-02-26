@@ -2,6 +2,7 @@ import {
   ExternalLink,
   Search,
 } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { ModelIcon } from '@/components/model-icon'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ type PricingPageProps = {
 }
 
 export default async function PricingPage({ searchParams }: PricingPageProps) {
+  const t = await getTranslations('Page.Pricing')
   const params = await searchParams
   const keyword = (params.keyword as string)?.toLowerCase() || ''
 
@@ -60,9 +62,9 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
   return (
     <div className="container mx-auto py-10 px-4 max-w-7xl space-y-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold tracking-tight">定价</h1>
+        <h1 className="text-4xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground text-lg">
-          精选顶级 AI 模型，手动维护，透明简单。
+          {t('subtitle')}
         </p>
       </div>
 
@@ -72,14 +74,14 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               name="keyword"
-              placeholder="搜索模型、分类、提供商或计费方式..."
+              placeholder={t('searchPlaceholder')}
               className="h-10 pl-9"
               defaultValue={keyword}
             />
           </form>
           <Link href="/models">
             <Button variant="outline" className="rounded-xl border-slate-200">
-              全部模型库
+              {t('allModels')}
             </Button>
           </Link>
         </div>
@@ -94,18 +96,18 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                 <span className="text-xs font-medium text-muted-foreground">
                   {groupModels.length}
                   {' '}
-                  个模型
+                  {t('modelCount')}
                 </span>
               </div>
             </div>
             <Table>
               <TableHeader className="bg-muted/10">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[40%] text-xs font-semibold py-4">模型</TableHead>
-                  <TableHead className="text-xs font-semibold py-4 text-center">分类</TableHead>
-                  <TableHead className="text-xs font-semibold py-4 text-right">我们的价格</TableHead>
-                  <TableHead className="text-xs font-semibold py-4 text-right">市场价格</TableHead>
-                  <TableHead className="text-xs font-semibold py-4 text-right">折扣</TableHead>
+                  <TableHead className="w-[40%] text-xs font-semibold py-4">{t('table.model')}</TableHead>
+                  <TableHead className="text-xs font-semibold py-4 text-center">{t('table.category')}</TableHead>
+                  <TableHead className="text-xs font-semibold py-4 text-right">{t('table.ourPrice')}</TableHead>
+                  <TableHead className="text-xs font-semibold py-4 text-right">{t('table.marketPrice')}</TableHead>
+                  <TableHead className="text-xs font-semibold py-4 text-right">{t('table.discount')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -138,7 +140,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
                         </Badge>
                       </TableCell>
                       <TableCell className="py-4 text-right font-bold text-primary">
-                        {model.price || '免费'}
+                        {model.price || t('free')}
                         {model.billingUnit ? <span className="ml-1 text-xs font-medium text-muted-foreground">{model.billingUnit}</span> : null}
                       </TableCell>
                       <TableCell className="py-4 text-right font-medium text-muted-foreground line-through">
@@ -165,7 +167,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
 
       {filteredModels.length === 0 && (
         <div className="rounded-3xl border-2 border-dashed bg-muted/20 py-20 text-center">
-          <p className="text-muted-foreground">未找到匹配的模型。</p>
+          <p className="text-muted-foreground">{t('empty')}</p>
         </div>
       )}
     </div>

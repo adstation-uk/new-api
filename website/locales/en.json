@@ -1,12 +1,909 @@
 {
-  "home": {
-    "title": "Welcome to Broadscene",
-    "subtitle": "High-performance LLM API management platform"
+  "Common": {
+    "action": {
+      "login": "Login",
+      "register": "Register",
+      "logout": "Log out",
+      "prevPage": "Previous",
+      "nextPage": "Next"
+    },
+    "status": {
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "expired": "Expired",
+      "exhausted": "Exhausted",
+      "unknown": "Unknown",
+      "current": "Current",
+      "user": "User",
+      "admin": "Admin",
+      "normalUser": "Regular user",
+      "systemToken": "(System)",
+      "defaultToken": "Default token"
+    },
+    "toast": {
+      "loginSuccess": "Login successful",
+      "loginFailed": "Login failed",
+      "registerSuccess": "Registration successful",
+      "registerSuccessAndLogin": "Registration successful, please log in",
+      "registerFailed": "Registration failed",
+      "loggedOutSample": "Logged out (demo)",
+      "copied": "Copied to clipboard"
+    },
+    "nav": {
+      "console": "Console",
+      "overview": "Overview",
+      "token": "Token",
+      "log": "Logs",
+      "topup": "Top up",
+      "personalSettings": "Personal settings"
+    },
+    "form": {
+      "username": "Username",
+      "usernameOrEmail": "Username / Email",
+      "usernamePlaceholder": "Enter username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Enter password again"
+    },
+    "table": {
+      "logTypeRecharge": "Recharge",
+      "logTypeConsume": "Consume",
+      "logTypeManage": "Manage",
+      "logTypeSystem": "System",
+      "logTypeError": "Error",
+      "logTypeRefund": "Refund",
+      "noData": "No data",
+      "paginationSummary": "{total} items, page {page} / {totalPages}",
+      "time": "Time",
+      "type": "Type",
+      "channel": "Channel",
+      "model": "Model",
+      "user": "User",
+      "userToken": "User / Token",
+      "token": "Token",
+      "consumptionDetail": "Consumption",
+      "duration": "Duration",
+      "detail": "Detail",
+      "consumption": "Consumed quota",
+      "detailContent": "Content",
+      "other": "Other"
+    },
+    "errors": {
+      "network": "Network error",
+      "serverTryLater": "Server error, please try again later",
+      "missingCredentials": "Please enter username and password",
+      "fillRequired": "Please fill in all required fields",
+      "passwordMismatch": "The two passwords do not match",
+      "getStateFailed": "Failed to fetch state",
+      "usernameRequired": "Please enter username",
+      "usernameMax": "Username must be at most 20 characters",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordMax": "Password must be at most 20 characters",
+      "passwordConfirmRequired": "Please enter the password again"
+    },
+    "locale": {
+      "en": "English",
+      "zh": "中文"
+    }
   },
-  "common": {
-    "language": "Language"
-  },
-  "ProfilePage": {
-    "title": "Welcome back, {username}"
+  "Page": {
+    "Marketing": {
+      "Meta": {
+        "description": "Broadscene AI API platform"
+      },
+      "Hero": {
+        "title": "Welcome to Broadscene",
+        "subtitle": "High-performance LLM API management platform"
+      },
+      "Navbar": {
+        "home": "Home",
+        "pricing": "Pricing",
+        "models": "Models",
+        "login": "Login",
+        "register": "Register"
+      },
+      "Footer": {
+        "description": "Next-generation LLM API platform providing unified, stable, and efficient API access to help developers and enterprises build AI applications quickly.",
+        "product": "Product",
+        "pricing": "Pricing",
+        "models": "Models",
+        "docs": "Docs",
+        "resource": "Resources",
+        "login": "Login",
+        "register": "Register",
+        "feedback": "Feedback",
+        "legal": "Legal",
+        "guide": "Guide",
+        "repo": "Open-source Repo",
+        "copyright": "Broadscene. All rights reserved.",
+        "locale": "Simplified Chinese"
+      },
+      "Mdx": {
+        "copy": "Copy",
+        "copied": "Copied"
+      }
+    },
+    "Collections": {
+      "Detail": {
+        "metaDescriptionWithCount": "{key} model collection with {count} models.",
+        "metaDescription": "{key} model collection.",
+        "description": "{title}, organized by capabilities and scenarios. Click a card to view model details and API docs.",
+        "explore": "Explore",
+        "empty": "No models in this collection yet.",
+        "overviewTitle": "Model Capability Overview",
+        "overview1": "• Covers multiple task types and business scenarios",
+        "overview2": "• Supports unified API and model-level routing",
+        "overview3": "• Choose model variants by cost and quality",
+        "modelFallback": "{title} {category} model"
+      }
+    },
+    "Models": {
+      "HeroCard": {
+        "billingRequest": "Per request",
+        "billingToken": "Per token",
+        "billingType": "Billing",
+        "priceInfo": "Pricing Info",
+        "ourPrice": "Our Price",
+        "contactSales": "Contact Sales",
+        "marketPrice": "Market Price",
+        "copyModelId": "Copy Model ID",
+        "copiedModelId": "Model ID Copied"
+      },
+      "List": {
+        "title": "Model Pricing",
+        "subtitle": "Compare pricing details across models and groups. Supports both token-based and request-based billing with unified access to leading AI capabilities.",
+        "searchPlaceholder": "Search models, vendors, tags...",
+        "showDiscounted": "Show discounted",
+        "showOriginal": "Show original",
+        "unknownVendor": "Unknown Vendor",
+        "empty": "No matching models",
+        "billing": {
+          "perToken": "Per token",
+          "perRequest": "Per request"
+        },
+        "sidebar": {
+          "title": "Filter & Sort",
+          "group": "Price Group",
+          "bestGroup": "Best Group",
+          "vendor": "Vendor",
+          "tags": "Tags"
+        },
+        "table": {
+          "modelInfo": "Model",
+          "billingMode": "Billing",
+          "details": "Details"
+        },
+        "card": {
+          "billingMode": "Billing",
+          "prompt": "Prompt",
+          "completion": "Completion",
+          "price": "Price",
+          "perRequestSuffix": " / req",
+          "groupRatio": "Group ratio:",
+          "modelRatio": "Model ratio:"
+        }
+      }
+    },
+    "Home": {
+      "hero": {
+        "badge": "One-stop access to top video, image, and music models",
+        "title": "Welcome back, {username}",
+        "subtitle": "Lower cost than similar platforms, faster response, and better developer experience. Integrate multiple models quickly using an OpenAI-style API.",
+        "getKey": "Get free API key now",
+        "docs": "API Docs",
+        "metrics": {
+          "uptime": "Uptime",
+          "avgResponse": "Avg Response",
+          "support": "Support",
+          "security": "Data Security"
+        }
+      },
+      "models": {
+        "title": "Popular Models",
+        "subtitle": "One key to access multiple model ecosystems",
+        "all": "Browse all models"
+      },
+      "useCases": {
+        "sectionTitle": "AI APIs for Any Project",
+        "sectionSubtitle": "Structured capability sections and conversion paths inspired by the Kie.ai layout.",
+        "video": {
+          "title": "AI Video Generation API",
+          "desc": "Create high-quality videos with Veo 3.1, Veo 3.1 Fast, and Runway Aleph, with synced audio, smooth motion, and better camera control."
+        },
+        "image": {
+          "title": "AI Image Generation API",
+          "desc": "Generate high-quality images using 4o Image API, Flux Kontext API, and Nano Banana API with realism, style control, and consistency."
+        },
+        "music": {
+          "title": "AI Music Generation API",
+          "desc": "Generate high-quality music via Suno API with stronger vocals, optimized arrangement, and longer compositions for apps, games, and creative workflows."
+        },
+        "chat": {
+          "title": "LLM & AI Chat API",
+          "desc": "Access advanced LLM capabilities with one API key for chat, coding, and QA to build smarter user experiences quickly."
+        },
+        "getKey": "Get API key now"
+      },
+      "why": {
+        "title": "Why choose Kie.ai for API integration",
+        "subtitle": "The style follows your requested reference and can be replaced with New API brand copy later.",
+        "pricing": {
+          "title": "Flexible credit system with affordable AI API pricing",
+          "desc": "Pay-as-you-go pricing lowers integration costs for startups and enterprise projects."
+        },
+        "trial": {
+          "title": "Free AI API sandbox trial",
+          "desc": "Test prompts and parameters before integration without buying a plan first."
+        },
+        "integration": {
+          "title": "Simple AI API integration",
+          "desc": "Use docs and examples to integrate AI capabilities into your product in minutes."
+        },
+        "performance": {
+          "title": "Fast and scalable AI API performance",
+          "desc": "Low latency, high concurrency, and stable outputs from prototype to production."
+        },
+        "security": {
+          "title": "Strong data security",
+          "desc": "End-to-end secure architecture and encryption protect your business and privacy."
+        },
+        "support": {
+          "title": "24/7 monitoring and support",
+          "desc": "Always-on monitoring and support help your business run continuously and reliably."
+        }
+      },
+      "hotModels": {
+        "title": "Popular AI models you can access today",
+        "video": "Video Creation",
+        "music": "Music Generation",
+        "image": "Image Creation",
+        "edit": "Image Editing",
+        "veo": "Cinematic motion and native synced audio output.",
+        "runway": "Multi-task video editing with stronger scene understanding.",
+        "suno": "Real singing voices and high-quality music across styles.",
+        "image4o": "High-fidelity visuals with accurate text rendering.",
+        "flux": "Highly consistent output for detail-heavy scenarios.",
+        "nano": "Fast and precise image generation and editing experience.",
+        "exploreAll": "Explore all"
+      },
+      "faq": {
+        "title": "Kie.ai FAQ",
+        "q1": "What is Kie.ai and how does it work?",
+        "a1": "Kie.ai is an AI platform providing video, image, music, and chat APIs. Developers can access different model capabilities through one unified key.",
+        "q2": "Does Kie.ai offer a free trial for new users?",
+        "a2": "Yes. The platform offers a free trial so you can validate features before paying.",
+        "q3": "What is Kie.ai's pricing model?",
+        "a3": "It uses flexible credits/usage-based billing for businesses of different sizes and stages.",
+        "q4": "What AI APIs does Kie.ai provide?",
+        "a4": "It covers video, image, music, and chat APIs while continuously adding mainstream models.",
+        "q5": "Does Kie.ai provide API documentation?",
+        "a5": "Yes. Complete docs and examples are provided, including setup, usage, best practices, and troubleshooting.",
+        "q6": "How do I integrate Kie.ai API into my project?",
+        "a6": "Create an account, get your API key, and follow the docs to finish configuration and start calling APIs."
+      },
+      "cta": {
+        "title": "Start building with world-class AI models today",
+        "subtitle": "Access video, image, music, and chat APIs on one platform—faster, more affordable, and developer-friendly.",
+        "getKey": "Get free API key now"
+      }
+    },
+    "Login": {
+      "title": "Sign in to New API",
+      "subtitle": "Enter your credentials to access the console",
+      "submitting": "Signing in...",
+      "oauthDivider": "Or continue with",
+      "noAccount": "No account?",
+      "goRegister": "Create one"
+    },
+    "Register": {
+      "title": "Create New API account",
+      "subtitle": "Create a new account to get started",
+      "loading": "Loading...",
+      "submitting": "Creating account...",
+      "oauthDivider": "Or register with",
+      "hasAccount": "Already have an account?",
+      "goLogin": "Sign in"
+    },
+    "Pricing": {
+      "title": "Pricing",
+      "subtitle": "Selected top AI models, curated manually, transparent and simple.",
+      "searchPlaceholder": "Search model, category, provider or billing...",
+      "allModels": "All models",
+      "modelCount": "models",
+      "free": "Free",
+      "empty": "No matching models found.",
+      "table": {
+        "model": "Model",
+        "category": "Category",
+        "ourPrice": "Our Price",
+        "marketPrice": "Market Price",
+        "discount": "Discount"
+      }
+    },
+    "Console": {
+      "Navbar": {
+        "dashboard": "Dashboard",
+        "token": "API Keys",
+        "log": "Usage Logs",
+        "topup": "Wallet",
+        "personal": "Personal Settings"
+      },
+      "Dashboard": {
+        "title": "Dashboard",
+        "welcome": "Welcome back, {username}. Here is an overview of your account activity.",
+        "announcementFallback": "Announcement",
+        "refresh": "Refresh",
+        "stats": {
+          "balance": "Current Balance",
+          "topupHint": "Top up",
+          "todayUsage": "Today's Usage",
+          "todayCalls": "Today's Calls",
+          "totalCalls": "Total Calls"
+        },
+        "announcements": {
+          "title": "Announcements",
+          "latest": "Latest 20",
+          "empty": "No announcements"
+        },
+        "apiInfo": {
+          "title": "Quick Start",
+          "manageTokenTitle": "Manage Tokens",
+          "manageTokenDesc": "Create and allocate quota",
+          "docsTitle": "Official Docs",
+          "docsDesc": "View integration guide",
+          "baseUrl": "Configure Base URL"
+        },
+        "charts": {
+          "usage": "Usage",
+          "title": "Usage Trend",
+          "loading": "Loading..."
+        },
+        "uptime": {
+          "title": "Service Status",
+          "up": "Healthy",
+          "down": "Unavailable",
+          "empty": "Uptime monitors are not configured yet"
+        }
+      },
+      "Log": {
+        "title": "Usage Logs",
+        "detailTitle": "Log Details",
+        "search": {
+          "token": "Token",
+          "model": "Model",
+          "type": "Type",
+          "all": "All",
+          "recharge": "Recharge",
+          "consume": "Consume",
+          "manage": "Manage",
+          "system": "System",
+          "error": "Error",
+          "refund": "Refund",
+          "selectRange": "Select time range",
+          "startDate": "Start date",
+          "endDate": "End date",
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "last7Days": "Last 7 days",
+          "thisWeek": "This week",
+          "last30Days": "Last 30 days",
+          "thisMonth": "This month",
+          "channelId": "Channel ID",
+          "user": "User",
+          "search": "Search"
+        }
+      },
+      "Channel": {
+        "page": {
+          "title": "Channel Management",
+          "description": "Manage provider channels, configure API keys, and test availability.",
+          "loading": "Loading..."
+        },
+        "client": {
+          "confirmBatchDelete": "Delete the selected {count} channels?",
+          "batchDeleteSuccess": "Deleted {count} channels successfully",
+          "batchDeleteFailed": "Batch delete failed",
+          "batchTagSuccess": "Batch tag update succeeded",
+          "batchTagFailed": "Batch tag update failed",
+          "confirmTestAll": "Test all channels?",
+          "testingAll": "Starting full test...",
+          "testAllStarted": "Full test task started",
+          "testAllFailed": "Failed to start full test",
+          "confirmUpdateBalanceAll": "Update balances for all channels?",
+          "updatingBalance": "Updating balances...",
+          "updateBalanceSuccess": "Balances updated successfully",
+          "updateBalanceFailed": "Update failed",
+          "confirmFixDb": "Repair database consistency?",
+          "fixDbSuccess": "Database repaired successfully",
+          "fixDbFailed": "Repair failed",
+          "confirmDeleteDisabled": "Delete all disabled channels? This cannot be undone!",
+          "deleteDisabledSuccess": "Deleted all disabled channels",
+          "deleteFailed": "Delete failed",
+          "tagDialogTitle": "Batch Set Tag",
+          "tagLabel": "Tag Name",
+          "tagPlaceholder": "Name...",
+          "tagDialogPrefix": "Set this tag for",
+          "tagDialogSuffix": "selected channels",
+          "cancel": "Cancel",
+          "confirm": "Confirm"
+        },
+        "search": {
+          "keywordPlaceholder": "Search channel name, ID, or model...",
+          "search": "Search",
+          "tagView": "Tag View",
+          "status": "Status",
+          "allStatus": "All Status",
+          "enabled": "Enabled",
+          "disabled": "Disabled",
+          "batchTag": "Batch Tag",
+          "batchDelete": "Batch Delete",
+          "more": "More",
+          "testAll": "Test All Channels",
+          "updateAllBalance": "Update All Balances",
+          "fixDb": "Fix DB Consistency",
+          "deleteDisabled": "Delete Disabled Channels",
+          "addChannel": "Add Channel"
+        },
+        "sheet": {
+          "validation": {
+            "nameRequired": "Name is required",
+            "modelsRequired": "Select at least one model",
+            "keyRequired": "Key is required when creating a channel"
+          },
+          "toast": {
+            "updateSuccess": "Updated successfully",
+            "createSuccess": "Added successfully",
+            "submitFailed": "Operation failed",
+            "fetchingModels": "Fetching model list...",
+            "keyRequiredFirst": "Please enter key first",
+            "fetchModelsSuccess": "Fetched {count} models successfully",
+            "fetchFailed": "Fetch failed",
+            "networkError": "Network error",
+            "noModelsToCopy": "No models to copy",
+            "copied": "Copied to clipboard"
+          },
+          "titleEdit": "Edit Channel",
+          "titleCreate": "Add Channel",
+          "description": "Configure basic channel info, models, and keys.",
+          "fields": {
+            "type": "Channel Type",
+            "typePlaceholder": "Select channel type",
+            "name": "Channel Name",
+            "namePlaceholder": "e.g. OpenAI-01",
+            "baseUrl": "Proxy URL",
+            "baseUrlPlaceholder": "https://api.openai.com (optional)",
+            "baseUrlDescription": "Default URL is used if empty",
+            "models": "Models",
+            "modelsPlaceholder": "Type model name and press Enter, or use comma separation",
+            "noModels": "No models selected",
+            "key": "Key",
+            "keyPlaceholder": "Enter authentication key for this channel",
+            "group": "Group",
+            "groupDescription": "Comma-separated",
+            "tag": "Tag",
+            "tagPlaceholder": "Channel tag",
+            "priority": "Priority",
+            "weight": "Weight",
+            "testModel": "Test Model",
+            "testModelPlaceholder": "Model used for testing (optional)",
+            "other": "Other Config (JSON)",
+            "otherPlaceholder": "Extra config for specific channels, e.g. Azure version"
+          },
+          "actions": {
+            "fetchModels": "Fetch Model List",
+            "clearModels": "Clear All Models",
+            "copyModels": "Copy All Models",
+            "save": "Save Channel"
+          }
+        },
+        "table": {
+          "toast": {
+            "updatingStatus": "Updating status...",
+            "updateStatusSuccess": "Status updated successfully",
+            "updateStatusFailed": "Status update failed",
+            "networkError": "Network connection error",
+            "deleting": "Deleting...",
+            "deleteSuccess": "Deleted successfully",
+            "deleteFailed": "Delete failed",
+            "testing": "Testing...",
+            "testSuccess": "Test succeeded: {message}",
+            "testFailed": "Test failed: {message}",
+            "testError": "Test error",
+            "updatingBalance": "Updating balance...",
+            "updateBalanceSuccess": "Balance updated: {message}",
+            "updateBalanceFailed": "Balance update failed: {message}",
+            "updateError": "Update error",
+            "saving": "Saving...",
+            "saveSuccess": "Saved successfully",
+            "saveFailed": "Save failed",
+            "copied": "Copied to clipboard"
+          },
+          "confirmDelete": "Delete this channel?",
+          "columns": {
+            "name": "Name",
+            "type": "Type",
+            "models": "Models",
+            "status": "Status",
+            "response": "Response",
+            "balance": "Balance",
+            "priority": "Priority",
+            "weight": "Weight",
+            "actions": "Actions"
+          },
+          "modelsCount": "models:",
+          "enabled": "Enabled",
+          "disabled": "Disabled",
+          "autoDisabled": "Auto Disabled",
+          "reason": "Reason",
+          "time": "Time",
+          "unknown": "Unknown",
+          "multiKey": "Multi-Key",
+          "notTested": "Not tested",
+          "manageChannel": "Manage Channel",
+          "quickTest": "Quick Test",
+          "detailTest": "Detailed Test",
+          "editChannel": "Edit Channel",
+          "copyKey": "Copy Key",
+          "deleteChannel": "Delete Channel",
+          "empty": "No channel data"
+        },
+        "modelSelect": {
+          "title": "Select Models",
+          "new": "New",
+          "existing": "Existing",
+          "searchPlaceholder": "Search models...",
+          "selected": "Selected",
+          "other": "Other",
+          "vendor": {
+            "qwen": "Tongyi Qianwen",
+            "zhipu": "Zhipu",
+            "baidu": "ERNIE Bot",
+            "doubao": "Doubao"
+          },
+          "empty": "No matching models found",
+          "totalSelected": "Total selected",
+          "models": "models",
+          "cancel": "Cancel",
+          "confirm": "Confirm and update"
+        },
+        "modelTest": {
+          "title": "Model Test",
+          "models": "models",
+          "unnamed": "Unnamed",
+          "searchModel": "Search Model",
+          "searchPlaceholder": "Type model name to search...",
+          "endpointType": "Endpoint Type",
+          "selectEndpoint": "Select endpoint type",
+          "copySuccess": "Copy Successful",
+          "columns": {
+            "model": "Model",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "requesting": "Requesting...",
+          "success": "Success",
+          "failed": "Failed",
+          "notStarted": "Not started",
+          "testThisModel": "Test this model",
+          "empty": "No matching models",
+          "tip": "Tip: this page runs non-streaming tests. If a channel only supports streaming, test may fail while real usage still works.",
+          "batchTesting": "Batch testing...",
+          "batchTest": "Batch Test",
+          "execFailed": "Test execution failed",
+          "noSuccessful": "No successful models",
+          "copiedSuccessful": "Copied {count} successful models",
+          "endpoint": {
+            "auto": "Auto Detect",
+            "imageGeneration": "Image Generation (/v1/images/generations)"
+          }
+        }
+      },
+      "Models": {
+        "page": {
+          "title": "Model Library",
+          "description": "Browse and manage all AI models supported by the system."
+        },
+        "client": {
+          "searchPlaceholder": "Search model name, alias, or tags...",
+          "allVendors": "All vendors",
+          "search": "Search",
+          "syncOfficial": "Sync Official",
+          "manageVendors": "Manage Vendors",
+          "addModel": "Add Model",
+          "paginationSummary": "{total} models, page {page} / {totalPages}",
+          "toast": {
+            "syncing": "Syncing official model data...",
+            "syncSuccess": "Sync successful",
+            "syncFailed": "Sync failed"
+          }
+        },
+        "sheet": {
+          "titleEdit": "Edit Model",
+          "titleCreate": "Add Model",
+          "description": "Configure model basics, aliases, and official sync settings.",
+          "save": "Save Model Info",
+          "validation": {
+            "modelNameRequired": "Model name is required",
+            "vendorRequired": "Please select a vendor"
+          },
+          "toast": {
+            "updating": "Updating model...",
+            "creating": "Creating model...",
+            "updateSuccess": "Updated successfully",
+            "createSuccess": "Created successfully",
+            "submitFailed": "Operation failed"
+          },
+          "nameRule": {
+            "exact": "Exact match",
+            "prefix": "Prefix match",
+            "contains": "Contains match",
+            "suffix": "Suffix match",
+            "description": "Match priority: Exact > Prefix > Suffix > Contains"
+          },
+          "fields": {
+            "modelName": "Model Name",
+            "modelNamePlaceholder": "e.g. gpt-4o-2024-05-13",
+            "preview": "Preview",
+            "nameRule": "Name Match Type",
+            "nameRulePlaceholder": "Select name match type",
+            "vendor": "Vendor",
+            "vendorPlaceholder": "Select model vendor",
+            "icon": "Custom Icon (Optional)",
+            "iconPlaceholder": "Enter @lobehub/icons icon ID",
+            "iconDescription": "Leave empty to use vendor icon automatically",
+            "tags": "Tags / Aliases (comma-separated)",
+            "tagsPlaceholder": "e.g. gpt-4o, chat, vision",
+            "tagsDescription": "Model will match these tags as aliases",
+            "description": "Model Description",
+            "descriptionPlaceholder": "Briefly describe model capabilities and use cases",
+            "status": "Enable Model",
+            "statusDescription": "Control whether model is visible in the list",
+            "syncOfficial": "Official Sync",
+            "syncOfficialDescription": "Allow auto-discovery through official API",
+            "endpoints": "Custom Endpoints (JSON)",
+            "endpointsDescription": "Override vendor base URL for specific providers"
+          }
+        },
+        "table": {
+          "confirmDelete": "Delete this model? This action cannot be undone.",
+          "unknownVendor": "Unknown vendor",
+          "allGroups": "Available to all",
+          "archived": "Archived",
+          "syncOfficial": "Official Sync",
+          "matchedCount": "Matched {count}",
+          "empty": "No matching model records",
+          "columns": {
+            "icon": "Icon",
+            "model": "Model / Alias",
+            "vendor": "Vendor",
+            "scope": "Scope / Group",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "nameRule": {
+            "exact": "Exact",
+            "prefix": "Prefix",
+            "contains": "Contains",
+            "suffix": "Suffix"
+          },
+          "menu": {
+            "title": "Model Actions",
+            "view": "View Details",
+            "delete": "Delete Model"
+          },
+          "toast": {
+            "deleting": "Deleting...",
+            "deleteSuccess": "Deleted successfully",
+            "deleteFailed": "Delete failed"
+          }
+        },
+        "vendorDialog": {
+          "title": "Vendor Management",
+          "description": "Manage model vendors, icons, and default descriptions. Icon identifiers follow Lobe Icons.",
+          "add": "Add Vendor",
+          "namePlaceholder": "e.g. OpenAI",
+          "descriptionPlaceholder": "Vendor description...",
+          "iconPlaceholder": "Icon identifier",
+          "confirmDelete": "Delete this vendor?",
+          "empty": "No vendor data",
+          "columns": {
+            "icon": "Icon",
+            "name": "Name",
+            "description": "Description",
+            "actions": "Actions"
+          },
+          "validation": {
+            "nameRequired": "Name is required"
+          },
+          "toast": {
+            "saving": "Saving...",
+            "saveFailed": "Save failed",
+            "updateSuccess": "Updated successfully",
+            "createSuccess": "Added successfully",
+            "deleting": "Deleting...",
+            "deleteSuccess": "Deleted successfully",
+            "deleteFailed": "Delete failed"
+          }
+        }
+      },
+      "Personal": {
+        "actions": {
+          "networkError": "Network error"
+        },
+        "page": {
+          "title": "Personal Settings",
+          "subtitle": "Manage your profile and account security",
+          "role": {
+            "user": "Regular User",
+            "admin": "Admin",
+            "superAdmin": "Super Admin",
+            "unknown": "Unknown"
+          },
+          "profile": {
+            "title": "Basic Info",
+            "description": "Your public profile information",
+            "userId": "User ID",
+            "username": "Username",
+            "balance": "Current Balance"
+          }
+        },
+        "client": {
+          "topup": "Top Up",
+          "provider": {
+            "email": "Email",
+            "wechat": "WeChat"
+          },
+          "security": {
+            "title": "Security & Access",
+            "description": "Manage account bindings and access token",
+            "bindings": "Account Bindings"
+          },
+          "status": {
+            "bound": "Bound",
+            "unbound": "Unbound"
+          },
+          "action": {
+            "bind": "Bind",
+            "bindNow": "Bind now",
+            "changePassword": "Change Password",
+            "deleteAccount": "Delete Account"
+          },
+          "token": {
+            "title": "Access Token",
+            "generate": "Generate",
+            "regenerate": "Regenerate",
+            "emptyHint": "Generate a system-level token for OpenAI-compatible client connections"
+          },
+          "toast": {
+            "tokenGenerated": "Access token generated",
+            "generateFailed": "Generation failed",
+            "copyFailed": "Copy failed"
+          }
+        }
+      },
+      "User": {
+        "page": {
+          "title": "User Management",
+          "description": "Manage user profiles, quota, and permissions."
+        },
+        "sheet": {
+          "titleEdit": "Edit User",
+          "titleCreate": "Add User",
+          "description": "Update user profile, quota, and group settings.",
+          "save": "Save Changes",
+          "validation": {
+            "usernameRequired": "Username is required",
+            "quotaNonNegative": "Quota cannot be negative"
+          },
+          "toast": {
+            "updating": "Updating user...",
+            "creating": "Creating user...",
+            "updateSuccess": "Updated successfully",
+            "createSuccess": "Created successfully",
+            "updateFailed": "Update failed",
+            "createFailed": "Create failed"
+          },
+          "group": {
+            "default": "Default Group (default)",
+            "vip": "VIP Group (vip)",
+            "svip": "Super VIP Group (svip)"
+          },
+          "fields": {
+            "username": "Username",
+            "usernamePlaceholder": "Enter username",
+            "displayName": "Display Name",
+            "displayNamePlaceholder": "Enter display name",
+            "password": "Reset Password",
+            "passwordPlaceholder": "Leave empty to keep password unchanged",
+            "passwordDescription": "Keep this empty if you don't want to change password",
+            "quota": "Remaining Quota (Unit: $)",
+            "group": "User Group",
+            "groupPlaceholder": "Select user group",
+            "groupDescription": "This affects channel priority and ratio calculation",
+            "remark": "Remark",
+            "remarkPlaceholder": "Enter remark"
+          }
+        },
+        "table": {
+          "edit": "Edit",
+          "empty": "No matching users found",
+          "remarkPrefix": "Remark: ",
+          "role": {
+            "superAdmin": "Super Admin"
+          },
+          "status": {
+            "deleted": "Deleted"
+          },
+          "columns": {
+            "user": "Username / Display Name",
+            "status": "Status",
+            "role": "Role",
+            "quota": "Quota Usage (Remaining / Total)",
+            "stats": "Stats",
+            "actions": "Actions"
+          },
+          "stats": {
+            "request": "Requests: ",
+            "requestTooltip": "Total request count",
+            "invite": "Invites: ",
+            "inviteTooltip": "Invited users / Historical invite quota: "
+          },
+          "action": {
+            "disable": "Disable",
+            "enable": "Enable",
+            "promote": "Promote",
+            "demote": "Demote",
+            "delete": "Delete"
+          },
+          "menu": {
+            "title": "Management",
+            "disableUser": "Disable User",
+            "enableUser": "Enable User",
+            "makeAdmin": "Set as Admin",
+            "makeNormal": "Set as Regular User",
+            "resetPasskey": "Reset Passkey",
+            "reset2fa": "Reset 2FA",
+            "deleteUser": "Delete User"
+          },
+          "toast": {
+            "executing": "Executing {label}...",
+            "actionSuccess": "{label} succeeded",
+            "actionFailed": "{label} failed",
+            "resetting": "Resetting {label}...",
+            "resetSuccess": "{label} reset successfully",
+            "resetFailed": "{label} reset failed"
+          }
+        }
+      },
+      "Topup": {
+        "title": "Wallet",
+        "subtitle": "Manage your account balance and recharges",
+        "emailNotBound": "Email not bound",
+        "balance": "Current Balance",
+        "exactQuota": "Exact Quota",
+        "onlineRecharge": "Online Recharge",
+        "paypal": {
+          "popular": "Popular",
+          "payUsd": "Pay ${amount} USD",
+          "bonusSuffix": "% Bonus",
+          "poweredBy": "Powered by",
+          "payNow": "Pay Now",
+          "confirmTitle": "Confirm Top-up",
+          "quotaLabel": "Top-up Amount",
+          "payAmount": "Payment: ${amount} USD",
+          "loadingOptions": "Loading payment options...",
+          "toast": {
+            "sdkLoadFailed": "Failed to load PayPal SDK",
+            "badNetworkResponse": "Unexpected network response",
+            "createOrderFailed": "Create order failed: {message}",
+            "captureFailed": "Payment capture failed",
+            "captureFailedWithMessage": "Payment capture failed: {message}",
+            "paySuccess": "Payment successful! Balance updated.",
+            "paypalError": "PayPal encountered an error."
+          }
+        }
+      }
+    }
   }
 }

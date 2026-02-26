@@ -2,16 +2,18 @@
 
 import type { SessionData } from '@/lib/session'
 import { getIronSession } from 'iron-session'
+import { getTranslations } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { api } from '@/lib/api'
 import { sessionOptions } from '@/lib/session'
 
 export async function loginAction(formData: FormData) {
+  const t = await getTranslations('Common')
   const username = formData.get('username') as string
   const password = formData.get('password') as string
 
   if (!username || !password) {
-    return { success: false, message: '请输入用户名和密码' }
+    return { success: false, message: t('errors.missingCredentials') }
   }
 
   try {
@@ -62,11 +64,11 @@ export async function loginAction(formData: FormData) {
       return { success: true, user: data.data }
     }
     else {
-      return { success: false, message: data.message || '登录失败' }
+      return { success: false, message: data.message || t('toast.loginFailed') }
     }
   }
   catch (error) {
     console.error('Login error:', error)
-    return { success: false, message: '服务器错误，请稍后再试' }
+    return { success: false, message: t('errors.serverTryLater') }
   }
 }

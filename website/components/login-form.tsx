@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -25,22 +26,30 @@ import {
   onOIDCClicked,
 } from '@/lib/oauth'
 
-const loginSchema = z.object({
-  username: z
-    .string()
-    .min(1, '请输入用户名')
-    .max(20, '用户名长度不得超过 20 位'),
-  password: z
-    .string()
-    .min(8, '密码长度不得小于 8 位')
-    .max(20, '密码长度不得超过 20 位'),
-})
+function createLoginSchema(t: (key: string) => string) {
+  return z.object({
+    username: z
+      .string()
+      .min(1, t('errors.usernameRequired'))
+      .max(20, t('errors.usernameMax')),
+    password: z
+      .string()
+      .min(8, t('errors.passwordMin'))
+      .max(20, t('errors.passwordMax')),
+  })
+}
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = {
+  username: string
+  password: string
+}
 
 export function LoginForm({ status }: { status: any }) {
+  const t = useTranslations('Common')
+  const p = useTranslations('Page.Login')
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const loginSchema = createLoginSchema(t)
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -61,16 +70,16 @@ export function LoginForm({ status }: { status: any }) {
       const result = await loginAction(formData)
 
       if (result.success) {
-        toast.success('登录成功')
+        toast.success(t('toast.loginSuccess'))
         router.push('/console')
         router.refresh()
       }
       else {
-        toast.error(result.message || '登录失败')
+        toast.error(result.message || t('toast.loginFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(t('errors.network'))
     }
     finally {
       setIsSubmitting(false)
@@ -86,9 +95,9 @@ export function LoginForm({ status }: { status: any }) {
             name="username"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>用户名 / 邮箱</FormLabel>
+                <FormLabel>{t('form.usernameOrEmail')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="admin" {...field} />
+                  <Input placeholder={t('form.usernamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,9 +108,9 @@ export function LoginForm({ status }: { status: any }) {
             name="password"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>密码</FormLabel>
+                <FormLabel>{t('form.password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" placeholder={t('form.passwordPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -110,7 +119,7 @@ export function LoginForm({ status }: { status: any }) {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? '登录中...' : '登录'}
+            {isSubmitting ? p('submitting') : t('action.login')}
           </Button>
 
           {(status?.github_oauth || status?.discord_oauth || status?.linuxdo_oauth || status?.oidc_enabled) && (
@@ -121,7 +130,7 @@ export function LoginForm({ status }: { status: any }) {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    或者使用以下方式登录
+                    {p('oauthDivider')}
                   </span>
                 </div>
               </div>
@@ -130,7 +139,7 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onGitHubOAuthClicked(status.github_client_id)}
+                    onClick={() => onGitHubOAuthClicked(status.github_client_id, t)}
                   >
                     GitHub
                   </Button>
@@ -139,7 +148,7 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id)}
+                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id, t)}
                   >
                     Linux DO
                   </Button>
@@ -148,7 +157,7 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onDiscordOAuthClicked(status.discord_client_id)}
+                    onClick={() => onDiscordOAuthClicked(status.discord_client_id, t)}
                   >
                     Discord
                   </Button>
@@ -157,7 +166,7 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id)}
+                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)}
                   >
                     OIDC
                   </Button>
@@ -167,10 +176,10 @@ export function LoginForm({ status }: { status: any }) {
           )}
 
           <div className="text-sm text-center text-muted-foreground">
-            没有账号？
+            {p('noAccount')}
             {' '}
             <Link href="/register" className="text-primary hover:underline">
-              立即注册
+              {p('goRegister')}
             </Link>
           </div>
         </CardFooter>

@@ -1,6 +1,7 @@
 'use client'
 
 import type { UserInfo } from '@/lib/user'
+import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
@@ -16,6 +17,7 @@ type MainNavProps = {
 
 export function MainNav({ navLinks, user }: MainNavProps) {
   const pathname = usePathname()
+  const t = useTranslations('Common')
 
   return (
     <nav className="hidden md:flex items-center gap-6">
@@ -44,7 +46,7 @@ export function MainNav({ navLinks, user }: MainNavProps) {
               : 'text-muted-foreground',
           )}
         >
-          控制台
+          {t('nav.console')}
         </Link>
       )}
     </nav>

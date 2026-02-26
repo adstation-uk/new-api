@@ -6,6 +6,7 @@ import {
   CreditCard,
   Zap,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { Line, LineChart, ResponsiveContainer } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -38,17 +39,19 @@ export function StatsCards({
   data: any
   loading: boolean
 }) {
+  const t = useTranslations('Page.Console.Dashboard.stats')
+
   const stats = [
     {
-      title: '当前余额',
+      title: t('balance'),
       value: renderQuota(data?.quota || 0),
       icon: <CreditCard className="w-4 h-4" />,
       className: '',
       trendColor: '#3b82f6',
-      subValue: '点击充值',
+      subValue: t('topupHint'),
     },
     {
-      title: '今日消耗',
+      title: t('todayUsage'),
       value: renderQuota(data?.today_quota || 0),
       icon: <Zap className="w-4 h-4" />,
       className: '',
@@ -56,7 +59,7 @@ export function StatsCards({
       trend: data?.trend?.consumeQuota,
     },
     {
-      title: '今日调用',
+      title: t('todayCalls'),
       value: renderNumber(data?.today_times || 0),
       icon: <Activity className="w-4 h-4" />,
       className: '',
@@ -64,7 +67,7 @@ export function StatsCards({
       trend: data?.trend?.times,
     },
     {
-      title: '总调用次数',
+      title: t('totalCalls'),
       value: renderNumber(data?.times || 0),
       icon: <BarChart3 className="w-4 h-4" />,
       className: '',

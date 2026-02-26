@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { useRouter } from '@/i18n/navigation'
 
@@ -10,6 +11,7 @@ type PaginationProps = {
 }
 
 export function Pagination({ page, total, pageSize }: PaginationProps) {
+  const t = useTranslations('Common')
   const router = useRouter()
   const totalPages = Math.ceil(total / pageSize)
 
@@ -25,19 +27,11 @@ export function Pagination({ page, total, pageSize }: PaginationProps) {
   return (
     <div className="p-4 border-t flex items-center justify-between">
       <div className="text-sm text-muted-foreground">
-        共
-        {' '}
-        {total}
-        {' '}
-        条数据，第
-        {' '}
-        {page}
-        {' '}
-        /
-        {' '}
-        {totalPages}
-        {' '}
-        页
+        {t('table.paginationSummary', {
+          total,
+          page,
+          totalPages,
+        })}
       </div>
       <div className="flex gap-2">
         <Button
@@ -46,7 +40,7 @@ export function Pagination({ page, total, pageSize }: PaginationProps) {
           disabled={page <= 1}
           onClick={() => handlePageChange(page - 1)}
         >
-          上一页
+          {t('action.prevPage')}
         </Button>
         <Button
           variant="outline"
@@ -54,7 +48,7 @@ export function Pagination({ page, total, pageSize }: PaginationProps) {
           disabled={page >= totalPages}
           onClick={() => handlePageChange(page + 1)}
         >
-          下一页
+          {t('action.nextPage')}
         </Button>
       </div>
     </div>

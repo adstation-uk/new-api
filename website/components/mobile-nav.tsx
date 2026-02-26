@@ -10,18 +10,12 @@ import {
   Menu,
   X,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { logout } from '@/actions/auth-actions'
 import { Button } from '@/components/ui/button'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
-
-const consoleLinks = [
-  { name: '总览', href: '/console', icon: LayoutDashboard },
-  { name: '令牌', href: '/console/token', icon: Key },
-  { name: '日志', href: '/console/log', icon: History },
-  { name: '充值', href: '/console/topup', icon: CreditCard },
-]
 
 type MobileNavProps = {
   navLinks: { name: string, href: string }[]
@@ -31,6 +25,13 @@ type MobileNavProps = {
 export function MobileNav({ navLinks, user }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
+  const t = useTranslations('Common')
+  const consoleLinks = [
+    { name: t('nav.overview'), href: '/console', icon: LayoutDashboard },
+    { name: t('nav.token'), href: '/console/token', icon: Key },
+    { name: t('nav.log'), href: '/console/log', icon: History },
+    { name: t('nav.topup'), href: '/console/topup', icon: CreditCard },
+  ]
 
   return (
     <>
@@ -90,7 +91,7 @@ export function MobileNav({ navLinks, user }: MobileNavProps) {
                   className="flex w-full items-center gap-3 py-2 text-destructive no-underline"
                 >
                   <LogOut className="h-5 w-5" />
-                  退出登录
+                  {t('action.logout')}
                 </button>
               </>
             )}
@@ -99,12 +100,12 @@ export function MobileNav({ navLinks, user }: MobileNavProps) {
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <Button variant="outline" className="w-full" asChild>
                   <Link href="/login" onClick={() => setIsOpen(false)}>
-                    登录
+                    {t('action.login')}
                   </Link>
                 </Button>
                 <Button className="w-full" asChild>
                   <Link href="/register" onClick={() => setIsOpen(false)}>
-                    注册
+                    {t('action.register')}
                   </Link>
                 </Button>
               </div>

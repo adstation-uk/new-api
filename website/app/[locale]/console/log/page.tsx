@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { Pagination } from '@/components/ui-pagination'
 import { Card } from '@/components/ui/card'
 import { api, getSession } from '@/lib/api'
@@ -53,6 +54,7 @@ export default async function LogPage({
     end_timestamp?: string
   }>
 }) {
+  const t = await getTranslations('Page.Console.Log')
   const params = await searchParams
   const page = Number.parseInt(params.p || '1')
   const pageSize = Number.parseInt(params.size || '15')
@@ -79,7 +81,7 @@ export default async function LogPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">使用日志</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
         </div>
 
         <Card className="p-0 overflow-hidden shadow-sm">

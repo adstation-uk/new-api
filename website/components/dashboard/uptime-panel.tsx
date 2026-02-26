@@ -1,6 +1,7 @@
 'use client'
 
 import { Globe } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -18,12 +19,14 @@ type UptimePanelProps = {
 }
 
 export function UptimePanel({ data, loading }: UptimePanelProps) {
+  const t = useTranslations('Page.Console.Dashboard.uptime')
+
   return (
     <Card className="col-span-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Globe className="w-5 h-5 text-green-500" />
-          <CardTitle className="text-lg font-semibold">服务运行状态</CardTitle>
+          <CardTitle className="text-lg font-semibold">{t('title')}</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="pt-6">
@@ -57,7 +60,7 @@ export function UptimePanel({ data, loading }: UptimePanelProps) {
                         <div className="flex flex-col">
                           <span className="text-sm font-medium">{monitor.name}</span>
                           <span className="text-[10px] text-muted-foreground">
-                            {monitor.status === 'up' ? '运行良好' : '不可连接'}
+                            {monitor.status === 'up' ? t('up') : t('down')}
                           </span>
                         </div>
                       </div>
@@ -73,7 +76,7 @@ export function UptimePanel({ data, loading }: UptimePanelProps) {
               )
             : (
                 <div className="flex flex-col items-center justify-center py-4 text-muted-foreground italic text-sm">
-                  管理员尚未配置 Uptime 监控
+                  {t('empty')}
                 </div>
               )}
       </CardContent>

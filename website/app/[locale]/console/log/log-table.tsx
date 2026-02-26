@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { DataTable } from '@/components/data-table'
 import { Badge } from '@/components/ui/badge'
@@ -25,12 +26,14 @@ type Log = {
 }
 
 export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
+  const t = useTranslations('Common')
+  const p = useTranslations('Page.Console.Log')
   const [selectedLog, setSelectedLog] = useState<Log | null>(null)
 
   const columns: ColumnDef<Log>[] = [
     {
       accessorKey: 'created_at',
-      header: '时间',
+      header: t('table.time'),
       cell: ({ row }) => {
         const date = new Date((row.getValue('created_at') as number) * 1000)
         return (
@@ -43,7 +46,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     },
     {
       accessorKey: 'type',
-      header: '类型',
+      header: t('table.type'),
       cell: ({ row }) => {
         const type = row.getValue('type') as number
         return (
@@ -53,7 +56,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
               getLogTypeClass(type),
             )}
           >
-            {renderLogType(type)}
+            {renderLogType(type, t)}
           </span>
         )
       },
@@ -62,7 +65,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
       ? [
           {
             accessorKey: 'channel',
-            header: '渠道',
+            header: t('table.channel'),
             cell: ({ row }: { row: any }) => {
               const channelId = row.getValue('channel') as number
               return channelId
@@ -78,7 +81,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
       : []),
     {
       accessorKey: 'model_name',
-      header: '模型',
+      header: t('table.model'),
       cell: ({ row }) => {
         const model = row.getValue('model_name') as string
         return model
@@ -92,14 +95,14 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     },
     {
       accessorKey: 'username',
-      header: isAdmin ? '用户 / 令牌' : '令牌',
+      header: isAdmin ? t('table.userToken') : t('table.token'),
       cell: ({ row }) => {
         const log = row.original
         return (
           <div className="flex flex-col min-w-[100px]">
             {isAdmin && <span className="font-medium text-foreground truncate">{log.username}</span>}
             <span className={cn('text-xs truncate', isAdmin ? 'text-muted-foreground/70' : 'font-medium text-foreground')}>
-              {log.token_name || (isAdmin ? '(系统)' : '默认令牌')}
+              {log.token_name || (isAdmin ? t('status.systemToken') : t('status.defaultToken'))}
             </span>
           </div>
         )
@@ -107,7 +110,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     },
     {
       id: 'consumption',
-      header: '消耗详情',
+      header: t('table.consumptionDetail'),
       cell: ({ row }) => {
         const log = row.original
         const isConsumption = log.type === 2
@@ -134,7 +137,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     },
     {
       accessorKey: 'use_time',
-      header: '耗时',
+      header: t('table.duration'),
       cell: ({ row }) => {
         const ms = row.getValue('use_time') as number
         if (ms === 0)
@@ -153,7 +156,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
     },
     {
       accessorKey: 'content',
-      header: '详情',
+      header: t('table.detail'),
       cell: ({ row }) => (
         <div
           className="max-w-[200px] truncate text-muted-foreground text-xs"
@@ -177,7 +180,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
       <Dialog open={!!selectedLog} onOpenChange={open => !open && setSelectedLog(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>日志详情</DialogTitle>
+            <DialogTitle>{p('detailTitle')}</DialogTitle>
           </DialogHeader>
           {selectedLog && (
             <div className="grid grid-cols-2 gap-4 text-sm mt-4">
@@ -186,42 +189,42 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
                 <p className="font-mono">{selectedLog.id}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">时间</span>
+                <span className="text-muted-foreground">{t('table.time')}</span>
                 <p>{new Date(selectedLog.created_at * 1000).toLocaleString()}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">类型</span>
+                <span className="text-muted-foreground">{t('table.type')}</span>
                 <div>
                   <Badge variant="secondary" className={getLogTypeClass(selectedLog.type)}>
-                    {renderLogType(selectedLog.type)}
+                    {renderLogType(selectedLog.type, t)}
                   </Badge>
                 </div>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">耗时</span>
+                <span className="text-muted-foreground">{t('table.duration')}</span>
                 <p>
                   {selectedLog.use_time}
                   ms
                 </p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">用户</span>
+                <span className="text-muted-foreground">{t('table.user')}</span>
                 <p>{selectedLog.username}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">令牌</span>
+                <span className="text-muted-foreground">{t('table.token')}</span>
                 <p>{selectedLog.token_name || '-'}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">模型</span>
+                <span className="text-muted-foreground">{t('table.model')}</span>
                 <p className="font-mono">{selectedLog.model_name || '-'}</p>
               </div>
               <div className="space-y-1">
-                <span className="text-muted-foreground">消耗额度</span>
+                <span className="text-muted-foreground">{t('table.consumption')}</span>
                 <p className="font-bold">{renderQuota(selectedLog.quota)}</p>
               </div>
               <div className="col-span-2 space-y-1">
-                <span className="text-muted-foreground">详情内容</span>
+                <span className="text-muted-foreground">{t('table.detailContent')}</span>
                 <p className="bg-muted p-2 rounded break-all">{selectedLog.content}</p>
               </div>
               {selectedLog.ip && (
@@ -232,7 +235,7 @@ export function LogTable({ data, isAdmin }: { data: Log[], isAdmin: boolean }) {
               )}
               {selectedLog.other && (
                 <div className="col-span-2 space-y-1">
-                  <span className="text-muted-foreground">其他信息</span>
+                  <span className="text-muted-foreground">{t('table.other')}</span>
                   <pre className="bg-muted p-2 rounded text-[10px] overflow-auto max-h-[200px]">
                     {JSON.stringify(JSON.parse(selectedLog.other), null, 2)}
                   </pre>

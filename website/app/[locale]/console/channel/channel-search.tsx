@@ -1,6 +1,7 @@
 'use client'
 
 import { CircleDollarSign, FlaskConical, MoreVertical, Plus, Search, Tag, Trash2, Wrench, XCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -41,6 +42,7 @@ export function ChannelSearch({
   onFixAbilities: () => void
   onDeleteDisabled: () => void
 }) {
+  const t = useTranslations('Page.Console.Channel.search')
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -73,19 +75,19 @@ export function ChannelSearch({
           <div className="relative flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="搜索渠道名称、ID或模型..."
+              placeholder={t('keywordPlaceholder')}
               className="pl-8 h-9"
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleSearch()}
             />
           </div>
-          <Button size="sm" onClick={handleSearch} className="h-9">查询</Button>
+          <Button size="sm" onClick={handleSearch} className="h-9">{t('search')}</Button>
         </div>
 
         <div className="flex items-center gap-4 border-l pl-4 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2 whitespace-nowrap">
-            <Label htmlFor="tag-mode" className="text-xs text-muted-foreground">分类视图</Label>
+            <Label htmlFor="tag-mode" className="text-xs text-muted-foreground">{t('tagView')}</Label>
             <Switch
               id="tag-mode"
               checked={tagMode}
@@ -95,12 +97,12 @@ export function ChannelSearch({
 
           <Select value={activeTab} onValueChange={handleStatusChange}>
             <SelectTrigger className="w-[110px] h-9">
-              <SelectValue placeholder="状态" />
+              <SelectValue placeholder={t('status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">全部状态</SelectItem>
-              <SelectItem value="enabled">已启用</SelectItem>
-              <SelectItem value="disabled">已禁用</SelectItem>
+              <SelectItem value="all">{t('allStatus')}</SelectItem>
+              <SelectItem value="enabled">{t('enabled')}</SelectItem>
+              <SelectItem value="disabled">{t('disabled')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -111,14 +113,16 @@ export function ChannelSearch({
               <Button variant="outline" size="sm" onClick={onBatchTag} className="h-9 border-dashed text-orange-600 border-orange-200 bg-orange-50 hover:bg-orange-100">
                 <Tag className="mr-2 h-4 w-4" />
                 {' '}
-                批量分类 (
+                {t('batchTag')}
+                {' '}
+                (
                 {selectedCount}
                 )
               </Button>
               <Button variant="outline" size="sm" onClick={onBatchDelete} className="h-9 border-dashed text-red-600 border-red-200 bg-red-50 hover:bg-red-100">
                 <Trash2 className="mr-2 h-4 w-4" />
                 {' '}
-                批量删除
+                {t('batchDelete')}
               </Button>
             </>
           )}
@@ -128,29 +132,29 @@ export function ChannelSearch({
               <Button variant="outline" size="sm" className="h-9">
                 <MoreVertical className="mr-2 h-4 w-4" />
                 {' '}
-                更多操作
+                {t('more')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={onTestAll}>
                 <FlaskConical className="mr-2 h-4 w-4" />
                 {' '}
-                测试所有渠道
+                {t('testAll')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onUpdateBalances}>
                 <CircleDollarSign className="mr-2 h-4 w-4" />
                 {' '}
-                更新所有余额
+                {t('updateAllBalance')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onFixAbilities}>
                 <Wrench className="mr-2 h-4 w-4" />
                 {' '}
-                修复数据库一致性
+                {t('fixDb')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={onDeleteDisabled} className="text-red-600 focus:text-red-600 focus:bg-red-50">
                 <XCircle className="mr-2 h-4 w-4" />
                 {' '}
-                删除已禁用渠道
+                {t('deleteDisabled')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -158,7 +162,7 @@ export function ChannelSearch({
           <Button size="sm" className="h-9 bg-green-600 hover:bg-green-700" onClick={onAdd}>
             <Plus className="mr-2 h-4 w-4" />
             {' '}
-            新建渠道
+            {t('addChannel')}
           </Button>
         </div>
       </div>

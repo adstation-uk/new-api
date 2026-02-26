@@ -1,38 +1,40 @@
 import { toast } from 'sonner'
 import { getOAuthStateAction } from '@/actions/auth-actions'
 
-export async function onGitHubOAuthClicked(github_client_id: string) {
+type Translator = (key: string) => string
+
+export async function onGitHubOAuthClicked(github_client_id: string, t: Translator) {
   const data = await getOAuthStateAction()
   if (data.success) {
     window.location.href = `https://github.com/login/oauth/authorize?client_id=${github_client_id}&state=${data.data}&scope=user:email`
   }
   else {
-    toast.error(data.message || '获取状态失败')
+    toast.error(data.message || t('errors.getStateFailed'))
   }
 }
 
-export async function onDiscordOAuthClicked(discord_client_id: string) {
+export async function onDiscordOAuthClicked(discord_client_id: string, t: Translator) {
   const data = await getOAuthStateAction()
   if (data.success) {
     const redirect_uri = `${window.location.origin}/oauth/discord`
     window.location.href = `https://discord.com/oauth2/authorize?client_id=${discord_client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=identify+openid&state=${data.data}`
   }
   else {
-    toast.error(data.message || '获取状态失败')
+    toast.error(data.message || t('errors.getStateFailed'))
   }
 }
 
-export async function onLinuxDOOAuthClicked(linuxdo_client_id: string) {
+export async function onLinuxDOOAuthClicked(linuxdo_client_id: string, t: Translator) {
   const data = await getOAuthStateAction()
   if (data.success) {
     window.location.href = `https://connect.linux.do/oauth2/authorize?response_type=code&client_id=${linuxdo_client_id}&state=${data.data}`
   }
   else {
-    toast.error(data.message || '获取状态失败')
+    toast.error(data.message || t('errors.getStateFailed'))
   }
 }
 
-export async function onOIDCClicked(auth_url: string, client_id: string) {
+export async function onOIDCClicked(auth_url: string, client_id: string, t: Translator) {
   const data = await getOAuthStateAction()
   if (data.success) {
     const url = new URL(auth_url)
@@ -44,6 +46,6 @@ export async function onOIDCClicked(auth_url: string, client_id: string) {
     window.location.href = url.toString()
   }
   else {
-    toast.error(data.message || '获取状态失败')
+    toast.error(data.message || t('errors.getStateFailed'))
   }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -26,32 +27,41 @@ import {
   onOIDCClicked,
 } from '@/lib/oauth'
 
-const registerSchema = z
-  .object({
-    username: z
-      .string()
-      .min(1, '请输入用户名')
-      .max(20, '用户名长度不得超过 20 位'),
-    password: z
-      .string()
-      .min(8, '密码长度不得小于 8 位')
-      .max(20, '密码长度不得超过 20 位'),
-    password2: z
-      .string()
-      .min(8, '请再次输入密码')
-      .max(20, '密码长度不得超过 20 位'),
-  })
-  .refine(data => data.password === data.password2, {
-    message: '两次输入的密码不一致',
-    path: ['password2'],
-  })
+function createRegisterSchema(t: (key: string) => string) {
+  return z
+    .object({
+      username: z
+        .string()
+        .min(1, t('errors.usernameRequired'))
+        .max(20, t('errors.usernameMax')),
+      password: z
+        .string()
+        .min(8, t('errors.passwordMin'))
+        .max(20, t('errors.passwordMax')),
+      password2: z
+        .string()
+        .min(8, t('errors.passwordConfirmRequired'))
+        .max(20, t('errors.passwordMax')),
+    })
+    .refine(data => data.password === data.password2, {
+      message: t('errors.passwordMismatch'),
+      path: ['password2'],
+    })
+}
 
-type RegisterFormValues = z.infer<typeof registerSchema>
+type RegisterFormValues = {
+  username: string
+  password: string
+  password2: string
+}
 
 export function RegisterForm({ status }: { status: any }) {
+  const t = useTranslations('Common')
+  const p = useTranslations('Page.Register')
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const registerSchema = createRegisterSchema(t)
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -79,15 +89,15 @@ export function RegisterForm({ status }: { status: any }) {
       const result = await registerAction(formData)
 
       if (result.success) {
-        toast.success('注册成功，请登录')
+        toast.success(t('toast.registerSuccessAndLogin'))
         router.push('/login')
       }
       else {
-        toast.error(result.message || '注册失败')
+        toast.error(result.message || t('toast.registerFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(t('errors.network'))
     }
     finally {
       setIsSubmitting(false)
@@ -103,9 +113,9 @@ export function RegisterForm({ status }: { status: any }) {
             name="username"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>用户名</FormLabel>
+                <FormLabel>{t('form.username')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="用户名" {...field} />
+                  <Input placeholder={t('form.usernamePlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,9 +126,9 @@ export function RegisterForm({ status }: { status: any }) {
             name="password"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>密码</FormLabel>
+                <FormLabel>{t('form.password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" placeholder={t('form.passwordPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,9 +139,9 @@ export function RegisterForm({ status }: { status: any }) {
             name="password2"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2">
-                <FormLabel>确认密码</FormLabel>
+                <FormLabel>{t('form.confirmPassword')}</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" placeholder={t('form.confirmPasswordPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -140,7 +150,7 @@ export function RegisterForm({ status }: { status: any }) {
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? '注册中...' : '注册'}
+            {isSubmitting ? p('submitting') : t('action.register')}
           </Button>
 
           {(status?.github_oauth || status?.discord_oauth || status?.linuxdo_oauth || status?.oidc_enabled) && (
@@ -151,7 +161,7 @@ export function RegisterForm({ status }: { status: any }) {
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
                   <span className="bg-background px-2 text-muted-foreground">
-                    或者使用以下方式注册
+                    {p('oauthDivider')}
                   </span>
                 </div>
               </div>
@@ -160,7 +170,7 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onGitHubOAuthClicked(status.github_client_id)}
+                    onClick={() => onGitHubOAuthClicked(status.github_client_id, t)}
                   >
                     GitHub
                   </Button>
@@ -169,7 +179,7 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id)}
+                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id, t)}
                   >
                     Linux DO
                   </Button>
@@ -178,7 +188,7 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onDiscordOAuthClicked(status.discord_client_id)}
+                    onClick={() => onDiscordOAuthClicked(status.discord_client_id, t)}
                   >
                     Discord
                   </Button>
@@ -187,7 +197,7 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id)}
+                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)}
                   >
                     OIDC
                   </Button>
@@ -197,10 +207,10 @@ export function RegisterForm({ status }: { status: any }) {
           )}
 
           <div className="text-sm text-center text-muted-foreground">
-            已有账号？
+            {p('hasAccount')}
             {' '}
             <Link href="/login" className="text-primary hover:underline">
-              立即登录
+              {p('goLogin')}
             </Link>
           </div>
         </CardFooter>

@@ -1,6 +1,7 @@
 'use client'
 
 import { CheckCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -43,6 +44,7 @@ export function PayPalRecharge({
   user: any
   onSuccess: () => void
 }) {
+  const t = useTranslations('Page.Console.Topup.paypal')
   const [selectedPackage, setSelectedPackage] = useState(
     packages.find(p => p.highlight) || packages[0],
   )
@@ -70,7 +72,7 @@ export function PayPalRecharge({
       script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD`
       script.onload = () => setPaypalLoaded(true)
       script.onerror = () => {
-        toast.error('加载 PayPal 支付模块失败')
+        toast.error(t('toast.sdkLoadFailed'))
       }
       document.body.appendChild(script)
     }
@@ -78,7 +80,7 @@ export function PayPalRecharge({
       // eslint-disable-next-line react-hooks-extra/no-direct-set-state-in-use-effect
       setPaypalLoaded(true)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (showModal && paypalLoaded && selectedPackage && window.paypal) {
@@ -110,13 +112,13 @@ export function PayPalRecharge({
                     )
                     if (!response.ok) {
                       const errorData = await response.json().catch(() => ({}))
-                      throw new Error(errorData.message || '网络响应不正常')
+                      throw new Error(errorData.message || t('toast.badNetworkResponse'))
                     }
                     const order = await response.json()
                     return order.id
                   }
                   catch (err: any) {
-                    toast.error(`创建订单失败: ${err.message}`)
+                    toast.error(t('toast.createOrderFailed', { message: err.message }))
                     throw err
                   }
                 },
@@ -131,7 +133,7 @@ export function PayPalRecharge({
                     )
 
                     if (!response.ok)
-                      throw new Error('支付捕获失败')
+                      throw new Error(t('toast.captureFailed'))
 
                     const orderData = await response.json()
                     const errorDetail = orderData?.details?.[0]
@@ -157,18 +159,18 @@ export function PayPalRecharge({
                         })
                       }
                       setShowModal(false)
-                      toast.success('支付成功！余额已更新。')
+                      toast.success(t('toast.paySuccess'))
                       onSuccess()
                     }
                   }
                   catch (err: any) {
                     console.error('Capture Error:', err)
-                    toast.error(`支付捕获失败: ${err.message}`)
+                    toast.error(t('toast.captureFailedWithMessage', { message: err.message }))
                   }
                 },
                 onError: (err: any) => {
                   console.error('PayPal Error:', err)
-                  toast.error('PayPal 遇到错误。')
+                  toast.error(t('toast.paypalError'))
                 },
               })
               .render(`#${containerId}`)
@@ -180,7 +182,7 @@ export function PayPalRecharge({
       }, 100)
       return () => clearTimeout(timeoutId)
     }
-  }, [showModal, paypalLoaded, selectedPackage, user, onSuccess])
+  }, [showModal, paypalLoaded, selectedPackage, user, onSuccess, t])
 
   return (
     <div className="space-y-6">
@@ -198,7 +200,7 @@ export function PayPalRecharge({
           >
             {pkg.highlight && (
               <div className="absolute top-0 left-0 px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-br-md">
-                热门选择
+                {t('popular')}
               </div>
             )}
             <div className="p-5 flex flex-col h-full justify-between gap-4">
@@ -212,10 +214,7 @@ export function PayPalRecharge({
                   <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
                     <CheckCircle className="w-3.5 h-3.5" />
                     <span>
-                      支付 $
-                      {pkg.amount}
-                      {' '}
-                      USD
+                      {t('payUsd', { amount: pkg.amount })}
                     </span>
                   </div>
                 </div>
@@ -223,7 +222,7 @@ export function PayPalRecharge({
                   <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-bold text-green-600 dark:text-green-400 uppercase">
                     +
                     {pkg.bonus * 100}
-                    % 额外赠送
+                    {t('bonusSuffix')}
                   </div>
                 )}
               </div>
@@ -241,7 +240,7 @@ export function PayPalRecharge({
         <div className="flex items-center gap-3">
           <div className="flex flex-col">
             <span className="text-[10px] text-muted-foreground font-bold uppercase">
-              技术支持
+              {t('poweredBy')}
             </span>
             <span className="font-black text-[#003087] dark:text-[#0070ba] italic text-xl">
               PayPal
@@ -253,18 +252,18 @@ export function PayPalRecharge({
           onClick={handlePayClick}
           className="w-full sm:w-auto px-10 font-bold"
         >
-          立即支付
+          {t('payNow')}
         </Button>
       </div>
 
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>确认充值</DialogTitle>
+            <DialogTitle>{t('confirmTitle')}</DialogTitle>
           </DialogHeader>
           <div className="py-6 flex flex-col items-center text-center">
             <div className="mb-8">
-              <p className="text-muted-foreground text-sm mb-2">充值额度</p>
+              <p className="text-muted-foreground text-sm mb-2">{t('quotaLabel')}</p>
               <div className="text-4xl font-black">
                 {renderQuota(
                   selectedPackage.amount
@@ -274,16 +273,13 @@ export function PayPalRecharge({
               </div>
               <div className="flex items-center justify-center gap-2 mt-4">
                 <div className="text-sm font-medium">
-                  支付金额: $
-                  {selectedPackage.amount}
-                  {' '}
-                  USD
+                  {t('payAmount', { amount: selectedPackage.amount })}
                 </div>
                 {selectedPackage.bonus && (
                   <div className="px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20 text-[10px] font-bold text-green-600">
                     +
                     {selectedPackage.bonus * 100}
-                    % Bonus
+                    {t('bonusSuffix')}
                   </div>
                 )}
               </div>
@@ -296,7 +292,7 @@ export function PayPalRecharge({
               {!paypalLoaded && (
                 <div className="flex flex-col items-center gap-2 text-muted-foreground">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                  <span className="text-xs">加载支付选项...</span>
+                  <span className="text-xs">{t('loadingOptions')}</span>
                 </div>
               )}
             </div>

@@ -25,6 +25,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -93,24 +94,25 @@ export function ChannelTable({
   onEdit: (channel: Channel) => void
   onTest?: (channel: Channel) => void
 }) {
+  const t = useTranslations('Page.Console.Channel.table')
   const [sorting, setSorting] = useState<SortingState>([])
 
   const [editingId, setEditingId] = useState<string | null>(null)
 
   const handleToggleStatus = async (id: number, currentStatus: number) => {
     const newStatus = currentStatus === 1 ? 2 : 1
-    const loadingToast = toast.loading('正在更新状态...')
+    const loadingToast = toast.loading(t('toast.updatingStatus'))
     try {
       const result = await toggleChannelStatus(id, newStatus)
       if (result.success) {
-        toast.success(result.message || '状态更新成功')
+        toast.success(result.message || t('toast.updateStatusSuccess'))
       }
       else {
-        toast.error(result.message || '状态更新失败')
+        toast.error(result.message || t('toast.updateStatusFailed'))
       }
     }
     catch {
-      toast.error('网络连接错误')
+      toast.error(t('toast.networkError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -119,20 +121,20 @@ export function ChannelTable({
 
   const handleDelete = async (id: number) => {
     // eslint-disable-next-line no-alert
-    if (!window.confirm('确定要删除该渠道吗？'))
+    if (!window.confirm(t('confirmDelete')))
       return
-    const loadingToast = toast.loading('正在删除...')
+    const loadingToast = toast.loading(t('toast.deleting'))
     try {
       const result = await deleteChannel(id)
       if (result.success) {
-        toast.success('删除成功')
+        toast.success(t('toast.deleteSuccess'))
       }
       else {
-        toast.error(result.message || '删除失败')
+        toast.error(result.message || t('toast.deleteFailed'))
       }
     }
     catch {
-      toast.error('网络连接错误')
+      toast.error(t('toast.networkError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -140,18 +142,18 @@ export function ChannelTable({
   }
 
   const handleTest = async (id: number) => {
-    const loadingToast = toast.loading('正在测试...')
+    const loadingToast = toast.loading(t('toast.testing'))
     try {
       const result = await testChannel(id)
       if (result.success) {
-        toast.success(`测试成功：${result.message}`)
+        toast.success(t('toast.testSuccess', { message: result.message }))
       }
       else {
-        toast.error(`测试失败：${result.message}`)
+        toast.error(t('toast.testFailed', { message: result.message }))
       }
     }
     catch {
-      toast.error('测试出错')
+      toast.error(t('toast.testError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -159,18 +161,18 @@ export function ChannelTable({
   }
 
   const handleUpdateBalance = async (id: number) => {
-    const loadingToast = toast.loading('正在更新余额...')
+    const loadingToast = toast.loading(t('toast.updatingBalance'))
     try {
       const result = await updateChannelBalance(id)
       if (result.success) {
-        toast.success(`余额更新成功：${result.message}`)
+        toast.success(t('toast.updateBalanceSuccess', { message: result.message }))
       }
       else {
-        toast.error(`余额更新失败：${result.message}`)
+        toast.error(t('toast.updateBalanceFailed', { message: result.message }))
       }
     }
     catch {
-      toast.error('更新出错')
+      toast.error(t('toast.updateError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -178,22 +180,22 @@ export function ChannelTable({
   }
 
   const handleUpdateField = async (channel: Channel, field: string, value: any) => {
-    const loadingToast = toast.loading('正在保存...')
+    const loadingToast = toast.loading(t('toast.saving'))
     try {
       const result = await saveChannel({
         ...channel,
         [field]: value,
       })
       if (result.success) {
-        toast.success('保存成功')
+        toast.success(t('toast.saveSuccess'))
         setEditingId(null)
       }
       else {
-        toast.error(result.message || '保存失败')
+        toast.error(result.message || t('toast.saveFailed'))
       }
     }
     catch {
-      toast.error('网络连接错误')
+      toast.error(t('toast.networkError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -202,7 +204,7 @@ export function ChannelTable({
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
-    toast.success('已复制到剪贴板')
+    toast.success(t('toast.copied'))
   }
 
   const columns: ColumnDef<Channel>[] = [
@@ -234,7 +236,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'name',
-      header: '名称',
+      header: t('columns.name'),
       cell: ({ row }) => (
         <div className="flex flex-col max-w-[200px]">
           <span className="font-medium truncate">{row.getValue('name')}</span>
@@ -253,7 +255,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'type',
-      header: '类型',
+      header: t('columns.type'),
       cell: ({ row }) => {
         const option = getChannelOption(row.original.type)
         return (
@@ -265,7 +267,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'models',
-      header: '模型',
+      header: t('columns.models'),
       cell: ({ row }) => {
         const models = (row.getValue('models') as string || '').split(',')
         return (
@@ -276,7 +278,7 @@ export function ChannelTable({
                 <span className="text-xs text-muted-foreground truncate flex-1">
                   {models.length}
                   {' '}
-                  个模型:
+                  {t('modelsCount')}
                   {models.slice(0, 2).join(', ')}
                   ...
                 </span>
@@ -297,7 +299,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'status',
-      header: '状态',
+      header: t('columns.status'),
       cell: ({ row }) => {
         const status = row.original.status
         const info = row.original.channel_info
@@ -309,7 +311,7 @@ export function ChannelTable({
             <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200 shadow-none">
               <CheckCircle2 className="w-3 h-3 mr-1" />
               {' '}
-              已启用
+              {t('enabled')}
             </Badge>
           )
         }
@@ -318,7 +320,7 @@ export function ChannelTable({
             <Badge className="bg-red-100 text-red-700 hover:bg-red-100 border-red-200 shadow-none">
               <XCircle className="w-3 h-3 mr-1" />
               {' '}
-              已禁用
+              {t('disabled')}
             </Badge>
           )
         }
@@ -330,17 +332,19 @@ export function ChannelTable({
                   <Badge className="bg-yellow-100 text-yellow-700 hover:bg-yellow-100 border-yellow-200 shadow-none cursor-help">
                     <AlertTriangle className="w-3 h-3 mr-1" />
                     {' '}
-                    自动禁用
+                    {t('autoDisabled')}
                   </Badge>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p className="text-xs">
-                    原因:
-                    {otherInfo.status_reason || '未知'}
+                    {t('reason')}
+                    :
+                    {otherInfo.status_reason || t('unknown')}
                   </p>
                   {otherInfo.status_time && (
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      时间:
+                      {t('time')}
+                      :
                       {new Date(otherInfo.status_time * 1000).toLocaleString()}
                     </p>
                   )}
@@ -360,7 +364,8 @@ export function ChannelTable({
               {statusBadge}
               {info?.is_multi_key && (
                 <span className="text-[10px] text-muted-foreground mt-0.5 ml-1">
-                  多Key:
+                  {t('multiKey')}
+                  :
                   {info.multi_key_size}
                 </span>
               )}
@@ -371,11 +376,11 @@ export function ChannelTable({
     },
     {
       accessorKey: 'response_time',
-      header: '响应',
+      header: t('columns.response'),
       cell: ({ row }) => {
         const time = row.original.response_time
         if (time === 0)
-          return <span className="text-muted-foreground text-xs">未测试</span>
+          return <span className="text-muted-foreground text-xs">{t('notTested')}</span>
         const color = time < 1000 ? 'text-green-600' : time < 3000 ? 'text-yellow-600' : 'text-red-600'
         return (
           <div className="flex items-center gap-1 font-mono text-xs">
@@ -390,7 +395,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'balance',
-      header: '余额',
+      header: t('columns.balance'),
       cell: ({ row }) => (
         <div
           className="flex flex-col text-xs font-mono cursor-pointer hover:bg-slate-50 p-1 rounded transition-colors group"
@@ -414,7 +419,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'priority',
-      header: '优先级',
+      header: t('columns.priority'),
       cell: ({ row }) => {
         const id = `priority-${row.original.id}`
         const isEditing = editingId === id
@@ -446,7 +451,7 @@ export function ChannelTable({
     },
     {
       accessorKey: 'weight',
-      header: '权重',
+      header: t('columns.weight'),
       cell: ({ row }) => {
         const id = `weight-${row.original.id}`
         const isEditing = editingId === id
@@ -478,7 +483,7 @@ export function ChannelTable({
     },
     {
       id: 'actions',
-      header: '操作',
+      header: t('columns.actions'),
       cell: ({ row }) => {
         const channel = row.original
 
@@ -491,26 +496,26 @@ export function ChannelTable({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-[160px]">
-              <DropdownMenuLabel>管理渠道</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('manageChannel')}</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => handleTest(channel.id)}>
                 <Zap className="mr-2 h-4 w-4" />
                 {' '}
-                快速测试
+                {t('quickTest')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onTest?.(channel)}>
                 <TestTube2 className="mr-2 h-4 w-4" />
                 {' '}
-                详细测试
+                {t('detailTest')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit(channel)}>
                 <Edit className="mr-2 h-4 w-4" />
                 {' '}
-                编辑渠道
+                {t('editChannel')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleCopy(channel.key)}>
                 <Copy className="mr-2 h-4 w-4" />
                 {' '}
-                复制密钥
+                {t('copyKey')}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -519,7 +524,7 @@ export function ChannelTable({
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 {' '}
-                删除渠道
+                {t('deleteChannel')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -607,7 +612,7 @@ export function ChannelTable({
             : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                    暂无渠道数据
+                    {t('empty')}
                   </TableCell>
                 </TableRow>
               )}

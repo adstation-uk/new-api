@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Broadscene',
-  description: 'Broadscene AI API 平台',
+  description: 'Broadscene AI API platform',
   icons: {
     icon: '/icon.png',
     shortcut: '/icon.png',

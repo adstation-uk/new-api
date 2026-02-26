@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import {
   Bar,
   BarChart,
@@ -15,19 +16,20 @@ import {
 } from '@/components/ui/chart'
 import { renderQuota } from '@/lib/utils'
 
-const chartConfig = {
-  Usage: {
-    label: '消耗',
-    color: 'var(--color-chart-1)',
-  },
-} as const
-
 type ChartsPanelProps = {
   data: any
   loading: boolean
 }
 
 export function ChartsPanel({ data, loading }: ChartsPanelProps) {
+  const t = useTranslations('Page.Console.Dashboard.charts')
+  const chartConfig = {
+    Usage: {
+      label: t('usage'),
+      color: 'var(--color-chart-1)',
+    },
+  } as const
+
   const chartData
     = data?.lineData?.length > 0
       ? data.lineData
@@ -42,13 +44,13 @@ export function ChartsPanel({ data, loading }: ChartsPanelProps) {
   return (
     <Card className="w-full overflow-hidden">
       <CardHeader className="pb-3 border-b">
-        <CardTitle className="text-base font-semibold">消耗趋势</CardTitle>
+        <CardTitle className="text-base font-semibold">{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="p-4 sm:p-5 flex items-center justify-center">
         <div className="w-full h-[260px] lg:h-[300px] mx-auto my-auto">
           {loading
             ? (
-                <div className="h-full flex items-center justify-center">加载中...</div>
+                <div className="h-full flex items-center justify-center">{t('loading')}</div>
               )
             : (
                 <ChartContainer config={chartConfig} className="h-full w-full">

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { ArrowRight } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 import { ModelIcon } from '@/components/model-icon'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -33,6 +34,7 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const t = await getTranslations('Page.Collections.Detail')
   const { key: rawKey } = await params
   const key = decodeURIComponent(rawKey).toLowerCase()
   const collection = getCollectionMetadata(key)
@@ -42,24 +44,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description: models.length
-      ? `${key.toUpperCase()} 模型集合，共 ${models.length} 个模型。`
-      : `${key.toUpperCase()} 模型集合。`,
+      ? t('metaDescriptionWithCount', { key: key.toUpperCase(), count: models.length })
+      : t('metaDescription', { key: key.toUpperCase() }),
   }
 }
 
 export default async function CollectionDetailPage({ params }: Props) {
+  const t = await getTranslations('Page.Collections.Detail')
   const { key: rawKey } = await params
   const key = decodeURIComponent(rawKey).toLowerCase()
   const collection = getCollectionMetadata(key)
   const models = toModelListByCollectionKey(key)
   const collectionTitle = collection?.title || `${key.toUpperCase()} Models`
-  const description = collection?.description || `${collectionTitle}，按能力和场景整理，点击卡片可查看模型详情与调用文档。`
+  const description = collection?.description || t('description', { title: collectionTitle })
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-10">
       <div className="mb-8 space-y-2">
         <p className="text-sm text-muted-foreground">
-          探索
+          {t('explore')}
           {' / '}
           {collectionTitle}
           {' Models'}
@@ -70,7 +73,7 @@ export default async function CollectionDetailPage({ params }: Props) {
       {models.length === 0
         ? (
             <div className="rounded-2xl border border-dashed p-12 text-center text-muted-foreground">
-              当前集合暂无模型。
+              {t('empty')}
             </div>
           )
         : (
@@ -78,11 +81,11 @@ export default async function CollectionDetailPage({ params }: Props) {
               <aside className="space-y-4">
                 <p className="text-sm leading-7 text-muted-foreground">{description}</p>
                 <div className="space-y-2">
-                  <h2 className="text-xl font-semibold">模型能力概览</h2>
+                  <h2 className="text-xl font-semibold">{t('overviewTitle')}</h2>
                   <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li>• 覆盖多个任务类型与业务场景</li>
-                    <li>• 支持统一接口与模型级路由</li>
-                    <li>• 可按成本与效果选择对应型号</li>
+                    <li>{t('overview1')}</li>
+                    <li>{t('overview2')}</li>
+                    <li>{t('overview3')}</li>
                   </ul>
                 </div>
               </aside>
@@ -101,7 +104,7 @@ export default async function CollectionDetailPage({ params }: Props) {
 
                         <div className="space-y-2">
                           <h3 className="line-clamp-1 text-base font-semibold">{model.name}</h3>
-                          <p className="line-clamp-2 text-xs text-muted-foreground">{model.description || `${collectionTitle} ${model.category} 模型`}</p>
+                          <p className="line-clamp-2 text-xs text-muted-foreground">{model.description || t('modelFallback', { title: collectionTitle, category: model.category })}</p>
                         </div>
 
                         <div className="flex items-center justify-between">

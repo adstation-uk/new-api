@@ -1,11 +1,13 @@
 'use client'
 
 import { Copy } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 export function ServerAddressClient() {
+  const t = useTranslations('Common')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function ServerAddressClient() {
     if (!serverAddress)
       return
     navigator.clipboard.writeText(serverAddress)
-    toast.success('已复制到剪切板')
+    toast.success(t('toast.copied'))
   }
 
   return (

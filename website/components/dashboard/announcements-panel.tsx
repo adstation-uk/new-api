@@ -2,6 +2,7 @@
 
 import { Bell, Info } from 'lucide-react'
 import { marked } from 'marked'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -23,15 +24,17 @@ export function AnnouncementsPanel({
   data,
   loading,
 }: AnnouncementsPanelProps) {
+  const t = useTranslations('Page.Console.Dashboard.announcements')
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-yellow-500" />
-          <CardTitle className="text-lg font-semibold">系统公告</CardTitle>
+          <CardTitle className="text-lg font-semibold">{t('title')}</CardTitle>
         </div>
         <div className="text-[10px] uppercase font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded">
-          最新 20 条
+          {t('latest')}
         </div>
       </CardHeader>
       <CardContent className="pt-6">
@@ -100,7 +103,7 @@ export function AnnouncementsPanel({
               : (
                   <div className="h-full flex flex-col items-center justify-center text-muted-foreground">
                     <Info className="w-8 h-8 mb-2 opacity-20" />
-                    <p className="text-sm">暂无系统公告</p>
+                    <p className="text-sm">{t('empty')}</p>
                   </div>
                 )}
         </div>

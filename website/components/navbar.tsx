@@ -1,4 +1,5 @@
 import type { UserInfo } from '@/lib/user'
+import { getTranslations } from 'next-intl/server'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Link } from '@/i18n/navigation'
@@ -9,10 +10,12 @@ import { ModeToggle } from './mode-toggle'
 import { UserMenu } from './user-menu'
 
 export async function Navbar({ user }: { user: UserInfo | null }) {
+  const t = await getTranslations('Page.Marketing.Navbar')
+
   const navLinks = [
-    { name: '首页', href: '/' },
-    { name: '价格', href: '/pricing' },
-    { name: '模型', href: '/models' },
+    { name: t('home'), href: '/' },
+    { name: t('pricing'), href: '/pricing' },
+    { name: t('models'), href: '/models' },
   ]
 
   return (
@@ -42,12 +45,12 @@ export async function Navbar({ user }: { user: UserInfo | null }) {
                   <>
                     <Button variant="ghost" size="sm" asChild>
                       <Link href="/login" className="no-underline">
-                        登录
+                        {t('login')}
                       </Link>
                     </Button>
                     <Button size="sm" asChild>
                       <Link href="/register" className="no-underline px-6">
-                        注册
+                        {t('register')}
                       </Link>
                     </Button>
                   </>

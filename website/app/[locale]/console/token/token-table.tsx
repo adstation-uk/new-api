@@ -1,6 +1,7 @@
 'use client'
 
 import type { ColumnDef } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { DataTable } from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -36,6 +37,7 @@ export function TokenTable({
   rowSelection: any
   onRowSelectionChange: any
 }) {
+  const t = useTranslations('Page.Console.Token.table')
   const columns: ColumnDef<Token>[] = [
     {
       id: 'select',
@@ -63,7 +65,7 @@ export function TokenTable({
     },
     {
       accessorKey: 'name',
-      header: '名称',
+      header: t('columns.name'),
       cell: ({ row }) => {
         const token = row.original
         return (
@@ -76,26 +78,26 @@ export function TokenTable({
     },
     {
       accessorKey: 'group',
-      header: '分组',
+      header: t('columns.group'),
       cell: ({ row }) => {
         const group = row.getValue('group') as string
         if (group === 'auto') {
           return (
             <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-              智能熔断
+              {t('autoGroup')}
             </span>
           )
         }
         return (
           <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-            {group || '默认'}
+            {group || t('defaultGroup')}
           </span>
         )
       },
     },
     {
       accessorKey: 'status',
-      header: '状态',
+      header: t('columns.status'),
       cell: ({ row }) => {
         const status = row.getValue('status') as number
         return (
@@ -105,14 +107,14 @@ export function TokenTable({
               getStatusBadgeClass(status),
             )}
           >
-            {renderStatus(status)}
+            {renderStatus(status, t)}
           </span>
         )
       },
     },
     {
       accessorKey: 'used_quota',
-      header: '已用额度',
+      header: t('columns.usedQuota'),
       cell: ({ row }) => (
         <div className="tabular-nums text-xs">
           {renderQuota(row.getValue('used_quota'))}
@@ -121,7 +123,7 @@ export function TokenTable({
     },
     {
       accessorKey: 'remain_quota',
-      header: '剩余额度',
+      header: t('columns.remainQuota'),
       cell: ({ row }) => {
         const token = row.original
         return (
@@ -131,7 +133,7 @@ export function TokenTable({
                   <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                     <span className="text-lg">∞</span>
                     {' '}
-                    无限制
+                    {t('unlimited')}
                   </span>
                 )
               : (
@@ -143,14 +145,14 @@ export function TokenTable({
     },
     {
       id: 'limits',
-      header: '限制',
+      header: t('columns.limits'),
       cell: ({ row }) => {
         const token = row.original
         const hasModelLimit = token.model_limits_enabled && token.model_limits
         const hasIpLimit = token.allow_ips
 
         if (!hasModelLimit && !hasIpLimit) {
-          return <span className="text-muted-foreground text-[10px]">无限制</span>
+          return <span className="text-muted-foreground text-[10px]">{t('unlimited')}</span>
         }
 
         return (
@@ -158,7 +160,7 @@ export function TokenTable({
             {hasModelLimit && (
               <div className="flex items-center gap-1 group relative">
                 <span className="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px] font-medium cursor-help">
-                  模型受限
+                  {t('modelLimited')}
                 </span>
                 <div className="invisible group-hover:visible absolute bottom-full left-0 mb-1 z-50 w-48 p-2 bg-popover text-popover-foreground rounded border shadow-md text-[10px]">
                   {token.model_limits}
@@ -168,7 +170,7 @@ export function TokenTable({
             {hasIpLimit && (
               <div className="flex items-center gap-1 group relative">
                 <span className="px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[10px] font-medium cursor-help">
-                  IP 受限
+                  {t('ipLimited')}
                 </span>
                 <div className="invisible group-hover:visible absolute bottom-full left-0 mb-1 z-50 w-48 p-2 bg-popover text-popover-foreground rounded border shadow-md text-[10px]">
                   {token.allow_ips}
@@ -181,7 +183,7 @@ export function TokenTable({
     },
     {
       accessorKey: 'created_time',
-      header: '创建时间',
+      header: t('columns.createdTime'),
       cell: ({ row }) => (
         <div className="text-[10px] text-muted-foreground whitespace-nowrap tabular-nums">
           {new Date((row.getValue('created_time') as number) * 1000).toLocaleString()}
@@ -190,7 +192,7 @@ export function TokenTable({
     },
     {
       id: 'actions',
-      header: () => <div className="text-right">操作</div>,
+      header: () => <div className="text-right">{t('columns.actions')}</div>,
       cell: ({ row }) => <TokenActions token={row.original} />,
     },
   ]

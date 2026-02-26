@@ -8,6 +8,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
 import {
@@ -39,6 +40,7 @@ export function DataTable<TData, TValue>({
   getRowId,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations('Common')
   const [internalRowSelection, setInternalRowSelection] = useState({})
 
   const table = useReactTable({
@@ -94,7 +96,7 @@ export function DataTable<TData, TValue>({
             : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    暂无数据
+                    {t('table.noData')}
                   </TableCell>
                 </TableRow>
               )}

@@ -37,18 +37,20 @@ export function renderQuota(quota: number, digits = 2): string {
   return symbol + fixedResult
 }
 
-export function renderStatus(status: number) {
+type Translator = (key: string) => string
+
+export function renderStatus(status: number, t?: Translator) {
   switch (status) {
     case 1:
-      return '已启用'
+      return t ? t('status.enabled') : 'Enabled'
     case 2:
-      return '已禁用'
+      return t ? t('status.disabled') : 'Disabled'
     case 3:
-      return '已过期'
+      return t ? t('status.expired') : 'Expired'
     case 4:
-      return '已耗尽'
+      return t ? t('status.exhausted') : 'Exhausted'
     default:
-      return '未知'
+      return t ? t('status.unknown') : 'Unknown'
   }
 }
 
@@ -67,22 +69,22 @@ export function getStatusBadgeClass(status: number) {
   }
 }
 
-export function renderLogType(type: number) {
+export function renderLogType(type: number, t?: Translator) {
   switch (type) {
     case 1:
-      return '充值'
+      return t ? t('table.logTypeRecharge') : 'Recharge'
     case 2:
-      return '消费'
+      return t ? t('table.logTypeConsume') : 'Consume'
     case 3:
-      return '管理'
+      return t ? t('table.logTypeManage') : 'Manage'
     case 4:
-      return '系统'
+      return t ? t('table.logTypeSystem') : 'System'
     case 5:
-      return '错误'
+      return t ? t('table.logTypeError') : 'Error'
     case 6:
-      return '退款'
+      return t ? t('table.logTypeRefund') : 'Refund'
     default:
-      return '未知'
+      return t ? t('status.unknown') : 'Unknown'
   }
 }
 

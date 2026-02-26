@@ -1,6 +1,7 @@
 'use client'
 
 import { Copy, Edit, Eye, EyeOff, Play, Square, Trash2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import {
@@ -20,15 +21,16 @@ import { deleteToken, toggleTokenStatus } from './actions'
 import { TokenDrawer } from './token-drawer'
 
 export function TokenKey({ token }: { token: { key: string, id: number } }) {
+  const t = useTranslations('Page.Console.Token.row')
   const [showKey, setShowKey] = useState(false)
 
   const copyToClipboard = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text)
-      toast.success('已复制到剪切板')
+      toast.success(t('copied'))
     }
     catch {
-      toast.error('复制失败')
+      toast.error(t('copyFailed'))
     }
   }
 
@@ -54,17 +56,18 @@ export function TokenKey({ token }: { token: { key: string, id: number } }) {
 }
 
 export function TokenActions({ token }: { token: any }) {
+  const t = useTranslations('Page.Console.Token.row')
   const router = useRouter()
   const [isEditOpen, setIsEditOpen] = useState(false)
 
   const handleDelete = async () => {
     const res = await deleteToken(token.id)
     if (res.success) {
-      toast.success('删除成功')
+      toast.success(t('deleteSuccess'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '删除失败')
+      toast.error(res.message || t('deleteFailed'))
     }
   }
 
@@ -72,11 +75,11 @@ export function TokenActions({ token }: { token: any }) {
     const newStatus = token.status === 1 ? 2 : 1
     const res = await toggleTokenStatus(token.id, newStatus)
     if (res.success) {
-      toast.success(newStatus === 1 ? '已启用' : '已禁用')
+      toast.success(newStatus === 1 ? t('enabled') : t('disabled'))
       router.refresh()
     }
     else {
-      toast.error(res.message || '操作失败')
+      toast.error(res.message || t('actionFailed'))
     }
   }
 
@@ -87,7 +90,7 @@ export function TokenActions({ token }: { token: any }) {
         variant="ghost"
         className="h-8 w-8 hover:bg-muted"
         onClick={handleToggleStatus}
-        title={token.status === 1 ? '禁用' : '启用'}
+        title={token.status === 1 ? t('disable') : t('enable')}
       >
         {token.status === 1
           ? (
@@ -117,20 +120,18 @@ export function TokenActions({ token }: { token: any }) {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>确认删除</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              确定删除令牌 &quot;
-              {token.name}
-              &quot; 吗？此操作无法撤销。
+              {t('confirmDescription', { name: token.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              确认删除
+              {t('confirmDelete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

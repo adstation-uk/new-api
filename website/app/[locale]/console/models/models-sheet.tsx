@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -36,20 +37,18 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { saveModel } from './actions'
 
-const modelSchema = z.object({
-  id: z.number().optional(),
-  model_name: z.string().min(1, '模型名称不能为空'),
-  description: z.string().optional(),
-  icon: z.string().optional(),
-  tags: z.string().optional(),
-  vendor_id: z.number().min(1, '请选择供应商'),
-  endpoints: z.string().optional(),
-  status: z.number().default(1),
-  sync_official: z.number().default(1),
-  name_rule: z.number().default(0),
-})
-
-type ModelFormValues = z.infer<typeof modelSchema>
+type ModelFormValues = {
+  id?: number
+  model_name: string
+  description?: string
+  icon?: string
+  tags?: string
+  vendor_id: number
+  endpoints?: string
+  status: number
+  sync_official: number
+  name_rule: number
+}
 
 export function ModelsSheet({
   model,
@@ -62,6 +61,21 @@ export function ModelsSheet({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const t = useTranslations('Page.Console.Models.sheet')
+  const commonT = useTranslations('Common')
+  const modelSchema = React.useMemo(() => z.object({
+    id: z.number().optional(),
+    model_name: z.string().min(1, t('validation.modelNameRequired')),
+    description: z.string().optional(),
+    icon: z.string().optional(),
+    tags: z.string().optional(),
+    vendor_id: z.number().min(1, t('validation.vendorRequired')),
+    endpoints: z.string().optional(),
+    status: z.number().default(1),
+    sync_official: z.number().default(1),
+    name_rule: z.number().default(0),
+  }), [t])
+
   const form = useForm<ModelFormValues>({
     resolver: zodResolver(modelSchema),
     defaultValues: {
@@ -108,19 +122,19 @@ export function ModelsSheet({
   }, [model, form])
 
   async function onSubmit(values: ModelFormValues) {
-    const loadingToast = toast.loading(model ? '正在更新模型...' : '正在创建模型...')
+    const loadingToast = toast.loading(model ? t('toast.updating') : t('toast.creating'))
     try {
       const result = await saveModel(values)
       if (result.success) {
-        toast.success(model ? '更新成功' : '创建成功')
+        toast.success(model ? t('toast.updateSuccess') : t('toast.createSuccess'))
         onOpenChange(false)
       }
       else {
-        toast.error(result.message || '操作失败')
+        toast.error(result.message || t('toast.submitFailed'))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -135,9 +149,9 @@ export function ModelsSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{model ? '编辑模型' : '添加模型'}</SheetTitle>
+          <SheetTitle>{model ? t('titleEdit') : t('titleCreate')}</SheetTitle>
           <SheetDescription>
-            配置模型的基础信息、聚合标签和官方同步设置。
+            {t('description')}
           </SheetDescription>
         </SheetHeader>
 
@@ -150,9 +164,9 @@ export function ModelsSheet({
                   name="model_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>模型名称</FormLabel>
+                      <FormLabel>{t('fields.modelName')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="如: gpt-4o-2024-05-13" />
+                        <Input {...field} placeholder={t('fields.modelNamePlaceholder')} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -165,7 +179,7 @@ export function ModelsSheet({
                   name="icon"
                   render={() => (
                     <FormItem>
-                      <FormLabel>预览</FormLabel>
+                      <FormLabel>{t('fields.preview')}</FormLabel>
                       <div className="flex flex-col items-center gap-2 px-3 py-2 border rounded-md bg-muted/20 min-h-[40px]">
                         <ModelIcon symbol={selectedIcon || selectedVendor?.icon || 'Layers'} size={32} />
                       </div>
@@ -180,22 +194,22 @@ export function ModelsSheet({
               name="name_rule"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>名称匹配类型</FormLabel>
+                  <FormLabel>{t('fields.nameRule')}</FormLabel>
                   <Select onValueChange={v => field.onChange(Number.parseInt(v))} value={field.value.toString()}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择名称匹配类型" />
+                        <SelectValue placeholder={t('fields.nameRulePlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="0">精确名称匹配</SelectItem>
-                      <SelectItem value="1">前缀名称匹配</SelectItem>
-                      <SelectItem value="2">包含名称匹配</SelectItem>
-                      <SelectItem value="3">后缀名称匹配</SelectItem>
+                      <SelectItem value="0">{t('nameRule.exact')}</SelectItem>
+                      <SelectItem value="1">{t('nameRule.prefix')}</SelectItem>
+                      <SelectItem value="2">{t('nameRule.contains')}</SelectItem>
+                      <SelectItem value="3">{t('nameRule.suffix')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription className="text-xs">
-                    匹配优先级：精确 &gt; 前缀 &gt; 后缀 &gt; 包含
+                    {t('nameRule.description')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -207,11 +221,11 @@ export function ModelsSheet({
               name="vendor_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>供应商</FormLabel>
+                  <FormLabel>{t('fields.vendor')}</FormLabel>
                   <Select onValueChange={v => field.onChange(Number(v))} value={field.value.toString()}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择模型所属供应商" />
+                        <SelectValue placeholder={t('fields.vendorPlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -235,11 +249,11 @@ export function ModelsSheet({
               name="icon"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>自定义图标 (可选)</FormLabel>
+                  <FormLabel>{t('fields.icon')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="输入 @lobehub/icons 图标 ID" />
+                    <Input {...field} placeholder={t('fields.iconPlaceholder')} />
                   </FormControl>
-                  <FormDescription>留空则自动使用供应商图标</FormDescription>
+                  <FormDescription>{t('fields.iconDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -250,11 +264,11 @@ export function ModelsSheet({
               name="tags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>标签 / 别名 (逗号分隔)</FormLabel>
+                  <FormLabel>{t('fields.tags')}</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="如: gpt-4o, chat, vision" />
+                    <Input {...field} placeholder={t('fields.tagsPlaceholder')} />
                   </FormControl>
-                  <FormDescription>模型会匹配这些标签作为别名</FormDescription>
+                  <FormDescription>{t('fields.tagsDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -265,9 +279,9 @@ export function ModelsSheet({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>模型说明</FormLabel>
+                  <FormLabel>{t('fields.description')}</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="简要描述模型的能力和用途" />
+                    <Textarea {...field} placeholder={t('fields.descriptionPlaceholder')} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -281,8 +295,8 @@ export function ModelsSheet({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
                     <div className="space-y-0.5">
-                      <FormLabel>启用模型</FormLabel>
-                      <div className="text-[10px] text-muted-foreground">控制模型是否在列表中可见</div>
+                      <FormLabel>{t('fields.status')}</FormLabel>
+                      <div className="text-[10px] text-muted-foreground">{t('fields.statusDescription')}</div>
                     </div>
                     <FormControl>
                       <Switch
@@ -300,8 +314,8 @@ export function ModelsSheet({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between space-y-0 gap-2">
                     <div className="space-y-0.5">
-                      <FormLabel>官方同步</FormLabel>
-                      <div className="text-[10px] text-muted-foreground">是否允许通过官方 API 自动发现</div>
+                      <FormLabel>{t('fields.syncOfficial')}</FormLabel>
+                      <div className="text-[10px] text-muted-foreground">{t('fields.syncOfficialDescription')}</div>
                     </div>
                     <FormControl>
                       <Switch
@@ -319,7 +333,7 @@ export function ModelsSheet({
               name="endpoints"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>自定义端点 (JSON 格式)</FormLabel>
+                  <FormLabel>{t('fields.endpoints')}</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
@@ -327,14 +341,14 @@ export function ModelsSheet({
                       placeholder='{"openai": "https://api.openai.com/v1"}'
                     />
                   </FormControl>
-                  <FormDescription>为特定供应商设置覆盖原始地址的 URL</FormDescription>
+                  <FormDescription>{t('fields.endpointsDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
             <SheetFooter className="pt-2">
-              <Button type="submit" className="w-full">保存模型信息</Button>
+              <Button type="submit" className="w-full">{t('save')}</Button>
             </SheetFooter>
           </form>
         </Form>

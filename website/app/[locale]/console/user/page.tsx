@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { api } from '@/lib/api'
 import { UserClient } from './user-client'
 
@@ -45,15 +46,16 @@ export default async function UserPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const t = await getTranslations('Page.Console.User.page')
   const resolvedSearchParams = await searchParams
   const { users, total, page } = await getUsers(resolvedSearchParams)
 
   return (
     <div>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">用户管理</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground mt-1">
-          管理系统用户信息、额度以及权限。
+          {t('description')}
         </p>
       </div>
 

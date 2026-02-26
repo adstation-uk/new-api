@@ -2,6 +2,7 @@
 
 import type { routing } from '@/i18n/routing'
 import { Languages } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,6 +14,7 @@ import {
 import { usePathname, useRouter } from '@/i18n/navigation'
 
 export function LanguageSwitcher() {
+  const t = useTranslations('Common.locale')
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -36,10 +38,10 @@ export function LanguageSwitcher() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => changeLanguage('en')}>
-          English
+          {t('en')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => changeLanguage('zh')}>
-          中文
+          {t('zh')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

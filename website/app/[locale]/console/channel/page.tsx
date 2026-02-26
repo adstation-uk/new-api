@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { api } from '@/lib/api'
 import { ChannelClient } from './channel-client'
@@ -42,19 +43,20 @@ export default async function ChannelPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+  const t = await getTranslations('Page.Console.Channel.page')
   const resolvedSearchParams = await searchParams
   const { channels, total } = await getChannels(resolvedSearchParams)
 
   return (
     <div>
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">渠道管理</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
         <p className="text-muted-foreground mt-1">
-          管理模型服务商渠道，配置 API 密钥和测试可用性。
+          {t('description')}
         </p>
       </div>
 
-      <Suspense fallback={<div>加载中...</div>}>
+      <Suspense fallback={<div>{t('loading')}</div>}>
         <ChannelClient
           initialChannels={channels}
           total={total}

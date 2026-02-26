@@ -7,40 +7,42 @@ import {
   LayoutDashboard,
   Settings,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import { cn } from '@/lib/utils'
 
 export function ConsoleNavbar({ user }: { user: any }) {
+  const t = useTranslations('Page.Console.Navbar')
   const pathname = usePathname()
   void user
 
   const links = [
     {
-      name: '仪表板',
+      name: t('dashboard'),
       href: '/console',
       icon: LayoutDashboard,
       active: pathname === '/console',
     },
     {
-      name: 'API 密钥',
+      name: t('token'),
       href: '/console/token',
       icon: Key,
       active: pathname.startsWith('/console/token'),
     },
     {
-      name: '使用日志',
+      name: t('log'),
       href: '/console/log',
       icon: History,
       active: pathname.startsWith('/console/log'),
     },
     {
-      name: '钱包管理',
+      name: t('topup'),
       href: '/console/topup',
       icon: CreditCard,
       active: pathname.startsWith('/console/topup'),
     },
     {
-      name: '个人设置',
+      name: t('personal'),
       href: '/console/personal',
       icon: Settings,
       active: pathname.startsWith('/console/personal'),

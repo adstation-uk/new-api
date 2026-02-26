@@ -1,6 +1,7 @@
 'use client'
 
 import { ExternalLink, Terminal } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { API_BASE_URL } from '@/config/models'
 
@@ -9,12 +10,14 @@ type ApiInfoPanelProps = {
 }
 
 export function ApiInfoPanel({ apiKey: _apiKey }: ApiInfoPanelProps) {
+  const t = useTranslations('Page.Console.Dashboard.apiInfo')
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
         <div className="flex items-center gap-2">
           <Terminal className="w-5 h-5 text-purple-500" />
-          <CardTitle className="text-lg font-semibold">快速开始</CardTitle>
+          <CardTitle className="text-lg font-semibold">{t('title')}</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="pt-6">
@@ -25,9 +28,9 @@ export function ApiInfoPanel({ apiKey: _apiKey }: ApiInfoPanelProps) {
               className="flex items-center justify-between p-4 rounded-xl border hover:bg-muted transition-colors group"
             >
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">管理令牌</span>
+                <span className="text-sm font-semibold">{t('manageTokenTitle')}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  创建和分配额度
+                  {t('manageTokenDesc')}
                 </span>
               </div>
               <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -40,9 +43,9 @@ export function ApiInfoPanel({ apiKey: _apiKey }: ApiInfoPanelProps) {
               className="flex items-center justify-between p-4 rounded-xl border hover:bg-muted transition-colors group"
             >
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">官方文档</span>
+                <span className="text-sm font-semibold">{t('docsTitle')}</span>
                 <span className="text-[10px] text-muted-foreground">
-                  查看集成教程
+                  {t('docsDesc')}
                 </span>
               </div>
               <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
@@ -51,7 +54,7 @@ export function ApiInfoPanel({ apiKey: _apiKey }: ApiInfoPanelProps) {
 
           <div className="p-4 rounded-xl bg-accent/50 border">
             <h4 className="text-xs font-bold text-primary mb-1 uppercase">
-              配置基地址
+              {t('baseUrl')}
             </h4>
             <p className="text-xs text-foreground/80 leading-relaxed font-mono">
               Base URL:

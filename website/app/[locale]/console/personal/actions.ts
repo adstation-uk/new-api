@@ -1,18 +1,21 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
 import { api } from '@/lib/api'
 
 export async function generateTokenAction() {
+  const t = await getTranslations('Page.Console.Personal.actions')
   try {
     const res = await api('/api/user/token')
     return await res.json()
   }
   catch {
-    return { success: false, message: '网络错误' }
+    return { success: false, message: t('networkError') }
   }
 }
 
 export async function bindWeChatAction(code: string) {
+  const t = await getTranslations('Page.Console.Personal.actions')
   try {
     const res = await api('/api/user/wechat', {
       method: 'POST',
@@ -22,6 +25,6 @@ export async function bindWeChatAction(code: string) {
     return await res.json()
   }
   catch {
-    return { success: false, message: '网络错误' }
+    return { success: false, message: t('networkError') }
   }
 }

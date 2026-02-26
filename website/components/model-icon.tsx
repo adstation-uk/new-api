@@ -12,16 +12,16 @@ type ModelIconProps = {
 }
 
 /**
- * 这是一个从原项目 web/src/helpers/render.jsx 中 getLobeHubIcon 函数移植而来的组件。
- * 它支持通过点号分隔的字符串来指定图标和属性。
- * 例如："OpenAI.Color" 或 "OpenAI.Avatar.size=20"
+ * This component is ported from getLobeHubIcon in web/src/helpers/render.jsx.
+ * It supports dot-separated strings to specify icon and properties.
+ * Examples: "OpenAI.Color" or "OpenAI.Avatar.size=20".
  */
 export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
   let iconName = symbol
   if (typeof iconName === 'string')
     iconName = iconName.trim()
 
-  // 1. 如果没有图标名称，返回问号头像 (对应原项目 !iconName 逻辑)
+  // 1. If icon name is empty, render a fallback avatar with '?'.
   if (!iconName) {
     return (
       <Avatar className={className} style={{ width: size, height: size }}>
@@ -30,7 +30,7 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
     )
   }
 
-  // 2. 解析组件路径与点号链式属性
+  // 2. Parse component path and dot-chained props.
   const segments = String(iconName).split('.')
   const baseKey = segments[0]
   // @ts-expect-error LobeIcons index access
@@ -49,7 +49,7 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
     propStartIndex = 1
   }
 
-  // 3. 失败兜底 (对应原项目 !IconComponent 逻辑)
+  // 3. Fallback when target icon component is invalid.
   if (
     !IconComponent
     || (typeof IconComponent !== 'function' && typeof IconComponent !== 'object')
@@ -62,7 +62,7 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
     )
   }
 
-  // 4. 解析点号链式属性
+  // 4. Parse dot-chained props.
   const props: any = {}
   const parseValue = (raw: any) => {
     if (raw == null)
@@ -100,11 +100,11 @@ export function ModelIcon({ symbol, size = 14, className }: ModelIconProps) {
     props[key] = parseValue(valRaw)
   }
 
-  // 兼容外部传入的 size
+  // Respect external size prop.
   if (props.size == null && size != null)
     props.size = size
 
-  // 5. 渲染
+  // 5. Render icon component.
   return (
     <div className={className} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
       <IconComponent {...props} />

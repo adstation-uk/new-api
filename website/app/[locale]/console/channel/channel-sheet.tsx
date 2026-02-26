@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Copy, Trash2, X, Zap } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -38,32 +39,6 @@ import { CHANNEL_OPTIONS } from '@/lib/channel'
 import { fetchChannelModels, fetchChannelModelsById, saveChannel } from './actions'
 import { ModelSelectDialog } from './model-select-dialog'
 
-const channelSchema = z.object({
-  id: z.number().optional(),
-  name: z.string().min(1, '名称不能为空'),
-  type: z.number(),
-  key: z.string(),
-  base_url: z.string().optional().default(''),
-  models: z.string().min(1, '请至少选择一个模型'),
-  group: z.string().default('default'),
-  priority: z.number().default(0),
-  weight: z.number().default(0),
-  test_model: z.string().optional().default(''),
-  other: z.string().optional().default(''),
-  tag: z.string().optional().default(''),
-}).refine((data) => {
-  if (!data.id && !data.key) {
-    return false
-  }
-  return true
-}, {
-  message: '新建渠道必须填写密钥',
-  path: ['key'],
-})
-
-type ChannelFormInput = z.input<typeof channelSchema>
-type ChannelFormValues = z.output<typeof channelSchema>
-
 export function ChannelSheet({
   open,
   onOpenChange,
@@ -75,11 +50,37 @@ export function ChannelSheet({
   editingChannel?: any
   onSuccess: () => void
 }) {
+  const t = useTranslations('Page.Console.Channel.sheet')
   const [fetchedModels, setFetchedModels] = useState<string[]>([])
   const [isSelectDialogOpen, setIsSelectDialogOpen] = useState(false)
 
-  const form = useForm<ChannelFormInput, any, ChannelFormValues>({
-    resolver: zodResolver(channelSchema),
+  const schema = z.object({
+    id: z.number().optional(),
+    name: z.string().min(1, t('validation.nameRequired')),
+    type: z.number(),
+    key: z.string(),
+    base_url: z.string().optional().default(''),
+    models: z.string().min(1, t('validation.modelsRequired')),
+    group: z.string().default('default'),
+    priority: z.number().default(0),
+    weight: z.number().default(0),
+    test_model: z.string().optional().default(''),
+    other: z.string().optional().default(''),
+    tag: z.string().optional().default(''),
+  }).refine((data) => {
+    if (!data.id && !data.key) {
+      return false
+    }
+    return true
+  }, {
+    message: t('validation.keyRequired'),
+    path: ['key'],
+  })
+
+  type ChannelFormValues = z.infer<typeof schema>
+
+  const form = useForm<ChannelFormValues>({
+    resolver: zodResolver(schema),
     defaultValues: {
       name: '',
       type: 1,
@@ -132,12 +133,12 @@ export function ChannelSheet({
   async function onSubmit(values: ChannelFormValues) {
     const result = await saveChannel(values)
     if (result.success) {
-      toast.success(values.id ? '更新成功' : '添加成功')
+      toast.success(values.id ? t('toast.updateSuccess') : t('toast.createSuccess'))
       onOpenChange(false)
       onSuccess()
     }
     else {
-      toast.error(result.message || '操作失败')
+      toast.error(result.message || t('toast.submitFailed'))
     }
   }
 
@@ -158,7 +159,7 @@ export function ChannelSheet({
     const key = form.getValues('key')
     const baseUrl = form.getValues('base_url')
 
-    const loadingToast = toast.loading('正在获取模型列表...')
+    const loadingToast = toast.loading(t('toast.fetchingModels'))
     try {
       let result
       if (editingChannel?.id) {
@@ -166,7 +167,7 @@ export function ChannelSheet({
       }
       else {
         if (!key) {
-          toast.error('请先填入密钥')
+          toast.error(t('toast.keyRequiredFirst'))
           toast.dismiss(loadingToast)
           return
         }
@@ -176,14 +177,14 @@ export function ChannelSheet({
       if (result.success && Array.isArray(result.data)) {
         setFetchedModels(result.data)
         setIsSelectDialogOpen(true)
-        toast.success(`成功获取 ${result.data.length} 个模型`)
+        toast.success(t('toast.fetchModelsSuccess', { count: result.data.length }))
       }
       else {
-        toast.error(result.message || '获取失败')
+        toast.error(result.message || t('toast.fetchFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(t('toast.networkError'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -199,20 +200,20 @@ export function ChannelSheet({
   const handleCopyModels = () => {
     const models = form.getValues('models')
     if (!models) {
-      toast.error('没有模型可以复制')
+      toast.error(t('toast.noModelsToCopy'))
       return
     }
     navigator.clipboard.writeText(models)
-    toast.success('已复制到剪贴板')
+    toast.success(t('toast.copied'))
   }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="sm:max-w-[600px] overflow-y-auto">
         <SheetHeader>
-          <SheetTitle>{editingChannel ? '编辑渠道' : '添加渠道'}</SheetTitle>
+          <SheetTitle>{editingChannel ? t('titleEdit') : t('titleCreate')}</SheetTitle>
           <SheetDescription>
-            配置渠道的基本信息、模型和密钥。
+            {t('description')}
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -222,11 +223,11 @@ export function ChannelSheet({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>渠道类型</FormLabel>
+                  <FormLabel>{t('fields.type')}</FormLabel>
                   <Select onValueChange={v => field.onChange(Number(v))} defaultValue={String(field.value)} value={String(field.value)}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="选择渠道类型" />
+                        <SelectValue placeholder={t('fields.typePlaceholder')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="max-h-[300px] overflow-y-auto">
@@ -247,9 +248,9 @@ export function ChannelSheet({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>渠道名称</FormLabel>
+                  <FormLabel>{t('fields.name')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="例如：OpenAI-01" {...field} />
+                    <Input placeholder={t('fields.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -261,11 +262,11 @@ export function ChannelSheet({
               name="base_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>代理地址</FormLabel>
+                  <FormLabel>{t('fields.baseUrl')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://api.openai.com (可选)" {...field} />
+                    <Input placeholder={t('fields.baseUrlPlaceholder')} {...field} />
                   </FormControl>
-                  <FormDescription>如果不填写，将使用默认地址</FormDescription>
+                  <FormDescription>{t('fields.baseUrlDescription')}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -276,11 +277,11 @@ export function ChannelSheet({
               name="models"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>模型</FormLabel>
+                  <FormLabel>{t('fields.models')}</FormLabel>
                   <FormControl>
                     <div className="space-y-2">
                       <Input
-                        placeholder="输入模型名称并回车添加，或逗号分隔"
+                        placeholder={t('fields.modelsPlaceholder')}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter') {
                             e.preventDefault()
@@ -302,7 +303,7 @@ export function ChannelSheet({
                             />
                           </Badge>
                         ))}
-                        {!field.value && <span className="text-xs text-muted-foreground">未选择模型</span>}
+                        {!field.value && <span className="text-xs text-muted-foreground">{t('fields.noModels')}</span>}
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <Button
@@ -314,7 +315,7 @@ export function ChannelSheet({
                         >
                           <Zap className="w-3 h-3 mr-1" />
                           {' '}
-                          获取模型列表
+                          {t('actions.fetchModels')}
                         </Button>
                         <Button
                           type="button"
@@ -325,7 +326,7 @@ export function ChannelSheet({
                         >
                           <Trash2 className="w-3 h-3 mr-1" />
                           {' '}
-                          清除所有模型
+                          {t('actions.clearModels')}
                         </Button>
                         <Button
                           type="button"
@@ -336,7 +337,7 @@ export function ChannelSheet({
                         >
                           <Copy className="w-3 h-3 mr-1" />
                           {' '}
-                          复制所有模型
+                          {t('actions.copyModels')}
                         </Button>
                       </div>
                     </div>
@@ -351,9 +352,9 @@ export function ChannelSheet({
               name="key"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>密钥 (Key)</FormLabel>
+                  <FormLabel>{t('fields.key')}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="请输入渠道对应的鉴权密钥" {...field} />
+                    <Textarea placeholder={t('fields.keyPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -366,11 +367,11 @@ export function ChannelSheet({
                 name="group"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>分组</FormLabel>
+                    <FormLabel>{t('fields.group')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
-                    <FormDescription>逗号分隔</FormDescription>
+                    <FormDescription>{t('fields.groupDescription')}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -380,9 +381,9 @@ export function ChannelSheet({
                 name="tag"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>标签</FormLabel>
+                    <FormLabel>{t('fields.tag')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="渠道标签" {...field} />
+                      <Input placeholder={t('fields.tagPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -396,7 +397,7 @@ export function ChannelSheet({
                 name="priority"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>优先级</FormLabel>
+                    <FormLabel>{t('fields.priority')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -413,7 +414,7 @@ export function ChannelSheet({
                 name="weight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>权重</FormLabel>
+                    <FormLabel>{t('fields.weight')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -432,9 +433,9 @@ export function ChannelSheet({
               name="test_model"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>测试模型</FormLabel>
+                  <FormLabel>{t('fields.testModel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="测试渠道时使用的模型 (可选)" {...field} />
+                    <Input placeholder={t('fields.testModelPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -446,10 +447,10 @@ export function ChannelSheet({
               name="other"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>其他配置 (JSON)</FormLabel>
+                  <FormLabel>{t('fields.other')}</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="部分渠道需要的额外配置，例如 Azure 的版本等"
+                      placeholder={t('fields.otherPlaceholder')}
                       className="font-mono text-xs"
                       {...field}
                     />
@@ -460,7 +461,7 @@ export function ChannelSheet({
             />
 
             <SheetFooter className="pt-4">
-              <Button type="submit" className="w-full">保存渠道</Button>
+              <Button type="submit" className="w-full">{t('actions.save')}</Button>
             </SheetFooter>
           </form>
         </Form>

@@ -1,6 +1,7 @@
 'use client'
 
 import { Search } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,6 +14,7 @@ export function TokenSearch({
   initialKeyword: string
   initialToken: string
 }) {
+  const t = useTranslations('Page.Console.Token.search')
   const [keyword, setKeyword] = useState(initialKeyword)
   const [token, setToken] = useState(initialToken)
   const router = useRouter()
@@ -42,7 +44,7 @@ export function TokenSearch({
       <div className="relative flex-1 max-w-[200px]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="搜索名称..."
+          placeholder={t('namePlaceholder')}
           className="pl-8 h-9"
           value={keyword}
           onChange={e => setKeyword(e.target.value)}
@@ -52,7 +54,7 @@ export function TokenSearch({
       <div className="relative flex-1 max-w-[200px]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="搜索密钥..."
+          placeholder={t('keyPlaceholder')}
           className="pl-8 h-9"
           value={token}
           onChange={e => setToken(e.target.value)}
@@ -61,10 +63,10 @@ export function TokenSearch({
       </div>
       <div className="flex gap-2">
         <Button size="sm" variant="outline" onClick={handleSearch} className="h-9">
-          查询
+          {t('search')}
         </Button>
         <Button size="sm" variant="outline" onClick={handleReset} className="h-9">
-          重置
+          {t('reset')}
         </Button>
       </div>
     </div>

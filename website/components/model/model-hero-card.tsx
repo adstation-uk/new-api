@@ -1,6 +1,7 @@
 'use client'
 
 import { Check, ChevronLeft, Copy, Sparkles, Zap } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -34,6 +35,7 @@ export function ModelHeroCard({
   billingUnit,
   backHref = '/pricing',
 }: ModelHeroCardProps) {
+  const t = useTranslations('Page.Models.HeroCard')
   const [copied, setCopied] = useState(false)
 
   const handleCopyModelId = async () => {
@@ -47,7 +49,7 @@ export function ModelHeroCard({
     }
   }
 
-  const billingLabel = billingType === 'request' ? '按次数计费' : '按 Token 计费'
+  const billingLabel = billingType === 'request' ? t('billingRequest') : t('billingToken')
 
   return (
     <section className="w-full border-b bg-muted/30">
@@ -83,7 +85,11 @@ export function ModelHeroCard({
                 <span className="font-medium">{modelId}</span>
               </div>
               <div className="rounded-md border bg-background px-3 py-1.5">
-                <span className="text-muted-foreground">计费方式: </span>
+                <span className="text-muted-foreground">
+                  {t('billingType')}
+                  :
+                  {' '}
+                </span>
                 <span className="font-medium">{billingLabel}</span>
                 {billingUnit && (
                   <span className="text-muted-foreground">
@@ -118,19 +124,19 @@ export function ModelHeroCard({
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">价格信息</CardTitle>
+              <CardTitle className="text-base">{t('priceInfo')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-lg border bg-muted/40 p-4">
-                <p className="text-xs text-muted-foreground">我们的价格</p>
+                <p className="text-xs text-muted-foreground">{t('ourPrice')}</p>
                 <p className="mt-1 text-2xl font-bold">
-                  {price || '联系销售'}
+                  {price || t('contactSales')}
                   {billingUnit ? <span className="ml-1 text-sm font-medium text-muted-foreground">{billingUnit}</span> : null}
                 </p>
               </div>
 
               <div className="rounded-lg border bg-background p-4">
-                <p className="text-xs text-muted-foreground">市场价格</p>
+                <p className="text-xs text-muted-foreground">{t('marketPrice')}</p>
                 <p className="mt-1 text-lg font-semibold text-muted-foreground">
                   {marketPrice || 'N/A'}
                   {billingUnit ? <span className="ml-1 text-xs">{billingUnit}</span> : null}
@@ -142,13 +148,13 @@ export function ModelHeroCard({
                   ? (
                       <>
                         <Check className="mr-2 h-4 w-4" />
-                        已复制模型 ID
+                        {t('copiedModelId')}
                       </>
                     )
                   : (
                       <>
                         <Copy className="mr-2 h-4 w-4" />
-                        复制模型 ID
+                        {t('copyModelId')}
                       </>
                     )}
               </Button>

@@ -7,6 +7,7 @@ import {
   Search,
   UserPlus,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { useTransition } from 'react'
@@ -27,6 +28,7 @@ export function UserClient({
   currentPage: number
   pageSize: number
 }) {
+  const t = useTranslations('Page.Console.User.client')
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
@@ -81,13 +83,13 @@ export function UserClient({
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="搜索用户名、显示名或备注..."
+              placeholder={t('searchPlaceholder')}
               className="pl-8"
               value={searchValue}
               onChange={e => setSearchValue(e.target.value)}
             />
           </div>
-          <Button type="submit" variant="secondary" size="sm">搜索</Button>
+          <Button type="submit" variant="secondary" size="sm">{t('search')}</Button>
           <Button type="button" variant="ghost" size="sm" onClick={handleReset}>
             <RotateCcw className="h-4 w-4" />
           </Button>
@@ -102,7 +104,7 @@ export function UserClient({
           >
             <UserPlus className="mr-2 h-4 w-4" />
             {' '}
-            添加用户
+            {t('addUser')}
           </Button>
         </div>
       </div>
@@ -111,19 +113,11 @@ export function UserClient({
 
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-muted-foreground">
-          共
-          {' '}
-          {total}
-          {' '}
-          个用户，当前第
-          {' '}
-          {currentPage}
-          {' '}
-          /
-          {' '}
-          {totalPages || 1}
-          {' '}
-          页
+          {t('pagination', {
+            total,
+            currentPage,
+            totalPages: totalPages || 1,
+          })}
         </div>
         <div className="flex items-center space-x-2">
           <Button
@@ -133,7 +127,7 @@ export function UserClient({
             disabled={currentPage <= 1 || isPending}
           >
             <ChevronLeft className="h-4 w-4" />
-            上一页
+            {t('prev')}
           </Button>
           <Button
             variant="outline"
@@ -141,7 +135,7 @@ export function UserClient({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages || isPending}
           >
-            下一页
+            {t('next')}
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

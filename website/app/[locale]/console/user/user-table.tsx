@@ -11,6 +11,7 @@ import {
   Smartphone,
   Trash2,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -64,19 +65,21 @@ export function UserTable({
   data: User[]
   onEdit: (user: User) => void
 }) {
+  const t = useTranslations('Page.Console.User.table')
+  const commonT = useTranslations('Common')
   const handleManage = async (id: number, action: any, label: string) => {
-    const loadingToast = toast.loading(`正在执行${label}...`)
+    const loadingToast = toast.loading(t('toast.executing', { label }))
     try {
       const result = await manageUser(id, action)
       if (result.success) {
-        toast.success(`${label}成功`)
+        toast.success(t('toast.actionSuccess', { label }))
       }
       else {
-        toast.error(result.message || `${label}失败`)
+        toast.error(result.message || t('toast.actionFailed', { label }))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -84,18 +87,18 @@ export function UserTable({
   }
 
   const handleResetSecurity = async (id: number, type: 'passkey' | '2fa', label: string) => {
-    const loadingToast = toast.loading(`正在重置${label}...`)
+    const loadingToast = toast.loading(t('toast.resetting', { label }))
     try {
       const result = type === 'passkey' ? await resetUserPasskey(id) : await resetUserTwoFA(id)
       if (result.success) {
-        toast.success(`${label}重置成功`)
+        toast.success(t('toast.resetSuccess', { label }))
       }
       else {
-        toast.error(result.message || `${label}重置失败`)
+        toast.error(result.message || t('toast.resetFailed', { label }))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -104,10 +107,10 @@ export function UserTable({
 
   const renderRole = (role: number) => {
     switch (role) {
-      case 1: return <Badge variant="secondary">普通用户</Badge>
-      case 10: return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-200">管理员</Badge>
-      case 100: return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-200">超级管理员</Badge>
-      default: return <Badge variant="outline">未知</Badge>
+      case 1: return <Badge variant="secondary">{commonT('status.normalUser')}</Badge>
+      case 10: return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-200">{commonT('status.admin')}</Badge>
+      case 100: return <Badge className="bg-orange-100 text-orange-800 hover:bg-orange-200 border-orange-200">{t('role.superAdmin')}</Badge>
+      default: return <Badge variant="outline">{commonT('status.unknown')}</Badge>
     }
   }
 
@@ -117,12 +120,12 @@ export function UserTable({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[80px]">ID</TableHead>
-            <TableHead>用户名 / 显示名</TableHead>
-            <TableHead>状态</TableHead>
-            <TableHead>角色</TableHead>
-            <TableHead className="w-[200px]">额度使用 (剩余 / 总额)</TableHead>
-            <TableHead>统计</TableHead>
-            <TableHead className="text-right">操作</TableHead>
+            <TableHead>{t('columns.user')}</TableHead>
+            <TableHead>{t('columns.status')}</TableHead>
+            <TableHead>{t('columns.role')}</TableHead>
+            <TableHead className="w-[200px]">{t('columns.quota')}</TableHead>
+            <TableHead>{t('columns.stats')}</TableHead>
+            <TableHead className="text-right">{t('columns.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -142,8 +145,7 @@ export function UserTable({
                     {user.remark && (
                       <div className="mt-1">
                         <Badge variant="outline" className="text-[10px] font-normal leading-tight h-auto py-0.5 max-w-[150px] truncate block" title={user.remark}>
-                          备注:
-                          {' '}
+                          {t('remarkPrefix')}
                           {user.remark}
                         </Badge>
                       </div>
@@ -153,14 +155,14 @@ export function UserTable({
                 <TableCell>
                   {isDeleted
                     ? (
-                        <Badge variant="destructive">已注销</Badge>
+                        <Badge variant="destructive">{t('status.deleted')}</Badge>
                       )
                     : user.status === 1
                       ? (
-                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200">已启用</Badge>
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-200 border-green-200">{commonT('status.enabled')}</Badge>
                         )
                       : (
-                          <Badge variant="destructive">已禁用</Badge>
+                          <Badge variant="destructive">{commonT('status.disabled')}</Badge>
                         )}
                 </TableCell>
                 <TableCell>{renderRole(user.role)}</TableCell>
@@ -188,21 +190,21 @@ export function UserTable({
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Badge variant="outline" className="text-[10px] cursor-default">
-                            请求:
+                            {t('stats.request')}
                             {renderNumber(user.request_count)}
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent>总调用次数</TooltipContent>
+                        <TooltipContent>{t('stats.requestTooltip')}</TooltipContent>
                       </Tooltip>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Badge variant="outline" className="text-[10px] cursor-default">
-                            邀请:
+                            {t('stats.invite')}
                             {user.aff_count}
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent>
-                          邀请人数 / 历史邀请额度:
+                          {t('stats.inviteTooltip')}
                           {renderQuota(user.aff_history_quota)}
                         </TooltipContent>
                       </Tooltip>
@@ -211,7 +213,7 @@ export function UserTable({
                 </TableCell>
                 <TableCell className="text-right text-right-important">
                   <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => onEdit(user)} title="编辑">
+                    <Button variant="ghost" size="sm" onClick={() => onEdit(user)} title={t('edit')}>
                       <Pencil className="h-4 w-4" />
                     </Button>
                     {!isDeleted && (
@@ -222,52 +224,45 @@ export function UserTable({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>管理操作</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('menu.title')}</DropdownMenuLabel>
                           {user.status === 1
                             ? (
-                                <DropdownMenuItem onClick={() => handleManage(user.id, 'disable', '禁用')} className="text-red-600">
+                                <DropdownMenuItem onClick={() => handleManage(user.id, 'disable', t('action.disable'))} className="text-red-600">
                                   <Ban className="mr-2 h-4 w-4" />
-                                  {' '}
-                                  禁用用户
+                                  {t('menu.disableUser')}
                                 </DropdownMenuItem>
                               )
                             : (
-                                <DropdownMenuItem onClick={() => handleManage(user.id, 'enable', '启用')} className="text-green-600">
+                                <DropdownMenuItem onClick={() => handleManage(user.id, 'enable', t('action.enable'))} className="text-green-600">
                                   <CheckCircle2 className="mr-2 h-4 w-4" />
-                                  {' '}
-                                  启用用户
+                                  {t('menu.enableUser')}
                                 </DropdownMenuItem>
                               )}
 
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleManage(user.id, 'promote', '提权')}>
+                          <DropdownMenuItem onClick={() => handleManage(user.id, 'promote', t('action.promote'))}>
                             <ShieldCheck className="mr-2 h-4 w-4" />
-                            {' '}
-                            设为管理员
+                            {t('menu.makeAdmin')}
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleManage(user.id, 'demote', '降权')}>
+                          <DropdownMenuItem onClick={() => handleManage(user.id, 'demote', t('action.demote'))}>
                             <ShieldAlert className="mr-2 h-4 w-4" />
-                            {' '}
-                            设为普通用户
+                            {t('menu.makeNormal')}
                           </DropdownMenuItem>
 
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleResetSecurity(user.id, 'passkey', 'Passkey')}>
                             <Key className="mr-2 h-4 w-4" />
-                            {' '}
-                            重置 Passkey
+                            {t('menu.resetPasskey')}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => handleResetSecurity(user.id, '2fa', '2FA')}>
                             <Smartphone className="mr-2 h-4 w-4" />
-                            {' '}
-                            重置 2FA
+                            {t('menu.reset2fa')}
                           </DropdownMenuItem>
 
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleManage(user.id, 'delete', '注销')} className="text-red-600">
+                          <DropdownMenuItem onClick={() => handleManage(user.id, 'delete', t('action.delete'))} className="text-red-600">
                             <Trash2 className="mr-2 h-4 w-4" />
-                            {' '}
-                            注销用户
+                            {t('menu.deleteUser')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -280,7 +275,7 @@ export function UserTable({
           {data.length === 0 && (
             <TableRow>
               <TableCell colSpan={7} className="h-24 text-center text-muted-foreground italic">
-                没有找到匹配的用户
+                {t('empty')}
               </TableCell>
             </TableRow>
           )}

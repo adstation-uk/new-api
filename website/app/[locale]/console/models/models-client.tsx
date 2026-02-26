@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Search,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
 import * as React from 'react'
 import { useTransition } from 'react'
@@ -42,6 +43,8 @@ export function ModelsClient({
   vendors: any[]
   vendorCounts: Record<string, number>
 }) {
+  const t = useTranslations('Page.Console.Models.client')
+  const commonT = useTranslations('Common')
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
@@ -92,18 +95,18 @@ export function ModelsClient({
   }
 
   const handleSync = async () => {
-    const loadingToast = toast.loading('正在同步官方模型数据...')
+    const loadingToast = toast.loading(t('toast.syncing'))
     try {
       const result = await syncUpstreamModels()
       if (result.success) {
-        toast.success('同步成功')
+        toast.success(t('toast.syncSuccess'))
       }
       else {
-        toast.error(result.message || '同步失败')
+        toast.error(result.message || t('toast.syncFailed'))
       }
     }
     catch {
-      toast.error('网络请求失败')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -117,7 +120,7 @@ export function ModelsClient({
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="搜索模型名称、别名或标签..."
+              placeholder={t('searchPlaceholder')}
               className="pl-8 bg-background"
               value={searchValue}
               onChange={(e) => {
@@ -135,13 +138,11 @@ export function ModelsClient({
           >
             <SelectTrigger className="w-[180px] bg-background">
               <Filter className="w-3.5 h-3.5 mr-2 opacity-50" />
-              <SelectValue placeholder="所有供应商" />
+              <SelectValue placeholder={t('allVendors')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">
-                所有供应商 (
-                {total}
-                )
+                {`${t('allVendors')} (${total})`}
               </SelectItem>
               {vendors.map(v => (
                 <SelectItem key={v.id} value={v.id.toString()}>
@@ -156,7 +157,7 @@ export function ModelsClient({
           </Select>
 
           <div className="flex items-center gap-1">
-            <Button type="submit" size="sm" className="h-10 px-4">搜索</Button>
+            <Button type="submit" size="sm" className="h-10 px-4">{t('search')}</Button>
             <Button type="button" variant="ghost" size="sm" onClick={handleReset} className="h-10 w-10 p-0">
               <RotateCcw className="h-4 w-4" />
             </Button>
@@ -166,13 +167,11 @@ export function ModelsClient({
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="h-10 border-dashed" onClick={handleSync}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            {' '}
-            同步官方
+            {t('syncOfficial')}
           </Button>
           <Button variant="outline" size="sm" className="h-10" onClick={() => setIsVendorDialogOpen(true)}>
             <Layers className="mr-2 h-4 w-4" />
-            {' '}
-            管理供应商
+            {t('manageVendors')}
           </Button>
           <Button
             size="sm"
@@ -183,8 +182,7 @@ export function ModelsClient({
             }}
           >
             <Plus className="mr-2 h-4 w-4" />
-            {' '}
-            新增模型
+            {t('addModel')}
           </Button>
         </div>
       </div>
@@ -206,19 +204,11 @@ export function ModelsClient({
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
         <div className="text-sm text-muted-foreground order-2 sm:order-1">
-          共
-          {' '}
-          {total}
-          {' '}
-          个模型，当前第
-          {' '}
-          {currentPage}
-          {' '}
-          /
-          {' '}
-          {totalPages || 1}
-          {' '}
-          页
+          {t('paginationSummary', {
+            total,
+            page: currentPage,
+            totalPages: totalPages || 1,
+          })}
         </div>
         <div className="flex items-center space-x-2 order-1 sm:order-2">
           <Button
@@ -228,8 +218,7 @@ export function ModelsClient({
             disabled={currentPage <= 1 || isPending}
           >
             <ChevronLeft className="h-4 w-4 mr-1" />
-            {' '}
-            上一页
+            {commonT('action.prevPage')}
           </Button>
           <Button
             variant="outline"
@@ -237,8 +226,7 @@ export function ModelsClient({
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages || isPending}
           >
-            下一页
-            {' '}
+            {commonT('action.nextPage')}
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>

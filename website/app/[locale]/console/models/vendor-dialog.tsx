@@ -1,6 +1,7 @@
 'use client'
 
 import { Pencil, Plus, Save, Trash2, X } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { ModelIcon } from '@/components/model-icon'
@@ -38,6 +39,8 @@ type VendorDialogProps = {
 }
 
 export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps) {
+  const t = useTranslations('Page.Console.Models.vendorDialog')
+  const commonT = useTranslations('Common')
   const [editingId, setEditingId] = React.useState<number | null>(null)
   const [isAdding, setIsAdding] = React.useState(false)
   const [formData, setFormData] = React.useState<Partial<Vendor>>({})
@@ -56,23 +59,23 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
 
   const handleSave = async () => {
     if (!formData.name) {
-      toast.error('名称不能为空')
+      toast.error(t('validation.nameRequired'))
       return
     }
 
-    const loadingToast = toast.loading('正在保存...')
+    const loadingToast = toast.loading(t('toast.saving'))
     try {
       const result = await saveVendor(formData)
       if (result.success) {
-        toast.success(formData.id ? '修改成功' : '添加成功')
+        toast.success(formData.id ? t('toast.updateSuccess') : t('toast.createSuccess'))
         handleCancel()
       }
       else {
-        toast.error(result.message || '保存失败')
+        toast.error(result.message || t('toast.saveFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -81,21 +84,21 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
 
   const handleDelete = async (id: number) => {
     // eslint-disable-next-line no-alert
-    if (!confirm('确定要删除这个供应商吗？'))
+    if (!confirm(t('confirmDelete')))
       return
 
-    const loadingToast = toast.loading('正在删除...')
+    const loadingToast = toast.loading(t('toast.deleting'))
     try {
       const result = await deleteVendor(id)
       if (result.success) {
-        toast.success('删除成功')
+        toast.success(t('toast.deleteSuccess'))
       }
       else {
-        toast.error(result.message || '删除失败')
+        toast.error(result.message || t('toast.deleteFailed'))
       }
     }
     catch {
-      toast.error('网络错误')
+      toast.error(commonT('errors.network'))
     }
     finally {
       toast.dismiss(loadingToast)
@@ -106,9 +109,9 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>供应商管理</DialogTitle>
+          <DialogTitle>{t('title')}</DialogTitle>
           <DialogDescription>
-            管理模型提供商，配置其图标和默认描述。图标标识符请参考 Lobe Icons。
+            {t('description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -117,7 +120,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
             {!isAdding && !editingId && (
               <Button onClick={() => setIsAdding(true)} size="sm" className="gap-1">
                 <Plus className="h-4 w-4" />
-                添加供应商
+                {t('add')}
               </Button>
             )}
           </div>
@@ -125,10 +128,10 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[60px]">图标</TableHead>
-                <TableHead className="w-[150px]">名称</TableHead>
-                <TableHead>描述</TableHead>
-                <TableHead className="w-[120px] text-right">操作</TableHead>
+                <TableHead className="w-[60px]">{t('columns.icon')}</TableHead>
+                <TableHead className="w-[150px]">{t('columns.name')}</TableHead>
+                <TableHead>{t('columns.description')}</TableHead>
+                <TableHead className="w-[120px] text-right">{t('columns.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -141,7 +144,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
                     <Input
                       value={formData.name || ''}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      placeholder="如: OpenAI"
+                      placeholder={t('namePlaceholder')}
                       className="h-8 text-xs"
                     />
                   </TableCell>
@@ -149,13 +152,13 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
                     <Input
                       value={formData.description || ''}
                       onChange={e => setFormData({ ...formData, description: e.target.value })}
-                      placeholder="供应商描述..."
+                      placeholder={t('descriptionPlaceholder')}
                       className="h-8 text-xs flex-1"
                     />
                     <Input
                       value={formData.icon || ''}
                       onChange={e => setFormData({ ...formData, icon: e.target.value })}
-                      placeholder="图标标识符"
+                      placeholder={t('iconPlaceholder')}
                       className="h-8 text-xs w-28"
                     />
                   </TableCell>
@@ -198,7 +201,7 @@ export function VendorDialog({ open, onOpenChange, vendors }: VendorDialogProps)
               {vendors.length === 0 && !isAdding && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs">
-                    暂无供应商数据
+                    {t('empty')}
                   </TableCell>
                 </TableRow>
               )}

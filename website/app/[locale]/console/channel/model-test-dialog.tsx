@@ -8,6 +8,7 @@ import {
   Search,
   Zap,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import * as React from 'react'
 import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
@@ -43,18 +44,18 @@ type ModelTestDialogProps = {
   channel: any
 }
 
-const ENDPOINT_TYPES = [
-  { value: 'auto', label: '自动检测' },
-  { value: 'openai', label: 'OpenAI (/v1/chat/completions)' },
-  { value: 'openai-response', label: 'OpenAI Response (/v1/responses)' },
-  { value: 'anthropic', label: 'Anthropic (/v1/messages)' },
-  { value: 'gemini', label: 'Gemini (/v1beta/models)' },
-  { value: 'jina-rerank', label: 'Jina Rerank (/rerank)' },
-  { value: 'image-generation', label: '图像生成 (/v1/images/generations)' },
-  { value: 'embeddings', label: 'Embeddings (/v1/embeddings)' },
-]
-
 export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialogProps) {
+  const t = useTranslations('Page.Console.Channel.modelTest')
+  const ENDPOINT_TYPES = [
+    { value: 'auto', label: t('endpoint.auto') },
+    { value: 'openai', label: 'OpenAI (/v1/chat/completions)' },
+    { value: 'openai-response', label: 'OpenAI Response (/v1/responses)' },
+    { value: 'anthropic', label: 'Anthropic (/v1/messages)' },
+    { value: 'gemini', label: 'Gemini (/v1beta/models)' },
+    { value: 'jina-rerank', label: 'Jina Rerank (/rerank)' },
+    { value: 'image-generation', label: t('endpoint.imageGeneration') },
+    { value: 'embeddings', label: 'Embeddings (/v1/embeddings)' },
+  ]
   const [search, setSearch] = React.useState('')
   const [endpointType, setEndpointType] = React.useState('auto')
   const [results, setResults] = React.useState<Record<string, { success: boolean, time: number, error?: string }>>({})
@@ -94,7 +95,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
         [model]: {
           success: false,
           time: 0,
-          error: '测试执行失败',
+          error: t('execFailed'),
         },
       }))
     }
@@ -116,11 +117,11 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
   const handleCopySuccess = () => {
     const successModels = filteredModels.filter((m: string) => results[m]?.success)
     if (successModels.length === 0) {
-      toast.info('没有测试成功的模型')
+      toast.info(t('noSuccessful'))
       return
     }
     navigator.clipboard.writeText(successModels.join(','))
-    toast.success(`已复制 ${successModels.length} 个成功的模型`)
+    toast.success(t('copiedSuccessful', { count: successModels.length }))
   }
 
   // Effect to clear results when channel changes
@@ -141,14 +142,15 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <span>
-              {channel?.name || '未命名'}
+              {channel?.name || t('unnamed')}
               {' '}
-              - 模型测试
+              -
+              {' '}
+              {t('title')}
             </span>
             <Badge variant="outline">
               {models.length}
-              {' '}
-              个模型
+              {t('models')}
             </Badge>
           </DialogTitle>
         </DialogHeader>
@@ -156,11 +158,11 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
         <div className="flex flex-col gap-4 py-4 overflow-hidden h-full">
           <div className="flex flex-wrap gap-2 items-end">
             <div className="flex-1 min-w-[200px]">
-              <label className="text-xs font-medium mb-1 block">搜索模型</label>
+              <label className="text-xs font-medium mb-1 block">{t('searchModel')}</label>
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="输入模型名称搜索..."
+                  placeholder={t('searchPlaceholder')}
                   className="pl-8"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
@@ -168,10 +170,10 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
               </div>
             </div>
             <div className="w-[180px]">
-              <label className="text-xs font-medium mb-1 block">端点类型</label>
+              <label className="text-xs font-medium mb-1 block">{t('endpointType')}</label>
               <Select value={endpointType} onValueChange={setEndpointType}>
                 <SelectTrigger>
-                  <SelectValue placeholder="选择端点类型" />
+                  <SelectValue placeholder={t('selectEndpoint')} />
                 </SelectTrigger>
                 <SelectContent>
                   {ENDPOINT_TYPES.map(type => (
@@ -183,7 +185,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
             <Button variant="outline" size="sm" className="h-10" onClick={handleCopySuccess}>
               <Copy className="h-4 w-4 mr-1" />
               {' '}
-              复制成功
+              {t('copySuccess')}
             </Button>
           </div>
 
@@ -191,9 +193,9 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
             <Table>
               <TableHeader className="sticky top-0 bg-white z-10 shadow-sm">
                 <TableRow>
-                  <TableHead>模型名称</TableHead>
-                  <TableHead className="w-[180px]">状态信息</TableHead>
-                  <TableHead className="w-[80px] text-right">操作</TableHead>
+                  <TableHead>{t('columns.model')}</TableHead>
+                  <TableHead className="w-[180px]">{t('columns.status')}</TableHead>
+                  <TableHead className="w-[80px] text-right">{t('columns.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -205,7 +207,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                         ? (
                             <div className="flex items-center gap-1 text-blue-500">
                               <Loader2 className="h-3 w-3 animate-spin" />
-                              <span className="text-[10px]">正在请求...</span>
+                              <span className="text-[10px]">{t('requesting')}</span>
                             </div>
                           )
                         : results[model]
@@ -214,10 +216,10 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                                 <div className="flex items-center gap-1.5">
                                   {results[model].success
                                     ? (
-                                        <Badge className="bg-green-50 text-green-700 hover:bg-green-50 border-green-200 h-5 px-1.5 text-[10px]">成功</Badge>
+                                        <Badge className="bg-green-50 text-green-700 hover:bg-green-50 border-green-200 h-5 px-1.5 text-[10px]">{t('success')}</Badge>
                                       )
                                     : (
-                                        <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">失败</Badge>
+                                        <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">{t('failed')}</Badge>
                                       )}
                                   <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
                                     <Clock className="h-3 w-3" />
@@ -234,7 +236,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                               </div>
                             )
                           : (
-                              <span className="text-[10px] text-muted-foreground italic">未开始</span>
+                              <span className="text-[10px] text-muted-foreground italic">{t('notStarted')}</span>
                             )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -244,7 +246,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                         className="h-7 w-7 p-0"
                         onClick={() => handleTest(model)}
                         disabled={testing[model] || isBatchTesting}
-                        title="测试此模型"
+                        title={t('testThisModel')}
                       >
                         <Play className="h-3.5 w-3.5" />
                       </Button>
@@ -254,7 +256,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                 {filteredModels.length === 0 && (
                   <TableRow>
                     <TableCell colSpan={3} className="text-center py-10 text-muted-foreground">
-                      未发现匹配的模型
+                      {t('empty')}
                     </TableCell>
                   </TableRow>
                 )}
@@ -265,7 +267,7 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
 
         <DialogFooter className="flex flex-row items-center justify-between sm:justify-between w-full border-t pt-4">
           <div className="text-[11px] text-muted-foreground bg-slate-50 p-2 rounded border leading-tight">
-            提示：本页测试为非流式请求。如果渠道仅支持流式，测试可能显示失败，请以实际使用为准。
+            {t('tip')}
           </div>
           <Button onClick={handleBatchTest} disabled={isBatchTesting || filteredModels.length === 0} size="sm">
             {isBatchTesting
@@ -273,14 +275,15 @@ export function ModelTestDialog({ open, onOpenChange, channel }: ModelTestDialog
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     {' '}
-                    批量测试中...
+                    {t('batchTesting')}
                   </>
                 )
               : (
                   <>
                     <Zap className="h-4 w-4 mr-2" />
+                    {t('batchTest')}
                     {' '}
-                    批量测试 (
+                    (
                     {filteredModels.length}
                     )
                   </>
