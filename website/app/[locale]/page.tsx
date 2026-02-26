@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import {
   Claude,
   DeepSeek,
@@ -40,6 +41,7 @@ import {
 } from '@/components/ui/card'
 import { Link } from '@/i18n/navigation'
 import { api } from '@/lib/api'
+import { buildPageMetadata, getLocaleUrl, getSiteUrl } from '@/lib/seo'
 import { getOptionalUserInfo } from '@/lib/user'
 
 const MODEL_GROUPS_ITEMS = [
@@ -136,7 +138,29 @@ const FAQ_ITEMS = [
   { qKey: 'faq.q6', aKey: 'faq.a6' },
 ]
 
-export default async function HomePage() {
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const isZh = locale === 'zh'
+
+  return buildPageMetadata({
+    locale,
+    pathname: '/',
+    title: isZh ? 'Broadscene - AI API 聚合平台' : 'Broadscene - AI API Platform',
+    description: isZh
+      ? '一站式接入文本、图像、视频与音乐模型 API，支持快速集成、稳定调用与高性价比计费。'
+      : 'Access chat, image, video, and music model APIs in one place with fast integration, stable delivery, and transparent pricing.',
+    keywords: isZh
+      ? ['AI API', '大模型接口', 'OpenAI 兼容', '多模型聚合', 'API 网关']
+      : ['AI API', 'LLM API gateway', 'OpenAI compatible API', 'multi-model API', 'video generation API'],
+  })
+}
+
+export default async function HomePage({ params }: Props) {
+  const { locale } = await params
   const user = await getOptionalUserInfo()
   const t = await getTranslations('Page.Home')
 
@@ -150,8 +174,40 @@ export default async function HomePage() {
   }
   catch {}
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': `${getSiteUrl()}#organization`,
+        'name': 'Broadscene',
+        'url': getSiteUrl(),
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${getSiteUrl()}#website`,
+        'url': getSiteUrl(),
+        'name': 'Broadscene',
+        'inLanguage': locale === 'zh' ? 'zh-CN' : 'en-US',
+      },
+      {
+        '@type': 'WebPage',
+        '@id': `${getLocaleUrl(locale, '/')}#webpage`,
+        'url': getLocaleUrl(locale, '/'),
+        'name': locale === 'zh' ? 'Broadscene - AI API 聚合平台' : 'Broadscene - AI API Platform',
+        'isPartOf': {
+          '@id': `${getSiteUrl()}#website`,
+        },
+      },
+    ],
+  }
+
   return (
     <div className="w-full overflow-x-hidden bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="relative overflow-hidden border-b">
         <DotPattern
           width={22}

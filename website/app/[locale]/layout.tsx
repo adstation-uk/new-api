@@ -8,6 +8,7 @@ import { Navbar } from '@/components/navbar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
 import { routing } from '@/i18n/routing'
+import { getSiteUrl, SITE_NAME } from '@/lib/seo'
 import { getOptionalUserInfo } from '@/lib/user'
 import '../globals.css'
 
@@ -21,19 +22,38 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 })
 
-export const metadata: Metadata = {
-  title: 'Broadscene',
-  description: 'Broadscene AI API platform',
-  icons: {
-    icon: '/icon.png',
-    shortcut: '/icon.png',
-    apple: '/icon.png',
-  },
-}
-
 type Props = {
   children: ReactNode
   params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const isZh = locale === 'zh'
+
+  return {
+    metadataBase: new URL(getSiteUrl()),
+    applicationName: SITE_NAME,
+    title: {
+      default: isZh ? 'Broadscene - AI API 聚合平台' : 'Broadscene - AI API Platform',
+      template: `%s | ${SITE_NAME}`,
+    },
+    description: isZh
+      ? '聚合主流 AI 模型接口，提供统一 API、稳定可用与透明计费。'
+      : 'Unified AI API gateway for chat, image, video, and music models with stable uptime and transparent pricing.',
+    alternates: {
+      languages: {
+        'en': `${getSiteUrl()}/en`,
+        'zh': `${getSiteUrl()}/zh`,
+        'x-default': `${getSiteUrl()}/en`,
+      },
+    },
+    icons: {
+      icon: '/icon.png',
+      shortcut: '/icon.png',
+      apple: '/icon.png',
+    },
+  }
 }
 
 export function generateStaticParams() {

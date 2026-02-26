@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { Suspense } from 'react'
 import { RegisterForm } from '@/components/register-form'
@@ -8,6 +9,23 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { api } from '@/lib/api'
+import { buildPageMetadata } from '@/lib/seo'
+
+type Props = {
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+
+  return buildPageMetadata({
+    locale,
+    pathname: '/register',
+    title: locale === 'zh' ? '注册' : 'Sign Up',
+    description: locale === 'zh' ? '创建 Broadscene 账号并开始调用 API。' : 'Create a Broadscene account and start using API models.',
+    noIndex: true,
+  })
+}
 
 export default async function RegisterPage() {
   const t = await getTranslations('Page.Register')

@@ -5,6 +5,7 @@ import { FileText } from 'lucide-react'
 import { ModelHeroCard } from '@/components/model/model-hero-card'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { API_BASE_URL, getModelMetadata } from '@/config/models'
+import { buildPageMetadata } from '@/lib/seo'
 
 type DocProps = {
   modelId: string
@@ -13,7 +14,7 @@ type DocProps = {
 }
 
 type Props = {
-  params: Promise<{ id: string }>
+  params: Promise<{ locale: string, id: string }>
 }
 
 export function generateStaticParams() {
@@ -29,14 +30,22 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id: modelParam } = await params
+  const { locale, id: modelParam } = await params
   const modelId = decodeURIComponent(modelParam)
   const metadata = getModelMetadata(modelId)
 
-  return {
-    title: `${metadata.name} | New API`,
-    description: `Read usage docs and API examples for ${metadata.name}.`,
-  }
+  return buildPageMetadata({
+    locale,
+    pathname: `/model/${encodeURIComponent(modelId)}`,
+    title: metadata.name || modelId,
+    description: metadata.description || `Read usage docs and API examples for ${metadata.name || modelId}.`,
+    keywords: [
+      metadata.name || modelId,
+      `${metadata.provider || 'AI'} API`,
+      `${metadata.category} model`,
+      'OpenAI-compatible API',
+    ],
+  })
 }
 
 export default async function ModelDetailPage({ params }: Props) {

@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { collectionsConfig, getCollectionMetadata, getModelMetadata } from '@/config/models'
 import { Link } from '@/i18n/navigation'
+import { buildPageMetadata } from '@/lib/seo'
 
 type Props = {
-  params: Promise<{ key: string }>
+  params: Promise<{ locale: string, key: string }>
 }
 
 function toModelListByCollectionKey(key: string) {
@@ -35,18 +36,26 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations('Page.Collections.Detail')
-  const { key: rawKey } = await params
+  const { locale, key: rawKey } = await params
   const key = decodeURIComponent(rawKey).toLowerCase()
   const collection = getCollectionMetadata(key)
   const models = toModelListByCollectionKey(key)
-  const title = `${collection?.title || `${key.toUpperCase()} Collections`} | New API`
+  const title = collection?.title || `${key.toUpperCase()} Collections`
 
-  return {
+  return buildPageMetadata({
+    locale,
+    pathname: `/collections/${encodeURIComponent(key)}`,
     title,
     description: models.length
       ? t('metaDescriptionWithCount', { key: key.toUpperCase(), count: models.length })
       : t('metaDescription', { key: key.toUpperCase() }),
-  }
+    keywords: [
+      collection?.title || key.toUpperCase(),
+      'AI models',
+      'model collection',
+      'API models',
+    ],
+  })
 }
 
 export default async function CollectionDetailPage({ params }: Props) {

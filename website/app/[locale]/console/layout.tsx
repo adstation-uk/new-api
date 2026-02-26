@@ -1,11 +1,28 @@
+import type { Metadata } from 'next'
 import { ConsoleNavbar } from '@/components/console-navbar'
+import { buildPageMetadata } from '@/lib/seo'
 import { getUserInfo } from '@/lib/user'
+
+type Props = {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}
+
+export async function generateMetadata({ params }: Omit<Props, 'children'>): Promise<Metadata> {
+  const { locale } = await params
+
+  return buildPageMetadata({
+    locale,
+    pathname: '/console',
+    title: locale === 'zh' ? '控制台' : 'Console',
+    description: locale === 'zh' ? 'Broadscene 控制台。' : 'Broadscene user console.',
+    noIndex: true,
+  })
+}
 
 export default async function ConsoleLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Props) {
   const user = await getUserInfo()
 
   return (

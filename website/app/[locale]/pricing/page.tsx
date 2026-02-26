@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import {
   ExternalLink,
   Search,
@@ -17,9 +18,28 @@ import {
 } from '@/components/ui/table'
 import { modelConfig } from '@/config/models'
 import { Link } from '@/i18n/navigation'
+import { buildPageMetadata } from '@/lib/seo'
 
 type PricingPageProps = {
+  params: Promise<{ locale: string }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata({ params }: PricingPageProps): Promise<Metadata> {
+  const { locale } = await params
+  const isZh = locale === 'zh'
+
+  return buildPageMetadata({
+    locale,
+    pathname: '/pricing',
+    title: isZh ? '模型价格' : 'Model Pricing',
+    description: isZh
+      ? '查看各模型实时价格、计费单位与市场价对比，支持关键字检索。'
+      : 'Check model pricing, billing units, and market comparisons with keyword search support.',
+    keywords: isZh
+      ? ['API 价格', '模型价格', 'token 计费', 'AI 接口价格']
+      : ['API pricing', 'model pricing', 'token billing', 'AI API cost'],
+  })
 }
 
 export default async function PricingPage({ searchParams }: PricingPageProps) {
