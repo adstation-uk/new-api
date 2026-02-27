@@ -62,6 +62,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet'
 import { useRouter } from '@/i18n/navigation'
+import { trackTokenCreateConversion } from '@/lib/ga-events'
 import { cn, renderQuota } from '@/lib/utils'
 import { createToken, getGroups, getModels, updateToken } from './actions'
 
@@ -248,6 +249,9 @@ export function TokenDrawer({
           if (res.success)
             successCount++
         }
+
+        if (successCount > 0)
+          trackTokenCreateConversion()
 
         if (successCount === count) {
           toast.success(t('toast.createSuccess', { count }))

@@ -177,7 +177,7 @@ export function PersonalClient({
                   variant="ghost"
                   size="sm"
                   disabled={!!user.github_id}
-                  onClick={() => onGitHubOAuthClicked(status.github_client_id)}
+                  onClick={() => onGitHubOAuthClicked(status.github_client_id, commonT)}
                 >
                   {user.github_id ? t('status.bound') : t('action.bind')}
                 </Button>
@@ -222,7 +222,7 @@ export function PersonalClient({
                   variant="ghost"
                   size="sm"
                   disabled={!!user.discord_id}
-                  onClick={() => onDiscordOAuthClicked(status.discord_client_id)}
+                  onClick={() => onDiscordOAuthClicked(status.discord_client_id, commonT)}
                 >
                   {user.discord_id ? t('status.bound') : t('action.bind')}
                 </Button>
@@ -247,7 +247,7 @@ export function PersonalClient({
                   variant="ghost"
                   size="sm"
                   disabled={!!user.linux_do_id}
-                  onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id)}
+                  onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id, commonT)}
                 >
                   {user.linux_do_id ? t('status.bound') : t('action.bind')}
                 </Button>
@@ -276,6 +276,7 @@ export function PersonalClient({
                     onOIDCClicked(
                       status.oidc_authorization_endpoint,
                       status.oidc_client_id,
+                      commonT,
                     )}
                 >
                   {user.oidc_id ? t('status.bound') : t('action.bind')}

@@ -82,6 +82,13 @@
       "passwordMax": "Password must be at most 20 characters",
       "passwordConfirmRequired": "Please enter the password again"
     },
+    "oauth": {
+      "unsupportedProvider": "Unsupported OAuth provider",
+      "missingAuthCode": "Authorization code not found",
+      "callbackError": "OAuth callback error",
+      "bindSuccess": "Binding successful",
+      "loading": "Loading..."
+    },
     "locale": {
       "en": "English",
       "zh": "中文"

@@ -13,6 +13,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  trackTopupStartConversion,
+  trackTopupSuccessConversion,
+} from '@/lib/ga-events'
 import { cn, renderQuota } from '@/lib/utils'
 
 const QUOTA_PER_UNIT = 500000
@@ -33,7 +37,6 @@ declare global {
   // eslint-disable-next-line ts/consistent-type-definitions
   interface Window {
     paypal: any
-    gtag?: (...args: any[]) => void
   }
 }
 
@@ -52,13 +55,7 @@ export function PayPalRecharge({
   const [paypalLoaded, setPaypalLoaded] = useState(false)
 
   const handlePayClick = () => {
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'conversion', {
-        send_to: 'AW-17369711139/XsEZCJSPlugbEKOEw9pA',
-        value: 1.0,
-        currency: 'USD',
-      })
-    }
+    trackTopupStartConversion()
     setShowModal(true)
   }
 
@@ -150,14 +147,7 @@ export function PayPalRecharge({
                       throw new Error(JSON.stringify(orderData))
                     }
                     else {
-                      if (typeof window.gtag === 'function') {
-                        window.gtag('event', 'conversion', {
-                          send_to: 'AW-17369711139/WmDvCO3Rwt8bEKOEw9pA',
-                          value: selectedPackage.amount,
-                          currency: 'USD',
-                          transaction_id: data.orderID,
-                        })
-                      }
+                      trackTopupSuccessConversion(selectedPackage.amount, data.orderID)
                       setShowModal(false)
                       toast.success(t('toast.paySuccess'))
                       onSuccess()

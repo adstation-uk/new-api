@@ -82,6 +82,13 @@
       "passwordMax": "密码长度不得超过 20 位",
       "passwordConfirmRequired": "请再次输入密码"
     },
+    "oauth": {
+      "unsupportedProvider": "不支持的 OAuth 提供方",
+      "missingAuthCode": "未获取到授权码",
+      "callbackError": "OAuth 回调错误",
+      "bindSuccess": "绑定成功！",
+      "loading": "加载中..."
+    },
     "locale": {
       "en": "English",
       "zh": "中文"

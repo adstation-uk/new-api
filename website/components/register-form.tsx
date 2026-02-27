@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Link, useRouter } from '@/i18n/navigation'
+import { trackRegisterConversion } from '@/lib/ga-events'
 import {
   onDiscordOAuthClicked,
   onGitHubOAuthClicked,
@@ -89,6 +90,7 @@ export function RegisterForm({ status }: { status: any }) {
       const result = await registerAction(formData)
 
       if (result.success) {
+        trackRegisterConversion()
         toast.success(t('toast.registerSuccessAndLogin'))
         router.push('/login')
       }
@@ -170,7 +172,10 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onGitHubOAuthClicked(status.github_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'register')
+                      onGitHubOAuthClicked(status.github_client_id, t)
+                    }}
                   >
                     GitHub
                   </Button>
@@ -179,7 +184,10 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'register')
+                      onLinuxDOOAuthClicked(status.linuxdo_client_id, t)
+                    }}
                   >
                     Linux DO
                   </Button>
@@ -188,7 +196,10 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onDiscordOAuthClicked(status.discord_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'register')
+                      onDiscordOAuthClicked(status.discord_client_id, t)
+                    }}
                   >
                     Discord
                   </Button>
@@ -197,7 +208,10 @@ export function RegisterForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'register')
+                      onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)
+                    }}
                   >
                     OIDC
                   </Button>

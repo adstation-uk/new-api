@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Link, useRouter } from '@/i18n/navigation'
+import { trackLoginConversion } from '@/lib/ga-events'
 import {
   onDiscordOAuthClicked,
   onGitHubOAuthClicked,
@@ -70,6 +71,7 @@ export function LoginForm({ status }: { status: any }) {
       const result = await loginAction(formData)
 
       if (result.success) {
+        trackLoginConversion()
         toast.success(t('toast.loginSuccess'))
         router.push('/console')
         router.refresh()
@@ -139,7 +141,10 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onGitHubOAuthClicked(status.github_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'login')
+                      onGitHubOAuthClicked(status.github_client_id, t)
+                    }}
                   >
                     GitHub
                   </Button>
@@ -148,7 +153,10 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onLinuxDOOAuthClicked(status.linuxdo_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'login')
+                      onLinuxDOOAuthClicked(status.linuxdo_client_id, t)
+                    }}
                   >
                     Linux DO
                   </Button>
@@ -157,7 +165,10 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onDiscordOAuthClicked(status.discord_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'login')
+                      onDiscordOAuthClicked(status.discord_client_id, t)
+                    }}
                   >
                     Discord
                   </Button>
@@ -166,7 +177,10 @@ export function LoginForm({ status }: { status: any }) {
                   <Button
                     variant="outline"
                     type="button"
-                    onClick={() => onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)}
+                    onClick={() => {
+                      localStorage.setItem('oauth_source', 'login')
+                      onOIDCClicked(status.oidc_authorization_endpoint, status.oidc_client_id, t)
+                    }}
                   >
                     OIDC
                   </Button>

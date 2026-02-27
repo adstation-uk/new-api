@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { notFound } from 'next/navigation'
+import { GaPageViewTracker } from '@/components/ga-page-view-tracker'
 import { Navbar } from '@/components/navbar'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from '@/components/ui/sonner'
@@ -81,12 +83,15 @@ export default async function LocaleLayout({ children, params }: Props) {
             enableSystem
             disableTransitionOnChange
           >
+            <GaPageViewTracker />
             <Navbar />
             <main className="flex-1">{children}</main>
             <Toaster position="top-right" />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
+      <GoogleAnalytics gaId="G-BCNF8H64BL" />
+      <GoogleAnalytics gaId="AW-17369711139" />
     </html>
   )
 }
