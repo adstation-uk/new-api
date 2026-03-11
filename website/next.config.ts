@@ -2,6 +2,8 @@ import type { NextConfig } from 'next'
 import createMDX from '@next/mdx'
 import createNextIntlPlugin from 'next-intl/plugin'
 
+const websiteApiBase = process.env.WEBSITE_API_BASE || 'http://ai-api:3000'
+
 const nextConfig: NextConfig = {
   /* config options here */
   // reactCompiler: true, // Commented out as often experimental/requires canary
@@ -10,11 +12,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:3000/api/:path*',
+        destination: `${websiteApiBase}/api/:path*`,
       },
       {
         source: '/v1/:path*',
-        destination: 'http://localhost:3000/v1/:path*',
+        destination: `${websiteApiBase}/v1/:path*`,
       },
     ]
   },

@@ -29,6 +29,23 @@ services:
       timeout: 10s
       retries: 3
 
+  website:
+    image: node:20-alpine
+    container_name: website
+    restart: always
+    working_dir: /app
+    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm start -p 3000"
+    ports:
+      - "3347:3000"
+    environment:
+      - WEBSITE_API_BASE=http://ai-api:3000
+      - TZ=Asia/Shanghai
+    volumes:
+      - ./website:/app
+      - website_node_modules:/app/node_modules
+    depends_on:
+      - ai-api
+
   redis:
     image: redis:latest
     container_name: redis
@@ -44,3 +61,6 @@ services:
       POSTGRES_DB: new-api
     volumes:
       - ./pg_data:/var/lib/postgresql/data
+
+volumes:
+  website_node_modules:
