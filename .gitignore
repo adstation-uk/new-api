@@ -30,5 +30,6 @@ data/
 .gocache-temp
 .gopath
 *.tar
+*.tar.gz
 
 node_modules

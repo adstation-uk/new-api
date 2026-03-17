@@ -1,6 +1,6 @@
 services:
   ai-api:
-    image: ai-api:18
+    image: ai-api:19
     container_name: ai-api
     restart: always
     command: --log-dir /app/logs
@@ -34,15 +34,15 @@ services:
     container_name: website
     restart: always
     working_dir: /app
-    command: sh -c "corepack enable && pnpm install --frozen-lockfile && pnpm build && pnpm start -p 3000"
+    command: node server.js
     ports:
       - "3347:3000"
     environment:
       - WEBSITE_API_BASE=http://ai-api:3000
+      - NODE_ENV=production
       - TZ=Asia/Shanghai
     volumes:
       - ./website:/app
-      - website_node_modules:/app/node_modules
     depends_on:
       - ai-api
 
@@ -62,5 +62,3 @@ services:
     volumes:
       - ./pg_data:/var/lib/postgresql/data
 
-volumes:
-  website_node_modules:
