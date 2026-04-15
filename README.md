@@ -3,19 +3,19 @@
 生成
 
 ```bash
-docker build . -t ai-api:19  --platform linux/amd64
+docker build . -t ai-api:20  --platform linux/amd64
 ```
 
 导出
 
 ```bash
-docker save ai-api:19 -o ai-api:19.tar
+docker save ai-api:20 -o ai-api:20.tar
 ```
 
 删除本地镜像
 
 ```bash
-docker rmi ai-api:19
+docker rmi ai-api:20
 ```
 
 说明：
@@ -32,7 +32,7 @@ cd /home/admin/ai-api
 上传镜像文件到服务器
 
 ```bash
-sudo docker load -i ai-api:19.tar
+sudo docker load -i ai-api:20.tar
 ```
 
 **修改 docker-compose.yml 中 版本**

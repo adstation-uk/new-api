@@ -1,6 +1,6 @@
 services:
   ai-api:
-    image: ai-api:19
+    image: ai-api:20
     container_name: ai-api
     restart: always
     command: --log-dir /app/logs
