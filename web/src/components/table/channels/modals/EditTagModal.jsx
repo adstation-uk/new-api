@@ -1,4 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   API,
   showError,
@@ -45,6 +64,7 @@ const EditTagModal = (props) => {
   const [modelOptions, setModelOptions] = useState([]);
   const [groupOptions, setGroupOptions] = useState([]);
   const [customModel, setCustomModel] = useState('');
+  const [modelSearchValue, setModelSearchValue] = useState('');
   const originInputs = {
     tag: '',
     new_tag: null,
@@ -55,6 +75,25 @@ const EditTagModal = (props) => {
     header_override: null,
   };
   const [inputs, setInputs] = useState(originInputs);
+  const modelSearchMatchedCount = useMemo(() => {
+    const keyword = modelSearchValue.trim();
+    if (!keyword) {
+      return modelOptions.length;
+    }
+    return modelOptions.reduce(
+      (count, option) => count + (selectFilter(keyword, option) ? 1 : 0),
+      0,
+    );
+  }, [modelOptions, modelSearchValue]);
+  const modelSearchHintText = useMemo(() => {
+    const keyword = modelSearchValue.trim();
+    if (!keyword || modelSearchMatchedCount !== 0) {
+      return '';
+    }
+    return t('未匹配到模型，按回车键可将「{{name}}」作为自定义模型名添加', {
+      name: keyword,
+    });
+  }, [modelSearchMatchedCount, modelSearchValue, t]);
   const formApiRef = useRef(null);
   const getInitValues = () => ({ ...originInputs });
 
@@ -273,6 +312,7 @@ const EditTagModal = (props) => {
     fetchModels().then();
     fetchGroups().then();
     fetchTagModels().then();
+    setModelSearchValue('');
     if (formApiRef.current) {
       formApiRef.current.setValues({
         ...getInitValues(),
@@ -348,7 +388,7 @@ const EditTagModal = (props) => {
       width={600}
       onCancel={handleClose}
       footer={
-        <div className='flex justify-end'>
+        <div className='flex justify-end bg-white'>
           <Space>
             <Button
               theme='solid'
@@ -442,9 +482,18 @@ const EditTagModal = (props) => {
                     placeholder={t('请选择该渠道所支持的模型，留空则不更改')}
                     multiple
                     filter={selectFilter}
+                    allowCreate
                     autoClearSearchValue={false}
                     searchPosition='dropdown'
                     optionList={modelOptions}
+                    onSearch={(value) => setModelSearchValue(value)}
+                    innerBottomSlot={
+                      modelSearchHintText ? (
+                        <Text className='px-3 py-2 block text-xs !text-semi-color-text-2'>
+                          {modelSearchHintText}
+                        </Text>
+                      ) : null
+                    }
                     style={{ width: '100%' }}
                     onChange={(value) => handleInputChange('models', value)}
                   />

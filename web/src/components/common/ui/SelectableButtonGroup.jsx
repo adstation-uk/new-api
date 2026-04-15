@@ -1,10 +1,28 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useState, useRef, useEffect } from 'react';
 import { useMinimumLoadingTime } from '../../../hooks/common/useMinimumLoadingTime';
 import { useContainerWidth } from '../../../hooks/common/useContainerWidth';
 import {
   Divider,
   Button,
-  Tag,
   Row,
   Col,
   Collapsible,
@@ -27,6 +45,7 @@ import { IconChevronDown, IconChevronUp } from '@douyinfe/semi-icons';
  * @param {number} collapseHeight 折叠时的高度，默认200
  * @param {boolean} withCheckbox 是否启用前缀 Checkbox 来控制激活状态
  * @param {boolean} loading 是否处于加载状态
+ * @param {string} variant 颜色变体: 'violet' | 'teal' | 'amber' | 'rose' | 'green'，不传则使用默认蓝色
  */
 const SelectableButtonGroup = ({
   title,
@@ -39,6 +58,7 @@ const SelectableButtonGroup = ({
   collapseHeight = 200,
   withCheckbox = false,
   loading = false,
+  variant,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [skeletonCount] = useState(12);
@@ -159,9 +179,6 @@ const SelectableButtonGroup = ({
   ) : (
     <Row gutter={gutterSize} style={{ lineHeight: '32px', ...style }}>
       {items.map((item) => {
-        const isDisabled =
-          item.disabled ||
-          (typeof item.tagCount === 'number' && item.tagCount === 0);
         const isActive = Array.isArray(activeValue)
           ? activeValue.includes(item.value)
           : activeValue === item.value;
@@ -175,13 +192,11 @@ const SelectableButtonGroup = ({
                 }}
                 theme={isActive ? 'light' : 'outline'}
                 type={isActive ? 'primary' : 'tertiary'}
-                disabled={isDisabled}
                 className='sbg-button'
                 icon={
                   <Checkbox
                     checked={isActive}
                     onChange={() => onChange(item.value)}
-                    disabled={isDisabled}
                     style={{ pointerEvents: 'auto' }}
                   />
                 }
@@ -191,14 +206,9 @@ const SelectableButtonGroup = ({
                   {item.icon && <span className='sbg-icon'>{item.icon}</span>}
                   <ConditionalTooltipText text={item.label} />
                   {item.tagCount !== undefined && shouldShowTags && (
-                    <Tag
-                      className='sbg-tag'
-                      color='white'
-                      shape='circle'
-                      size='small'
-                    >
+                    <span className={`sbg-badge ${isActive ? 'sbg-badge-active' : ''}`}>
                       {item.tagCount}
-                    </Tag>
+                    </span>
                   )}
                 </div>
               </Button>
@@ -212,22 +222,16 @@ const SelectableButtonGroup = ({
               onClick={() => onChange(item.value)}
               theme={isActive ? 'light' : 'outline'}
               type={isActive ? 'primary' : 'tertiary'}
-              disabled={isDisabled}
               className='sbg-button'
               style={{ width: '100%' }}
             >
               <div className='sbg-content'>
                 {item.icon && <span className='sbg-icon'>{item.icon}</span>}
                 <ConditionalTooltipText text={item.label} />
-                {item.tagCount !== undefined && shouldShowTags && (
-                  <Tag
-                    className='sbg-tag'
-                    color='white'
-                    shape='circle'
-                    size='small'
-                  >
+                {item.tagCount !== undefined && shouldShowTags && item.tagCount !== '' && (
+                  <span className={`sbg-badge ${isActive ? 'sbg-badge-active' : ''}`}>
                     {item.tagCount}
-                  </Tag>
+                  </span>
                 )}
               </div>
             </Button>
@@ -239,7 +243,7 @@ const SelectableButtonGroup = ({
 
   return (
     <div
-      className={`mb-8 ${containerWidth <= 400 ? 'sbg-compact' : ''}`}
+      className={`mb-8 ${containerWidth <= 400 ? 'sbg-compact' : ''}${variant ? ` sbg-variant-${variant}` : ''}`}
       ref={containerRef}
     >
       {title && (

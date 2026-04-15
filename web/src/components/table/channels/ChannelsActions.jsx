@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import {
   Button,
@@ -17,6 +36,10 @@ const ChannelsActions = ({
   fixChannelsAbilities,
   updateAllChannelsBalance,
   deleteAllDisabledChannels,
+  applyAllUpstreamUpdates,
+  detectAllUpstreamUpdates,
+  detectAllUpstreamUpdatesLoading,
+  applyAllUpstreamUpdatesLoading,
   compactMode,
   setCompactMode,
   idSort,
@@ -77,17 +100,19 @@ const ChannelsActions = ({
                     size='small'
                     type='tertiary'
                     className='w-full'
+                    loading={detectAllUpstreamUpdatesLoading}
+                    disabled={detectAllUpstreamUpdatesLoading}
                     onClick={() => {
                       Modal.confirm({
                         title: t('确定？'),
-                        content: t('确定要测试所有通道吗？'),
+                        content: t('确定要测试所有未手动禁用渠道吗？'),
                         onOk: () => testAllChannels(),
                         size: 'small',
                         centered: true,
                       });
                     }}
                   >
-                    {t('测试所有通道')}
+                    {t('测试所有未手动禁用渠道')}
                   </Button>
                 </Dropdown.Item>
                 <Dropdown.Item>
@@ -125,6 +150,46 @@ const ChannelsActions = ({
                     }}
                   >
                     {t('更新所有已启用通道余额')}
+                  </Button>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Button
+                    size='small'
+                    type='tertiary'
+                    className='w-full'
+                    onClick={() => {
+                      Modal.confirm({
+                        title: t('确定？'),
+                        content: t(
+                          '确定要仅检测全部渠道上游模型更新吗？（不执行新增/删除）',
+                        ),
+                        onOk: () => detectAllUpstreamUpdates(),
+                        size: 'sm',
+                        centered: true,
+                      });
+                    }}
+                  >
+                    {t('检测全部渠道上游更新')}
+                  </Button>
+                </Dropdown.Item>
+                <Dropdown.Item>
+                  <Button
+                    size='small'
+                    type='primary'
+                    className='w-full'
+                    loading={applyAllUpstreamUpdatesLoading}
+                    disabled={applyAllUpstreamUpdatesLoading}
+                    onClick={() => {
+                      Modal.confirm({
+                        title: t('确定？'),
+                        content: t('确定要对全部渠道执行上游模型更新吗？'),
+                        onOk: () => applyAllUpstreamUpdates(),
+                        size: 'sm',
+                        centered: true,
+                      });
+                    }}
+                  >
+                    {t('处理全部渠道上游更新')}
                   </Button>
                 </Dropdown.Item>
                 <Dropdown.Item>

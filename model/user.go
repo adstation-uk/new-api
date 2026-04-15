@@ -1,6 +1,7 @@
 package model
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,6 +15,8 @@ import (
 	"github.com/bytedance/gopkg/util/gopool"
 	"gorm.io/gorm"
 )
+
+const UserNameMaxLength = 20
 
 // User if you add sensitive fields, don't forget to clean them in setupLogin function.
 // Otherwise, the sensitive information will be saved on local storage in plain text!
@@ -148,7 +151,7 @@ func generateDefaultSidebarConfigForRole(userRole int) string {
 	// 转换为JSON字符串
 	configBytes, err := json.Marshal(defaultConfig)
 	if err != nil {
-		common.SysLog("failed to generate default sidebar configuration: " + err.Error())
+		common.SysLog("生成默认边栏配置失败: " + err.Error())
 		return ""
 	}
 
@@ -288,7 +291,7 @@ func SearchUsers(keyword string, group string, startIdx int, num int) ([]*User, 
 
 func GetUserById(id int, selectAll bool) (*User, error) {
 	if id == 0 {
-		return nil, errors.New("id is empty!")
+		return nil, errors.New("id 为空！")
 	}
 	user := User{Id: id}
 	var err error = nil
@@ -302,7 +305,7 @@ func GetUserById(id int, selectAll bool) (*User, error) {
 
 func GetUserIdByAffCode(affCode string) (int, error) {
 	if affCode == "" {
-		return 0, errors.New("affCode is empty!")
+		return 0, errors.New("affCode 为空！")
 	}
 	var user User
 	err := DB.Select("id").First(&user, "aff_code = ?", affCode).Error
@@ -311,7 +314,7 @@ func GetUserIdByAffCode(affCode string) (int, error) {
 
 func DeleteUserById(id int) (err error) {
 	if id == 0 {
-		return errors.New("id is empty!")
+		return errors.New("id 为空！")
 	}
 	user := User{Id: id}
 	return user.Delete()
@@ -319,7 +322,7 @@ func DeleteUserById(id int) (err error) {
 
 func HardDeleteUserById(id int) error {
 	if id == 0 {
-		return errors.New("id is empty!")
+		return errors.New("id 为空！")
 	}
 	err := DB.Unscoped().Delete(&User{}, "id = ?", id).Error
 	return err
@@ -339,7 +342,7 @@ func inviteUser(inviterId int) (err error) {
 func (user *User) TransferAffQuotaToQuota(quota int) error {
 	// 检查quota是否小于最小额度
 	if float64(quota) < common.QuotaPerUnit {
-		return fmt.Errorf("minimum transfer amount is %s!", logger.LogQuota(int(common.QuotaPerUnit)))
+		return fmt.Errorf("转移额度最小为%s！", logger.LogQuota(int(common.QuotaPerUnit)))
 	}
 
 	// 开始数据库事务
@@ -357,7 +360,7 @@ func (user *User) TransferAffQuotaToQuota(quota int) error {
 
 	// 再次检查用户的AffQuota是否足够
 	if user.AffQuota < quota {
-		return errors.New("insufficient invitation quota!")
+		return errors.New("邀请额度不足！")
 	}
 
 	// 更新用户额度
@@ -408,25 +411,84 @@ func (user *User) Insert(inviterId int) error {
 			currentSetting.SidebarModules = defaultSidebarConfig
 			createdUser.SetSetting(currentSetting)
 			createdUser.Update(false)
-			common.SysLog(fmt.Sprintf("Initialized sidebar configuration for new user %s (Role: %d)", createdUser.Username, createdUser.Role))
+			common.SysLog(fmt.Sprintf("为新用户 %s (角色: %d) 初始化边栏配置", createdUser.Username, createdUser.Role))
 		}
 	}
 
 	if common.QuotaForNewUser > 0 {
-		RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("New user registration gift %s", logger.LogQuota(common.QuotaForNewUser)))
+		RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("新用户注册赠送 %s", logger.LogQuota(common.QuotaForNewUser)))
 	}
 	if inviterId != 0 {
 		if common.QuotaForInvitee > 0 {
 			_ = IncreaseUserQuota(user.Id, common.QuotaForInvitee, true)
-			RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("Invitation code gift %s", logger.LogQuota(common.QuotaForInvitee)))
+			RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("使用邀请码赠送 %s", logger.LogQuota(common.QuotaForInvitee)))
 		}
 		if common.QuotaForInviter > 0 {
 			//_ = IncreaseUserQuota(inviterId, common.QuotaForInviter)
-			RecordLog(inviterId, LogTypeSystem, fmt.Sprintf("Invited user gift %s", logger.LogQuota(common.QuotaForInviter)))
+			RecordLog(inviterId, LogTypeSystem, fmt.Sprintf("邀请用户赠送 %s", logger.LogQuota(common.QuotaForInviter)))
 			_ = inviteUser(inviterId)
 		}
 	}
 	return nil
+}
+
+// InsertWithTx inserts a new user within an existing transaction.
+// This is used for OAuth registration where user creation and binding need to be atomic.
+// Post-creation tasks (sidebar config, logs, inviter rewards) are handled after the transaction commits.
+func (user *User) InsertWithTx(tx *gorm.DB, inviterId int) error {
+	var err error
+	if user.Password != "" {
+		user.Password, err = common.Password2Hash(user.Password)
+		if err != nil {
+			return err
+		}
+	}
+	user.Quota = common.QuotaForNewUser
+	user.AffCode = common.GetRandomString(4)
+
+	// 初始化用户设置
+	if user.Setting == "" {
+		defaultSetting := dto.UserSetting{}
+		user.SetSetting(defaultSetting)
+	}
+
+	result := tx.Create(user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// FinalizeOAuthUserCreation performs post-transaction tasks for OAuth user creation.
+// This should be called after the transaction commits successfully.
+func (user *User) FinalizeOAuthUserCreation(inviterId int) {
+	// 用户创建成功后，根据角色初始化边栏配置
+	var createdUser User
+	if err := DB.Where("id = ?", user.Id).First(&createdUser).Error; err == nil {
+		defaultSidebarConfig := generateDefaultSidebarConfigForRole(createdUser.Role)
+		if defaultSidebarConfig != "" {
+			currentSetting := createdUser.GetSetting()
+			currentSetting.SidebarModules = defaultSidebarConfig
+			createdUser.SetSetting(currentSetting)
+			createdUser.Update(false)
+			common.SysLog(fmt.Sprintf("为新用户 %s (角色: %d) 初始化边栏配置", createdUser.Username, createdUser.Role))
+		}
+	}
+
+	if common.QuotaForNewUser > 0 {
+		RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("新用户注册赠送 %s", logger.LogQuota(common.QuotaForNewUser)))
+	}
+	if inviterId != 0 {
+		if common.QuotaForInvitee > 0 {
+			_ = IncreaseUserQuota(user.Id, common.QuotaForInvitee, true)
+			RecordLog(user.Id, LogTypeSystem, fmt.Sprintf("使用邀请码赠送 %s", logger.LogQuota(common.QuotaForInvitee)))
+		}
+		if common.QuotaForInviter > 0 {
+			RecordLog(inviterId, LogTypeSystem, fmt.Sprintf("邀请用户赠送 %s", logger.LogQuota(common.QuotaForInviter)))
+			_ = inviteUser(inviterId)
+		}
+	}
 }
 
 func (user *User) Update(updatePassword bool) error {
@@ -461,7 +523,6 @@ func (user *User) Edit(updatePassword bool) error {
 		"username":     newUser.Username,
 		"display_name": newUser.DisplayName,
 		"group":        newUser.Group,
-		"quota":        newUser.Quota,
 		"remark":       newUser.Remark,
 	}
 	if updatePassword {
@@ -477,9 +538,40 @@ func (user *User) Edit(updatePassword bool) error {
 	return updateUserCache(*user)
 }
 
+func (user *User) ClearBinding(bindingType string) error {
+	if user.Id == 0 {
+		return errors.New("user id is empty")
+	}
+
+	bindingColumnMap := map[string]string{
+		"email":    "email",
+		"github":   "github_id",
+		"discord":  "discord_id",
+		"oidc":     "oidc_id",
+		"wechat":   "wechat_id",
+		"telegram": "telegram_id",
+		"linuxdo":  "linux_do_id",
+	}
+
+	column, ok := bindingColumnMap[bindingType]
+	if !ok {
+		return errors.New("invalid binding type")
+	}
+
+	if err := DB.Model(&User{}).Where("id = ?", user.Id).Update(column, "").Error; err != nil {
+		return err
+	}
+
+	if err := DB.Where("id = ?", user.Id).First(user).Error; err != nil {
+		return err
+	}
+
+	return updateUserCache(*user)
+}
+
 func (user *User) Delete() error {
 	if user.Id == 0 {
-		return errors.New("id is empty!")
+		return errors.New("id 为空！")
 	}
 	if err := DB.Delete(user).Error; err != nil {
 		return err
@@ -491,7 +583,7 @@ func (user *User) Delete() error {
 
 func (user *User) HardDelete() error {
 	if user.Id == 0 {
-		return errors.New("id is empty!")
+		return errors.New("id 为空！")
 	}
 	err := DB.Unscoped().Delete(user).Error
 	return err
@@ -505,20 +597,26 @@ func (user *User) ValidateAndFill() (err error) {
 	password := user.Password
 	username := strings.TrimSpace(user.Username)
 	if username == "" || password == "" {
-		return errors.New("username or password is empty")
+		return ErrUserEmptyCredentials
 	}
 	// find by username or email
-	DB.Where("username = ? OR email = ?", username, username).First(user)
+	err = DB.Where("username = ? OR email = ?", username, username).First(user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return ErrInvalidCredentials
+		}
+		return fmt.Errorf("%w: %v", ErrDatabase, err)
+	}
 	okay := common.ValidatePasswordAndHash(password, user.Password)
 	if !okay || user.Status != common.UserStatusEnabled {
-		return errors.New("invalid username or password, or user has been banned")
+		return ErrInvalidCredentials
 	}
 	return nil
 }
 
 func (user *User) FillUserById() error {
 	if user.Id == 0 {
-		return errors.New("id is empty!")
+		return errors.New("id 为空！")
 	}
 	DB.Where(User{Id: user.Id}).First(user)
 	return nil
@@ -526,7 +624,7 @@ func (user *User) FillUserById() error {
 
 func (user *User) FillUserByEmail() error {
 	if user.Email == "" {
-		return errors.New("email is empty!")
+		return errors.New("email 为空！")
 	}
 	DB.Where(User{Email: user.Email}).First(user)
 	return nil
@@ -534,15 +632,23 @@ func (user *User) FillUserByEmail() error {
 
 func (user *User) FillUserByGitHubId() error {
 	if user.GitHubId == "" {
-		return errors.New("GitHub ID is empty!")
+		return errors.New("GitHub id 为空！")
 	}
 	DB.Where(User{GitHubId: user.GitHubId}).First(user)
 	return nil
 }
 
+// UpdateGitHubId updates the user's GitHub ID (used for migration from login to numeric ID)
+func (user *User) UpdateGitHubId(newGitHubId string) error {
+	if user.Id == 0 {
+		return errors.New("user id is empty")
+	}
+	return DB.Model(user).Update("github_id", newGitHubId).Error
+}
+
 func (user *User) FillUserByDiscordId() error {
 	if user.DiscordId == "" {
-		return errors.New("discord ID is empty!")
+		return errors.New("discord id 为空！")
 	}
 	DB.Where(User{DiscordId: user.DiscordId}).First(user)
 	return nil
@@ -550,7 +656,7 @@ func (user *User) FillUserByDiscordId() error {
 
 func (user *User) FillUserByOidcId() error {
 	if user.OidcId == "" {
-		return errors.New("oidc ID is empty!")
+		return errors.New("oidc id 为空！")
 	}
 	DB.Where(User{OidcId: user.OidcId}).First(user)
 	return nil
@@ -558,7 +664,7 @@ func (user *User) FillUserByOidcId() error {
 
 func (user *User) FillUserByWeChatId() error {
 	if user.WeChatId == "" {
-		return errors.New("WeChat ID is empty!")
+		return errors.New("WeChat id 为空！")
 	}
 	DB.Where(User{WeChatId: user.WeChatId}).First(user)
 	return nil
@@ -566,11 +672,11 @@ func (user *User) FillUserByWeChatId() error {
 
 func (user *User) FillUserByTelegramId() error {
 	if user.TelegramId == "" {
-		return errors.New("Telegram ID is empty!")
+		return errors.New("Telegram id 为空！")
 	}
 	err := DB.Where(User{TelegramId: user.TelegramId}).First(user).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return errors.New("this Telegram account is not bound")
+		return errors.New("该 Telegram 账户未绑定")
 	}
 	return nil
 }
@@ -601,7 +707,7 @@ func IsTelegramIdAlreadyTaken(telegramId string) bool {
 
 func ResetUserPasswordByEmail(email string, password string) error {
 	if email == "" || password == "" {
-		return errors.New("email address or password is empty!")
+		return errors.New("邮箱地址或密码为空！")
 	}
 	hashedPassword, err := common.Password2Hash(password)
 	if err != nil {
@@ -654,16 +760,20 @@ func IsAdmin(userId int) bool {
 //	return user.Status == common.UserStatusEnabled, nil
 //}
 
-func ValidateAccessToken(token string) (user *User) {
+func ValidateAccessToken(token string) (*User, error) {
 	if token == "" {
-		return nil
+		return nil, nil
 	}
 	token = strings.Replace(token, "Bearer ", "", 1)
-	user = &User{}
-	if DB.Where("access_token = ?", token).First(user).RowsAffected == 1 {
-		return user
+	user := &User{}
+	err := DB.Where("access_token = ?", token).First(user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("%w: %v", ErrDatabase, err)
 	}
-	return nil
+	return user, nil
 }
 
 // GetUserQuota gets quota from Redis first, falls back to DB if needed
@@ -753,9 +863,16 @@ func GetUserSetting(id int, fromDB bool) (settingMap dto.UserSetting, err error)
 		// Don't return error - fall through to DB
 	}
 	fromDB = true
-	err = DB.Model(&User{}).Where("id = ?", id).Select("setting").Find(&setting).Error
+	// can be nil setting
+	var safeSetting sql.NullString
+	err = DB.Model(&User{}).Where("id = ?", id).Select("setting").Find(&safeSetting).Error
 	if err != nil {
 		return settingMap, err
+	}
+	if safeSetting.Valid {
+		setting = safeSetting.String
+	} else {
+		setting = ""
 	}
 	userBase := &UserBase{
 		Setting: setting,
@@ -765,7 +882,7 @@ func GetUserSetting(id int, fromDB bool) (settingMap dto.UserSetting, err error)
 
 func IncreaseUserQuota(id int, quota int, db bool) (err error) {
 	if quota < 0 {
-		return errors.New("quota cannot be negative!")
+		return errors.New("quota 不能为负数！")
 	}
 	gopool.Go(func() {
 		err := cacheIncrUserQuota(id, int64(quota))
@@ -788,9 +905,9 @@ func increaseUserQuota(id int, quota int) (err error) {
 	return err
 }
 
-func DecreaseUserQuota(id int, quota int) (err error) {
+func DecreaseUserQuota(id int, quota int, db bool) (err error) {
 	if quota < 0 {
-		return errors.New("quota cannot be negative!")
+		return errors.New("quota 不能为负数！")
 	}
 	gopool.Go(func() {
 		err := cacheDecrUserQuota(id, int64(quota))
@@ -798,7 +915,7 @@ func DecreaseUserQuota(id int, quota int) (err error) {
 			common.SysLog("failed to decrease user quota: " + err.Error())
 		}
 	})
-	if common.BatchUpdateEnabled {
+	if !db && common.BatchUpdateEnabled {
 		addNewRecord(BatchUpdateTypeUserQuota, id, -quota)
 		return nil
 	}
@@ -820,7 +937,7 @@ func DeltaUpdateUserQuota(id int, delta int) (err error) {
 	if delta > 0 {
 		return IncreaseUserQuota(id, delta, false)
 	} else {
-		return DecreaseUserQuota(id, -delta)
+		return DecreaseUserQuota(id, -delta, false)
 	}
 }
 

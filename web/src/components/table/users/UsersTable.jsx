@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useMemo, useState } from 'react';
 import { Empty } from '@douyinfe/semi-ui';
 import CardTable from '../../common/ui/CardTable';
@@ -12,6 +31,7 @@ import EnableDisableUserModal from './modals/EnableDisableUserModal';
 import DeleteUserModal from './modals/DeleteUserModal';
 import ResetPasskeyModal from './modals/ResetPasskeyModal';
 import ResetTwoFAModal from './modals/ResetTwoFAModal';
+import UserSubscriptionsModal from './modals/UserSubscriptionsModal';
 
 const UsersTable = (usersData) => {
   const {
@@ -42,6 +62,8 @@ const UsersTable = (usersData) => {
   const [enableDisableAction, setEnableDisableAction] = useState('');
   const [showResetPasskeyModal, setShowResetPasskeyModal] = useState(false);
   const [showResetTwoFAModal, setShowResetTwoFAModal] = useState(false);
+  const [showUserSubscriptionsModal, setShowUserSubscriptionsModal] =
+    useState(false);
 
   // Modal handlers
   const showPromoteUserModal = (user) => {
@@ -73,6 +95,11 @@ const UsersTable = (usersData) => {
   const showResetTwoFAUserModal = (user) => {
     setModalUser(user);
     setShowResetTwoFAModal(true);
+  };
+
+  const showUserSubscriptionsUserModal = (user) => {
+    setModalUser(user);
+    setShowUserSubscriptionsModal(true);
   };
 
   // Modal confirm handlers
@@ -113,6 +140,7 @@ const UsersTable = (usersData) => {
       showDeleteModal: showDeleteUserModal,
       showResetPasskeyModal: showResetPasskeyUserModal,
       showResetTwoFAModal: showResetTwoFAUserModal,
+      showUserSubscriptionsModal: showUserSubscriptionsUserModal,
     });
   }, [
     t,
@@ -124,6 +152,7 @@ const UsersTable = (usersData) => {
     showDeleteUserModal,
     showResetPasskeyUserModal,
     showResetTwoFAUserModal,
+    showUserSubscriptionsUserModal,
   ]);
 
   // Handle compact mode by removing fixed positioning
@@ -222,6 +251,14 @@ const UsersTable = (usersData) => {
         onConfirm={handleResetTwoFAConfirm}
         user={modalUser}
         t={t}
+      />
+
+      <UserSubscriptionsModal
+        visible={showUserSubscriptionsModal}
+        onCancel={() => setShowUserSubscriptionsModal(false)}
+        user={modalUser}
+        t={t}
+        onSuccess={() => refresh?.()}
       />
     </>
   );

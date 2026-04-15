@@ -25,7 +25,7 @@ func SecureVerificationRequired() gin.HandlerFunc {
 		if userId == 0 {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
-				"message": "Not logged in",
+				"message": "未登录",
 			})
 			c.Abort()
 			return
@@ -38,7 +38,7 @@ func SecureVerificationRequired() gin.HandlerFunc {
 		if verifiedAtRaw == nil {
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
-				"message": "Security verification required",
+				"message": "需要安全验证",
 				"code":    "VERIFICATION_REQUIRED",
 			})
 			c.Abort()
@@ -52,7 +52,7 @@ func SecureVerificationRequired() gin.HandlerFunc {
 			_ = session.Save()
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
-				"message": "Verification status abnormal, please verify again",
+				"message": "验证状态异常，请重新验证",
 				"code":    "VERIFICATION_INVALID",
 			})
 			c.Abort()
@@ -67,7 +67,7 @@ func SecureVerificationRequired() gin.HandlerFunc {
 			_ = session.Save()
 			c.JSON(http.StatusForbidden, gin.H{
 				"success": false,
-				"message": "Verification expired, please verify again",
+				"message": "验证已过期，请重新验证",
 				"code":    "VERIFICATION_EXPIRED",
 			})
 			c.Abort()

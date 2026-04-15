@@ -1,5 +1,24 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
-import { Modal, Button, Checkbox } from '@douyinfe/semi-ui';
+import { Modal, Button, Checkbox, RadioGroup, Radio } from '@douyinfe/semi-ui';
 import { getLogsColumns } from '../UsageLogsColumnDefs';
 
 const ColumnSelectorModal = ({
@@ -9,12 +28,22 @@ const ColumnSelectorModal = ({
   handleColumnVisibilityChange,
   handleSelectAll,
   initDefaultColumns,
+  billingDisplayMode,
+  setBillingDisplayMode,
   COLUMN_KEYS,
   isAdminUser,
   copyText,
   showUserInfoFunc,
   t,
 }) => {
+  const handleBillingDisplayModeChange = (eventOrValue) => {
+    setBillingDisplayMode(eventOrValue?.target?.value ?? eventOrValue);
+  };
+
+  const isTokensDisplay =
+    typeof localStorage !== 'undefined' &&
+    localStorage.getItem('quota_display_type') === 'TOKENS';
+
   // Get all columns for display in selector
   const allColumns = getLogsColumns({
     t,
@@ -22,6 +51,7 @@ const ColumnSelectorModal = ({
     copyText,
     showUserInfoFunc,
     isAdminUser,
+    billingDisplayMode,
   });
 
   return (
@@ -42,6 +72,21 @@ const ColumnSelectorModal = ({
       }
     >
       <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: 8, fontWeight: 600 }}>{t('计费显示模式')}</div>
+          <RadioGroup
+            type='button'
+            value={billingDisplayMode}
+            onChange={handleBillingDisplayModeChange}
+          >
+            <Radio value='price'>
+              {isTokensDisplay ? t('价格模式') : t('价格模式（默认）')}
+            </Radio>
+            <Radio value='ratio'>
+              {isTokensDisplay ? t('倍率模式（默认）') : t('倍率模式')}
+            </Radio>
+          </RadioGroup>
+        </div>
         <Checkbox
           checked={Object.values(visibleColumns).every((v) => v === true)}
           indeterminate={

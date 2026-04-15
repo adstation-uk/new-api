@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -37,7 +56,6 @@ export default function SettingsSidebarModulesAdmin(props) {
     personal: {
       enabled: true,
       topup: true,
-      recharge: true,
       personal: true,
     },
     admin: {
@@ -47,6 +65,7 @@ export default function SettingsSidebarModulesAdmin(props) {
       deployment: true,
       redemption: true,
       user: true,
+      subscription: true,
       setting: true,
     },
   });
@@ -98,7 +117,6 @@ export default function SettingsSidebarModulesAdmin(props) {
       personal: {
         enabled: true,
         topup: true,
-        recharge: true,
         personal: true,
       },
       admin: {
@@ -108,6 +126,7 @@ export default function SettingsSidebarModulesAdmin(props) {
         deployment: true,
         redemption: true,
         user: true,
+        subscription: true,
         setting: true,
       },
     };
@@ -168,12 +187,7 @@ export default function SettingsSidebarModulesAdmin(props) {
             midjourney: true,
             task: true,
           },
-          personal: {
-            enabled: true,
-            topup: true,
-            recharge: true,
-            personal: true,
-          },
+          personal: { enabled: true, topup: true, personal: true },
           admin: {
             enabled: true,
             channel: true,
@@ -181,6 +195,7 @@ export default function SettingsSidebarModulesAdmin(props) {
             deployment: true,
             redemption: true,
             user: true,
+            subscription: true,
             setting: true,
           },
         };
@@ -227,11 +242,6 @@ export default function SettingsSidebarModulesAdmin(props) {
       modules: [
         { key: 'topup', title: t('钱包管理'), description: t('余额充值管理') },
         {
-          key: 'recharge',
-          title: t('充值页面'),
-          description: t('购买充值套餐'),
-        },
-        {
           key: 'personal',
           title: t('个人设置'),
           description: t('个人信息设置'),
@@ -249,6 +259,11 @@ export default function SettingsSidebarModulesAdmin(props) {
           key: 'deployment',
           title: t('模型部署'),
           description: t('模型部署管理'),
+        },
+        {
+          key: 'subscription',
+          title: t('订阅管理'),
+          description: t('订阅套餐管理'),
         },
         {
           key: 'redemption',

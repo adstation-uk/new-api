@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import SelectableButtonGroup from '../../../common/ui/SelectableButtonGroup';
 
@@ -6,6 +25,7 @@ const PricingDisplaySettings = ({
   setShowWithRecharge,
   currency,
   setCurrency,
+  siteDisplayType,
   showRatio,
   setShowRatio,
   viewMode,
@@ -15,11 +35,17 @@ const PricingDisplaySettings = ({
   loading = false,
   t,
 }) => {
+  const supportsCurrencyDisplay = siteDisplayType !== 'TOKENS';
+
   const items = [
-    {
-      value: 'recharge',
-      label: t('充值价格显示'),
-    },
+    ...(supportsCurrencyDisplay
+      ? [
+          {
+            value: 'recharge',
+            label: t('充值价格显示'),
+          },
+        ]
+      : []),
     {
       value: 'ratio',
       label: t('显示倍率'),
@@ -59,7 +85,7 @@ const PricingDisplaySettings = ({
 
   const getActiveValues = () => {
     const activeValues = [];
-    if (showWithRecharge) activeValues.push('recharge');
+    if (supportsCurrencyDisplay && showWithRecharge) activeValues.push('recharge');
     if (showRatio) activeValues.push('ratio');
     if (viewMode === 'table') activeValues.push('tableView');
     if (tokenUnit === 'K') activeValues.push('tokenUnit');
@@ -79,7 +105,7 @@ const PricingDisplaySettings = ({
         t={t}
       />
 
-      {showWithRecharge && (
+      {supportsCurrencyDisplay && showWithRecharge && (
         <SelectableButtonGroup
           title={t('货币单位')}
           items={currencyItems}

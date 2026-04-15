@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -41,6 +60,7 @@ const JSONEditor = ({
   editorType = 'keyValue',
   rules = [],
   formApi = null,
+  renderStringValueSuffix,
   ...props
 }) => {
   const { t } = useTranslation();
@@ -316,7 +336,7 @@ const JSONEditor = ({
   ]);
 
   // 渲染值输入控件（支持嵌套）
-  const renderValueInput = (pairId, value) => {
+  const renderValueInput = (pairId, pairKey, value) => {
     const valueType = typeof value;
 
     if (valueType === 'boolean') {
@@ -368,6 +388,7 @@ const JSONEditor = ({
       <Input
         placeholder={t('参数值')}
         value={String(value)}
+        suffix={renderStringValueSuffix?.({ pairId, pairKey, value })}
         onChange={(newValue) => {
           let convertedValue = newValue;
           if (newValue === 'true') convertedValue = true;
@@ -451,7 +472,9 @@ const JSONEditor = ({
                   )}
                 </div>
               </Col>
-              <Col span={12}>{renderValueInput(pair.id, pair.value)}</Col>
+              <Col span={12}>
+                {renderValueInput(pair.id, pair.key, pair.value)}
+              </Col>
               <Col span={2}>
                 <Button
                   icon={<IconDelete />}

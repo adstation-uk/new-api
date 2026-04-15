@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useContext, useEffect } from 'react';
 import { getRelativeTime } from '../../helpers';
 import { UserContext } from '../../context/User';
@@ -67,12 +86,22 @@ const Dashboard = () => {
   );
 
   // ========== 数据处理 ==========
+  const loadUserData = async () => {
+    if (dashboardData.isAdminUser) {
+      const userData = await dashboardData.loadUserQuotaData();
+      if (userData && userData.length > 0) {
+        dashboardCharts.updateUserChartData(userData);
+      }
+    }
+  };
+
   const initChart = async () => {
     await dashboardData.loadQuotaData().then((data) => {
       if (data && data.length > 0) {
         dashboardCharts.updateChartData(data);
       }
     });
+    await loadUserData();
     await dashboardData.loadUptimeData();
   };
 
@@ -81,10 +110,12 @@ const Dashboard = () => {
     if (data && data.length > 0) {
       dashboardCharts.updateChartData(data);
     }
+    await loadUserData();
   };
 
   const handleSearchConfirm = async () => {
     await dashboardData.handleSearchConfirm(dashboardCharts.updateChartData);
+    await loadUserData();
   };
 
   // ========== 数据准备 ==========
@@ -163,6 +194,9 @@ const Dashboard = () => {
             spec_model_line={dashboardCharts.spec_model_line}
             spec_pie={dashboardCharts.spec_pie}
             spec_rank_bar={dashboardCharts.spec_rank_bar}
+            spec_user_rank={dashboardCharts.spec_user_rank}
+            spec_user_trend={dashboardCharts.spec_user_trend}
+            isAdminUser={dashboardData.isAdminUser}
             CARD_PROPS={CARD_PROPS}
             CHART_CONFIG={CHART_CONFIG}
             FLEX_CENTER_GAP2={FLEX_CENTER_GAP2}

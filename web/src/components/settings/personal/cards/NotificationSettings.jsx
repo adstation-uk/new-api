@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useRef, useEffect, useState, useContext } from 'react';
 import {
   Button,
@@ -39,6 +58,7 @@ const NotificationSettings = ({
   const formApiRef = useRef(null);
   const [statusState] = useContext(StatusContext);
   const [userState] = useContext(UserContext);
+  const isAdminOrRoot = (userState?.user?.role || 0) >= 10;
 
   // 左侧边栏设置相关状态
   const [sidebarLoading, setSidebarLoading] = useState(false);
@@ -60,7 +80,6 @@ const NotificationSettings = ({
     personal: {
       enabled: true,
       topup: true,
-      recharge: true,
       personal: true,
     },
     admin: {
@@ -68,6 +87,7 @@ const NotificationSettings = ({
       channel: true,
       models: true,
       deployment: true,
+      subscription: true,
       redemption: true,
       user: true,
       setting: true,
@@ -145,12 +165,13 @@ const NotificationSettings = ({
         midjourney: true,
         task: true,
       },
-      personal: { enabled: true, topup: true, recharge: true, personal: true },
+      personal: { enabled: true, topup: true, personal: true },
       admin: {
         enabled: true,
         channel: true,
         models: true,
         deployment: true,
+        subscription: true,
         redemption: true,
         user: true,
         setting: true,
@@ -259,11 +280,6 @@ const NotificationSettings = ({
       modules: [
         { key: 'topup', title: t('钱包管理'), description: t('余额充值管理') },
         {
-          key: 'recharge',
-          title: t('充值页面'),
-          description: t('购买充值套餐'),
-        },
-        {
           key: 'personal',
           title: t('个人设置'),
           description: t('个人信息设置'),
@@ -282,6 +298,11 @@ const NotificationSettings = ({
           key: 'deployment',
           title: t('模型部署'),
           description: t('模型部署管理'),
+        },
+        {
+          key: 'subscription',
+          title: t('订阅管理'),
+          description: t('订阅套餐管理'),
         },
         {
           key: 'redemption',
@@ -427,13 +448,13 @@ const NotificationSettings = ({
                   data={[
                     { value: 100000, label: '0.2$' },
                     { value: 500000, label: '1$' },
-                    { value: 1000000, label: '5$' },
+                    { value: 1000000, label: '2$' },
                     { value: 5000000, label: '10$' },
                   ]}
                   onChange={(val) => handleFormChange('warningThreshold', val)}
                   prefix={<IconBell />}
                   extraText={t(
-                    '当剩余额度低于此数值时，系统将通过选择的方式发送通知',
+                    '当钱包或订阅剩余额度低于此数值时，系统将通过选择的方式发送通知',
                   )}
                   style={{ width: '100%', maxWidth: '300px' }}
                   rules={[
@@ -449,6 +470,21 @@ const NotificationSettings = ({
                     },
                   ]}
                 />
+
+                {isAdminOrRoot && (
+                  <Form.Switch
+                    field='upstreamModelUpdateNotifyEnabled'
+                    label={t('接收上游模型更新通知')}
+                    checkedText={t('开')}
+                    uncheckedText={t('关')}
+                    onChange={(value) =>
+                      handleFormChange('upstreamModelUpdateNotifyEnabled', value)
+                    }
+                    extraText={t(
+                      '仅管理员可用。开启后，当系统定时检测全部渠道发现上游模型变更或检测异常时，将按你选择的通知方式发送汇总通知；渠道或模型过多时会自动省略部分明细。',
+                    )}
+                  />
+                )}
 
                 {/* 邮件通知设置 */}
                 {notificationSettings.warningType === 'email' && (

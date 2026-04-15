@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Button,
@@ -24,6 +43,7 @@ export default function ModelRatioSettings(props) {
     ModelPrice: '',
     ModelRatio: '',
     CacheRatio: '',
+    CreateCacheRatio: '',
     CompletionRatio: '',
     ImageRatio: '',
     AudioRatio: '',
@@ -178,6 +198,30 @@ export default function ModelRatioSettings(props) {
                 },
               ]}
               onChange={(value) => setInputs({ ...inputs, CacheRatio: value })}
+            />
+          </Col>
+        </Row>
+        <Row gutter={16}>
+          <Col xs={24} sm={16}>
+            <Form.TextArea
+              label={t('缓存创建倍率')}
+              extraText={t(
+                '默认为 5m 缓存创建倍率；1h 缓存创建倍率按固定乘法自动计算（当前为 1.6x）',
+              )}
+              placeholder={t('为一个 JSON 文本，键为模型名称，值为倍率')}
+              field={'CreateCacheRatio'}
+              autosize={{ minRows: 6, maxRows: 12 }}
+              trigger='blur'
+              stopValidateWithError
+              rules={[
+                {
+                  validator: (rule, value) => verifyJSON(value),
+                  message: '不是合法的 JSON 字符串',
+                },
+              ]}
+              onChange={(value) =>
+                setInputs({ ...inputs, CreateCacheRatio: value })
+              }
             />
           </Col>
         </Row>

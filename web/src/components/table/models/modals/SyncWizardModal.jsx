@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useState } from 'react';
 import { Modal, RadioGroup, Radio, Steps, Button } from '@douyinfe/semi-ui';
 import { useIsMobile } from '../../../../hooks/common/useIsMobile';
@@ -5,14 +24,14 @@ import { useIsMobile } from '../../../../hooks/common/useIsMobile';
 const SyncWizardModal = ({ visible, onClose, onConfirm, loading, t }) => {
   const [step, setStep] = useState(0);
   const [option, setOption] = useState('official');
-  const [locale, setLocale] = useState('zh');
+  const [locale, setLocale] = useState('zh-CN');
   const isMobile = useIsMobile();
 
   useEffect(() => {
     if (visible) {
       setStep(0);
       setOption('official');
-      setLocale('zh');
+      setLocale('zh-CN');
     }
   }, [visible]);
 
@@ -94,13 +113,16 @@ const SyncWizardModal = ({ visible, onClose, onConfirm, loading, t }) => {
               name='sync-locale-selection'
             >
               <Radio value='en' extra='English'>
-                EN
+                en
               </Radio>
-              <Radio value='zh' extra='中文'>
-                ZH
+              <Radio value='zh-CN' extra='简体中文'>
+                zh-CN
+              </Radio>
+              <Radio value='zh-TW' extra='繁體中文'>
+                zh-TW
               </Radio>
               <Radio value='ja' extra='日本語'>
-                JA
+                ja
               </Radio>
             </RadioGroup>
           </div>

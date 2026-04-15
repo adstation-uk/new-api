@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -158,7 +177,7 @@ export const useDashboardData = (userState, userDispatch, statusState) => {
         if (data.length === 0) {
           data.push({
             count: 0,
-            model_name: 'Unknown',
+            model_name: '无数据',
             quota: 0,
             created_at: now.getTime() / 1000,
           });
@@ -193,6 +212,27 @@ export const useDashboardData = (userState, userDispatch, statusState) => {
       setUptimeLoading(false);
     }
   }, [activeUptimeTab]);
+
+  const loadUserQuotaData = useCallback(async () => {
+    if (!isAdminUser) return [];
+    try {
+      const { start_timestamp, end_timestamp } = inputs;
+      const localStartTimestamp = Date.parse(start_timestamp) / 1000;
+      const localEndTimestamp = Date.parse(end_timestamp) / 1000;
+      const url = `/api/data/users?start_timestamp=${localStartTimestamp}&end_timestamp=${localEndTimestamp}`;
+      const res = await API.get(url);
+      const { success, message, data } = res.data;
+      if (success) {
+        return data || [];
+      } else {
+        showError(message);
+        return [];
+      }
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }, [inputs, isAdminUser]);
 
   const getUserData = useCallback(async () => {
     let res = await API.get(`/api/user/self`);
@@ -292,6 +332,7 @@ export const useDashboardData = (userState, userDispatch, statusState) => {
     showSearchModal,
     handleCloseModal,
     loadQuotaData,
+    loadUserQuotaData,
     loadUptimeData,
     getUserData,
     refresh,

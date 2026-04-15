@@ -1,4 +1,23 @@
-import React, { useEffect, useState } from 'react';
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
+import React, { useEffect, useMemo, useState } from 'react';
 import { API, showError } from '../../../helpers';
 import { Empty, Card, Spin, Typography } from '@douyinfe/semi-ui';
 const { Title } = Typography;
@@ -9,7 +28,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import MarkdownRenderer from '../markdown/MarkdownRenderer';
 
-// 检查是否为 URL
+// Check whether content is a URL.
 const isUrl = (content) => {
   try {
     new URL(content.trim());
@@ -19,27 +38,23 @@ const isUrl = (content) => {
   }
 };
 
-// 检查是否为 HTML 内容
+// Check whether content contains HTML.
 const isHtmlContent = (content) => {
   if (!content || typeof content !== 'string') return false;
 
-  // 检查是否包含HTML标签
   const htmlTagRegex = /<\/?[a-z][\s\S]*>/i;
   return htmlTagRegex.test(content);
 };
 
-// 安全地渲染HTML内容
+// Parse HTML content and extract inline styles.
 const sanitizeHtml = (html) => {
-  // 创建一个临时元素来解析HTML
   const tempDiv = document.createElement('div');
   tempDiv.innerHTML = html;
 
-  // 提取样式
   const styles = Array.from(tempDiv.querySelectorAll('style'))
     .map((style) => style.innerHTML)
     .join('\n');
 
-  // 提取body内容，如果没有body标签则使用全部内容
   const bodyContent = tempDiv.querySelector('body');
   const content = bodyContent ? bodyContent.innerHTML : html;
 
@@ -57,15 +72,11 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   const { t } = useTranslation();
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
-  const [htmlStyles, setHtmlStyles] = useState('');
-  const [processedHtmlContent, setProcessedHtmlContent] = useState('');
 
   const loadContent = async () => {
-    // 先从缓存中获取
     const cachedContent = localStorage.getItem(cacheKey) || '';
     if (cachedContent) {
       setContent(cachedContent);
-      processContent(cachedContent);
       setLoading(false);
     }
 
@@ -74,7 +85,6 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
       const { success, message, data } = res.data;
       if (success && data) {
         setContent(data);
-        processContent(data);
         localStorage.setItem(cacheKey, data);
       } else {
         if (!cachedContent) {
@@ -92,16 +102,12 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
     }
   };
 
-  const processContent = (rawContent) => {
-    if (isHtmlContent(rawContent)) {
-      const { content: htmlContent, styles } = sanitizeHtml(rawContent);
-      setProcessedHtmlContent(htmlContent);
-      setHtmlStyles(styles);
-    } else {
-      setProcessedHtmlContent('');
-      setHtmlStyles('');
+  const htmlPayload = useMemo(() => {
+    if (!isHtmlContent(content)) {
+      return { content: '', styles: '' };
     }
-  };
+    return sanitizeHtml(content);
+  }, [content]);
 
   useEffect(() => {
     loadContent();
@@ -110,8 +116,9 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 处理HTML样式注入
   useEffect(() => {
     const styleId = `document-renderer-styles-${cacheKey}`;
+    const { styles } = htmlPayload;
 
-    if (htmlStyles) {
+    if (styles) {
       let styleEl = document.getElementById(styleId);
       if (!styleEl) {
         styleEl = document.createElement('style');
@@ -119,7 +126,7 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
         styleEl.type = 'text/css';
         document.head.appendChild(styleEl);
       }
-      styleEl.innerHTML = htmlStyles;
+      styleEl.innerHTML = styles;
     } else {
       const el = document.getElementById(styleId);
       if (el) el.remove();
@@ -129,12 +136,12 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
       const el = document.getElementById(styleId);
       if (el) el.remove();
     };
-  }, [htmlStyles, cacheKey]);
+  }, [cacheKey, htmlPayload]);
 
   // 显示加载状态
   if (loading) {
     return (
-      <div className='flex justify-center items-center min-h-screen dark:bg-transparent'>
+      <div className='flex justify-center items-center min-h-screen'>
         <Spin size='large' />
       </div>
     );
@@ -143,7 +150,7 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果没有内容，显示空状态
   if (!content || content.trim() === '') {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50 dark:bg-transparent'>
+      <div className='flex justify-center items-center min-h-screen bg-gray-50'>
         <Empty
           title={t('管理员未设置' + title + '内容')}
           image={
@@ -161,13 +168,13 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
   // 如果是 URL，显示链接卡片
   if (isUrl(content)) {
     return (
-      <div className='flex justify-center items-center min-h-screen bg-gray-50 dark:bg-transparent p-4'>
-        <Card className='max-w-md w-full dark:bg-zinc-900/50 dark:border-white/10'>
+      <div className='flex justify-center items-center min-h-screen bg-gray-50 p-4'>
+        <Card className='max-w-md w-full'>
           <div className='text-center'>
             <Title heading={4} className='mb-4'>
               {title}
             </Title>
-            <p className='text-gray-600 dark:text-gray-400 mb-4'>
+            <p className='text-gray-600 mb-4'>
               {t('管理员设置了外部链接，点击下方按钮访问')}
             </p>
             <a
@@ -188,25 +195,16 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
 
   // 如果是 HTML 内容，直接渲染
   if (isHtmlContent(content)) {
-    const { content: htmlContent, styles } = sanitizeHtml(content);
-
-    // 设置样式（如果有的话）
-    useEffect(() => {
-      if (styles && styles !== htmlStyles) {
-        setHtmlStyles(styles);
-      }
-    }, [content, styles, htmlStyles]);
-
     return (
-      <div className='min-h-screen bg-gray-50 dark:bg-transparent'>
+      <div className='min-h-screen bg-gray-50'>
         <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-          <div className='bg-white dark:bg-zinc-900/50 dark:border dark:border-white/10 rounded-lg shadow-sm p-8'>
+          <div className='bg-white rounded-lg shadow-sm p-8'>
             <Title heading={2} className='text-center mb-8'>
               {title}
             </Title>
             <div
-              className='prose prose-lg max-w-none dark:prose-invert'
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
+              className='prose prose-lg max-w-none'
+              dangerouslySetInnerHTML={{ __html: htmlPayload.content }}
             />
           </div>
         </div>
@@ -216,13 +214,13 @@ const DocumentRenderer = ({ apiEndpoint, title, cacheKey, emptyMessage }) => {
 
   // 其他内容统一使用 Markdown 渲染器
   return (
-    <div className='min-h-screen bg-gray-50 dark:bg-transparent pt-12'>
-      <div className='max-w-4xl  mx-auto py-12 px-4 sm:px-6 lg:px-8'>
-        <div className='bg-white dark:bg-zinc-900/50 dark:border dark:border-white/10 rounded-lg shadow-sm p-8'>
+    <div className='min-h-screen bg-gray-50'>
+      <div className='max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8'>
+        <div className='bg-white rounded-lg shadow-sm p-8'>
           <Title heading={2} className='text-center mb-8'>
             {title}
           </Title>
-          <div className='prose prose-lg max-w-none dark:prose-invert'>
+          <div className='prose prose-lg max-w-none'>
             <MarkdownRenderer content={content} />
           </div>
         </div>

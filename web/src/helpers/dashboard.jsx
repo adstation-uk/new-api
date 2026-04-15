@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import { Progress, Divider, Empty } from '@douyinfe/semi-ui';
 import {
@@ -367,4 +386,59 @@ export const generateChartTimePoints = (
   }
 
   return chartTimePoints;
+};
+
+// ========== 用户维度数据处理 ==========
+export const processUserData = (data, dataExportDefaultTime, limit = 10) => {
+  const userQuotaTotal = new Map();
+  data.forEach((item) => {
+    const prev = userQuotaTotal.get(item.username) || 0;
+    userQuotaTotal.set(item.username, prev + item.quota);
+  });
+
+  const sorted = Array.from(userQuotaTotal.entries()).sort(
+    (a, b) => b[1] - a[1],
+  );
+  const topUsers = sorted.slice(0, limit).map(([u]) => u);
+  const topUserSet = new Set(topUsers);
+
+  const rankingData = sorted.slice(0, limit).map(([username, quota]) => ({
+    User: username,
+    Quota: quota,
+  }));
+
+  const showYear = isDataCrossYear(data.map((item) => item.created_at));
+
+  const timeUserMap = new Map();
+  const allTimePoints = new Set();
+
+  data.forEach((item) => {
+    const timeKey = timestamp2string1(
+      item.created_at,
+      dataExportDefaultTime,
+      showYear,
+    );
+    allTimePoints.add(timeKey);
+    const user = topUserSet.has(item.username) ? item.username : null;
+    if (!user) return;
+    const key = `${timeKey}-${user}`;
+    const prev = timeUserMap.get(key) || { quota: 0 };
+    timeUserMap.set(key, { quota: prev.quota + item.quota });
+  });
+
+  const sortedTimePoints = Array.from(allTimePoints).sort();
+  const trendData = [];
+  sortedTimePoints.forEach((time) => {
+    topUsers.forEach((user) => {
+      const key = `${time}-${user}`;
+      const val = timeUserMap.get(key);
+      trendData.push({
+        Time: time,
+        User: user,
+        Quota: val?.quota || 0,
+      });
+    });
+  });
+
+  return { rankingData, trendData, topUsers };
 };

@@ -27,7 +27,7 @@ func TurnstileCheck() gin.HandlerFunc {
 			if response == "" {
 				c.JSON(http.StatusOK, gin.H{
 					"success": false,
-					"message": "Turnstile token is empty",
+					"message": "Turnstile token 为空",
 				})
 				c.Abort()
 				return
@@ -61,7 +61,7 @@ func TurnstileCheck() gin.HandlerFunc {
 			if !res.Success {
 				c.JSON(http.StatusOK, gin.H{
 					"success": false,
-					"message": "Turnstile verification failed, please refresh and try again!",
+					"message": "Turnstile 校验失败，请刷新重试！",
 				})
 				c.Abort()
 				return
@@ -70,7 +70,7 @@ func TurnstileCheck() gin.HandlerFunc {
 			err = session.Save()
 			if err != nil {
 				c.JSON(http.StatusOK, gin.H{
-					"message": "Unable to save session information, please try again",
+					"message": "无法保存会话信息，请重试",
 					"success": false,
 				})
 				return

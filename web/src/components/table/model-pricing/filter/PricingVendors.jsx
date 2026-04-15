@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import SelectableButtonGroup from '../../../common/ui/SelectableButtonGroup';
 import { getLobeHubIcon } from '../../../../helpers';
@@ -64,7 +83,6 @@ const PricingVendors = ({
         value: 'all',
         label: t('全部供应商'),
         tagCount: getVendorCount('all'),
-        disabled: models.length === 0,
       },
     ];
 
@@ -77,7 +95,6 @@ const PricingVendors = ({
         label: vendor,
         icon: icon ? getLobeHubIcon(icon, 16) : null,
         tagCount: count,
-        disabled: count === 0,
       });
     });
 
@@ -88,7 +105,6 @@ const PricingVendors = ({
         value: 'unknown',
         label: t('未知供应商'),
         tagCount: count,
-        disabled: count === 0,
       });
     }
 
@@ -102,6 +118,7 @@ const PricingVendors = ({
       activeValue={filterVendor}
       onChange={setFilterVendor}
       loading={loading}
+      variant='violet'
       t={t}
     />
   );

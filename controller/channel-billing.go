@@ -435,7 +435,7 @@ func UpdateChannelBalance(c *gin.Context) {
 	if channel.ChannelInfo.IsMultiKey {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
-			"message": "Multi-key channels do not support balance queries",
+			"message": "多密钥渠道不支持余额查询",
 		})
 		return
 	}
@@ -473,7 +473,7 @@ func updateAllChannelsBalance() error {
 		} else {
 			// err is nil & balance <= 0 means quota is used up
 			if balance <= 0 {
-				service.DisableChannel(*types.NewChannelError(channel.Id, channel.Type, channel.Name, channel.ChannelInfo.IsMultiKey, "", channel.GetAutoBan()), "Insufficient balance")
+				service.DisableChannel(*types.NewChannelError(channel.Id, channel.Type, channel.Name, channel.ChannelInfo.IsMultiKey, "", channel.GetAutoBan()), "余额不足")
 			}
 		}
 		time.Sleep(common.RequestInterval)

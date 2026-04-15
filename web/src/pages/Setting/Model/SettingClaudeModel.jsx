@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Col, Form, Row, Spin } from '@douyinfe/semi-ui';
 import {
@@ -19,6 +38,16 @@ const CLAUDE_HEADER = {
     ],
   },
 };
+
+const CLAUDE_HEADER_APPEND_CONFIG = {
+  'claude-3-7-sonnet-20250219-thinking': {
+    'anthropic-beta': ['token-efficient-tools-2025-02-19'],
+  },
+};
+
+const CLAUDE_HEADER_APPEND_BEFORE = `anthropic-beta: output-128k-2025-02-19`;
+
+const CLAUDE_HEADER_APPEND_AFTER = `anthropic-beta: output-128k-2025-02-19,token-efficient-tools-2025-02-19`;
 
 const CLAUDE_DEFAULT_MAX_TOKENS = {
   default: 8192,
@@ -95,7 +124,7 @@ export default function SettingClaudeModel(props) {
             <Row>
               <Col xs={24} sm={12} md={8} lg={8} xl={8}>
                 <Form.TextArea
-                  label={t('Claude请求头覆盖')}
+                  label={t('Claude请求头追加')}
                   field={'claude.model_headers_settings'}
                   placeholder={
                     t('为一个 JSON 文本，例如：') +
@@ -103,7 +132,20 @@ export default function SettingClaudeModel(props) {
                     JSON.stringify(CLAUDE_HEADER, null, 2)
                   }
                   extraText={
-                    t('示例') + '\n' + JSON.stringify(CLAUDE_HEADER, null, 2)
+                    <div>
+                      <div>
+                        {t(
+                          'Claude会在原有请求头基础上追加这些值，不会覆盖已有同名请求头；重复值会自动忽略。',
+                        )}
+                      </div>
+                      <div className='mt-2 whitespace-pre-wrap font-mono text-xs'>
+                        {`${t('前：')}\n${CLAUDE_HEADER_APPEND_BEFORE}\n\n${t('配置：')}\n${JSON.stringify(
+                          CLAUDE_HEADER_APPEND_CONFIG,
+                          null,
+                          2,
+                        )}\n\n${t('后：')}\n${CLAUDE_HEADER_APPEND_AFTER}`}
+                      </div>
+                    </div>
                   }
                   autosize={{ minRows: 6, maxRows: 12 }}
                   trigger='blur'

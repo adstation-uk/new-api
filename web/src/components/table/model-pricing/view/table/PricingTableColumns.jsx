@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import { Tag, Space, Tooltip } from '@douyinfe/semi-ui';
 import { IconHelpCircle } from '@douyinfe/semi-icons';
@@ -5,6 +24,7 @@ import {
   renderModelTag,
   stringToColor,
   calculateModelPrice,
+  getModelPriceItems,
   getLobeHubIcon,
 } from '../../../../../helpers';
 import {
@@ -89,6 +109,7 @@ export const getPricingTableColumns = ({
   setModalImageUrl,
   setIsModalOpenurl,
   currency,
+  siteDisplayType,
   tokenUnit,
   displayPrice,
   showRatio,
@@ -106,6 +127,7 @@ export const getPricingTableColumns = ({
         tokenUnit,
         displayPrice,
         currency,
+        quotaDisplayType: siteDisplayType,
       });
       priceDataCache.set(record, cache);
     }
@@ -207,31 +229,23 @@ export const getPricingTableColumns = ({
   };
 
   const priceColumn = {
-    title: t('模型价格'),
+    title: siteDisplayType === 'TOKENS' ? t('计费摘要') : t('模型价格'),
     dataIndex: 'model_price',
     ...(isMobile ? {} : { fixed: 'right' }),
     render: (text, record, index) => {
       const priceData = getPriceData(record);
+      const priceItems = getModelPriceItems(priceData, t, siteDisplayType);
 
-      if (priceData.isPerToken) {
-        return (
-          <div className='space-y-1'>
-            <div className=''>
-              {t('输入')} {priceData.inputPrice} / 1{priceData.unitLabel} tokens
+      return (
+        <div className='space-y-1'>
+          {priceItems.map((item) => (
+            <div key={item.key} className='text-gray-700'>
+              {item.label} {item.value}
+              {item.suffix}
             </div>
-            <div className=''>
-              {t('输出')} {priceData.completionPrice} / 1{priceData.unitLabel}{' '}
-              tokens
-            </div>
-          </div>
-        );
-      } else {
-        return (
-          <div className=''>
-            {t('模型价格')}：{priceData.price}
-          </div>
-        );
-      }
+          ))}
+        </div>
+      );
     },
   };
 

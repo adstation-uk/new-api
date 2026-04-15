@@ -1,9 +1,29 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import HeaderBar from './headerbar';
 import { Layout } from '@douyinfe/semi-ui';
 import SiderBar from './SiderBar';
 import App from '../../App';
 import FooterBar from './Footer';
 import { ToastContainer } from 'react-toastify';
+import ErrorBoundary from '../common/ErrorBoundary';
 import React, { useContext, useEffect, useState } from 'react';
 import { useIsMobile } from '../../hooks/common/useIsMobile';
 import { useSidebarCollapsed } from '../../hooks/common/useSidebarCollapsed';
@@ -18,10 +38,11 @@ import {
 import { UserContext } from '../../context/User';
 import { StatusContext } from '../../context/Status';
 import { useLocation } from 'react-router-dom';
+import { normalizeLanguage } from '../../i18n/language';
 const { Sider, Content, Header } = Layout;
 
 const PageLayout = () => {
-  const [, userDispatch] = useContext(UserContext);
+  const [userState, userDispatch] = useContext(UserContext);
   const [, statusDispatch] = useContext(StatusContext);
   const isMobile = useIsMobile();
   const [collapsed, , setCollapsed] = useSidebarCollapsed();
@@ -98,16 +119,39 @@ const PageLayout = () => {
         linkElement.href = logo;
       }
     }
-    const savedLang = localStorage.getItem('i18nextLng');
-    if (savedLang) {
-      i18n.changeLanguage(savedLang);
+  }, []);
+
+  useEffect(() => {
+    let preferredLang;
+
+    if (userState?.user?.setting) {
+      try {
+        const settings = JSON.parse(userState.user.setting);
+        preferredLang = normalizeLanguage(settings.language);
+      } catch (e) {
+        // Ignore parse errors
+      }
     }
-  }, [i18n]);
+
+    if (!preferredLang) {
+      const savedLang = localStorage.getItem('i18nextLng');
+      if (savedLang) {
+        preferredLang = normalizeLanguage(savedLang);
+      }
+    }
+
+    if (preferredLang) {
+      localStorage.setItem('i18nextLng', preferredLang);
+      if (preferredLang !== i18n.language) {
+        i18n.changeLanguage(preferredLang);
+      }
+    }
+  }, [i18n, userState?.user?.setting]);
 
   return (
     <Layout
+      className='app-layout'
       style={{
-        height: '100vh',
         display: 'flex',
         flexDirection: 'column',
         overflow: isMobile ? 'visible' : 'hidden',
@@ -138,6 +182,7 @@ const PageLayout = () => {
       >
         {showSider && (
           <Sider
+            className='app-sider'
             style={{
               position: 'fixed',
               left: 0,
@@ -145,7 +190,6 @@ const PageLayout = () => {
               zIndex: 99,
               border: 'none',
               paddingRight: '0',
-              height: 'calc(100vh - 64px)',
               width: 'var(--sidebar-current-width)',
             }}
           >
@@ -177,7 +221,9 @@ const PageLayout = () => {
               position: 'relative',
             }}
           >
-            <App />
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
           </Content>
           {!shouldHideFooter && (
             <Layout.Footer

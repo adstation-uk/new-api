@@ -9,3 +9,4 @@ docs
 .gocache
 /admin/node_modules
 /website
+/web/node_modules

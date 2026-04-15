@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useMemo } from 'react';
 import { Empty, Descriptions } from '@douyinfe/semi-ui';
 import CardTable from '../../common/ui/CardTable';
@@ -21,8 +40,10 @@ const LogsTable = (logsData) => {
     handlePageSizeChange,
     copyText,
     showUserInfoFunc,
+    openChannelAffinityUsageCacheModal,
     hasExpandableRows,
     isAdminUser,
+    billingDisplayMode,
     t,
     COLUMN_KEYS,
   } = logsData;
@@ -34,9 +55,19 @@ const LogsTable = (logsData) => {
       COLUMN_KEYS,
       copyText,
       showUserInfoFunc,
+      openChannelAffinityUsageCacheModal,
       isAdminUser,
+      billingDisplayMode,
     });
-  }, [t, COLUMN_KEYS, copyText, showUserInfoFunc, isAdminUser]);
+  }, [
+    t,
+    COLUMN_KEYS,
+    copyText,
+    showUserInfoFunc,
+    openChannelAffinityUsageCacheModal,
+    isAdminUser,
+    billingDisplayMode,
+  ]);
 
   // Filter columns based on visibility settings
   const getVisibleColumns = () => {
@@ -71,7 +102,7 @@ const LogsTable = (logsData) => {
       loading={loading}
       scroll={compactMode ? undefined : { x: 'max-content' }}
       className='rounded-xl overflow-hidden'
-      size='middle'
+      size='small'
       empty={
         <Empty
           image={<IllustrationNoResult style={{ width: 150, height: 150 }} />}

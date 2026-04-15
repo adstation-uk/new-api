@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import { useState, useCallback, useEffect } from 'react';
 import { initVChartSemiTheme } from '@visactor/vchart-semi-theme';
 import {
@@ -15,7 +34,13 @@ import {
   updateChartSpec,
   updateMapValue,
   initializeMaps,
+  processUserData,
 } from '../../helpers/dashboard';
+
+const USER_COLORS = [
+  '#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6',
+  '#ec4899', '#06b6d4', '#f97316', '#6366f1', '#14b8a6',
+];
 
 export const useDashboardCharts = (
   dataExportDefaultTime,
@@ -160,7 +185,6 @@ export const useDashboardCharts = (
     },
   });
 
-  // 模型消耗趋势折线图
   const [spec_model_line, setSpecModelLine] = useState({
     type: 'line',
     data: [
@@ -178,7 +202,7 @@ export const useDashboardCharts = (
     },
     title: {
       visible: true,
-      text: t('模型消耗趋势'),
+      text: t('调用趋势'),
       subtext: '',
     },
     tooltip: {
@@ -196,7 +220,6 @@ export const useDashboardCharts = (
     },
   });
 
-  // 模型调用次数排行柱状图
   const [spec_rank_bar, setSpecRankBar] = useState({
     type: 'bar',
     data: [
@@ -238,6 +261,82 @@ export const useDashboardCharts = (
     color: {
       specified: modelColorMap,
     },
+  });
+
+  // ========== Admin: 用户消耗排行 ==========
+  const [spec_user_rank, setSpecUserRank] = useState({
+    type: 'bar',
+    data: [{ id: 'userRankData', values: [] }],
+    xField: 'rawQuota',
+    yField: 'User',
+    seriesField: 'User',
+    direction: 'horizontal',
+    legends: { visible: false },
+    title: {
+      visible: true,
+      text: t('用户消耗排行'),
+      subtext: '',
+    },
+    bar: {
+      state: { hover: { stroke: '#000', lineWidth: 1 } },
+    },
+    label: {
+      visible: true,
+      position: 'outside',
+      formatMethod: (value, datum) => renderQuota(datum['rawQuota'] || 0, 2),
+    },
+    axes: [{
+      orient: 'left',
+      type: 'band',
+      label: { visible: true },
+    }, {
+      orient: 'bottom',
+      type: 'linear',
+      visible: false,
+    }],
+    tooltip: {
+      mark: {
+        content: [{
+          key: (datum) => datum['User'],
+          value: (datum) => renderQuota(datum['rawQuota'] || 0, 4),
+        }],
+      },
+    },
+    color: { type: 'ordinal', range: USER_COLORS },
+  });
+
+  // ========== Admin: 用户消耗趋势 ==========
+  const [spec_user_trend, setSpecUserTrend] = useState({
+    type: 'area',
+    data: [{ id: 'userTrendData', values: [] }],
+    xField: 'Time',
+    yField: 'rawQuota',
+    seriesField: 'User',
+    stack: false,
+    legends: { visible: true, selectMode: 'single' },
+    title: {
+      visible: true,
+      text: t('用户消耗趋势'),
+      subtext: '',
+    },
+    axes: [{
+      orient: 'left',
+      label: {
+        formatMethod: (value) => renderQuota(value, 2),
+      },
+    }],
+    area: { style: { fillOpacity: 0.15 } },
+    line: { style: { lineWidth: 2 } },
+    point: { visible: false },
+    tooltip: {
+      mark: {
+        content: [{
+          key: (datum) => datum['User'],
+          value: (datum) => renderQuota(datum['rawQuota'] || 0, 4),
+        }],
+      },
+    },
+    color: { type: 'ordinal', range: USER_COLORS },
   });
 
   // ========== 数据处理函数 ==========
@@ -407,6 +506,51 @@ export const useDashboardCharts = (
     ],
   );
 
+  // ========== 用户维度图表数据处理 ==========
+  const updateUserChartData = useCallback(
+    (data) => {
+      const { rankingData, trendData: userTrend } = processUserData(
+        data,
+        dataExportDefaultTime,
+        10,
+      );
+
+      const userRankValues = rankingData.map((item) => ({
+        User: item.User,
+        rawQuota: item.Quota,
+        Quota: getQuotaWithUnit(item.Quota, 4),
+      })).sort((a, b) => b.rawQuota - a.rawQuota);
+
+      const totalUserQuota = rankingData.reduce((s, i) => s + i.Quota, 0);
+
+      setSpecUserRank((prev) => ({
+        ...prev,
+        data: [{ id: 'userRankData', values: userRankValues }],
+        title: {
+          ...prev.title,
+          subtext: `${t('总计')}：${renderQuota(totalUserQuota, 2)}`,
+        },
+      }));
+
+      const userTrendValues = userTrend.map((item) => ({
+        Time: item.Time,
+        User: item.User,
+        rawQuota: item.Quota,
+        Usage: item.Quota ? getQuotaWithUnit(item.Quota, 4) : 0,
+      }));
+
+      setSpecUserTrend((prev) => ({
+        ...prev,
+        data: [{ id: 'userTrendData', values: userTrendValues }],
+        title: {
+          ...prev.title,
+          subtext: `${t('总计')}：${renderQuota(totalUserQuota, 2)}`,
+        },
+      }));
+    },
+    [dataExportDefaultTime, t],
+  );
+
   // ========== 初始化图表主题 ==========
   useEffect(() => {
     initVChartSemiTheme({
@@ -415,14 +559,14 @@ export const useDashboardCharts = (
   }, []);
 
   return {
-    // 图表规格
     spec_pie,
     spec_line,
     spec_model_line,
     spec_rank_bar,
-
-    // 函数
+    spec_user_rank,
+    spec_user_trend,
     updateChartData,
+    updateUserChartData,
     generateModelColors,
   };
 };

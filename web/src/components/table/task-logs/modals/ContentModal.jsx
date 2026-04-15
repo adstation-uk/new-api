@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Typography, Spin } from '@douyinfe/semi-ui';
 import { IconExternalOpen, IconCopy } from '@douyinfe/semi-icons';
@@ -101,7 +120,7 @@ const ContentModal = ({
     }
 
     return (
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', height: '100%' }}>
         {isLoading && (
           <div
             style={{
@@ -118,9 +137,13 @@ const ContentModal = ({
         <video
           src={modalContent}
           controls
-          style={{ width: '100%' }}
-          autoPlay
-          crossOrigin='anonymous'
+          style={{
+            width: '100%',
+            height: '100%',
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+          }}
           onError={handleVideoError}
           onLoadedData={handleVideoLoaded}
           onLoadStart={() => setIsLoading(true)}
@@ -136,11 +159,13 @@ const ContentModal = ({
       onCancel={() => setIsModalOpen(false)}
       closable={null}
       bodyStyle={{
-        height: isVideo ? '450px' : '400px',
+        height: isVideo ? '70vh' : '400px',
+        maxHeight: '80vh',
         overflow: 'auto',
         padding: isVideo && videoError ? '0' : '24px',
       }}
-      width={800}
+      width={isVideo ? '90vw' : 800}
+      style={isVideo ? { maxWidth: 960 } : undefined}
     >
       {isVideo ? (
         renderVideoContent()

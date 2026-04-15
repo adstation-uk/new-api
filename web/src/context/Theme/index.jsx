@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import {
   createContext,
   useCallback,
@@ -26,23 +45,18 @@ const getSystemTheme = () => {
 };
 
 export const ThemeProvider = ({ children }) => {
-  // 读取本地存储的主题设置
-  //  2026-1-9 修改默认主题为 dark 且不可改动
-   const [theme, _setTheme] = useState(() => {
-     try {
-       return localStorage.getItem('theme-mode') || 'auto';
-     } catch {
-       return 'auto';
-     }
-   });
-  // const [theme, _setTheme] = useState('dark');
+  const [theme, _setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('theme-mode') || 'auto';
+    } catch {
+      return 'auto';
+    }
+  });
 
   const [systemTheme, setSystemTheme] = useState(getSystemTheme());
 
   // 计算实际应用的主题
-  //  2026-1-9 修改默认主题为 dark 且不可改动
   const actualTheme = theme === 'auto' ? systemTheme : theme;
-  // const actualTheme = 'light';
 
   // 监听系统主题变化
   useEffect(() => {

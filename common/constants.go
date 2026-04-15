@@ -1,6 +1,7 @@
 package common
 
 import (
+	"crypto/tls"
 	//"os"
 	//"strconv"
 	"sync"
@@ -38,7 +39,7 @@ var OptionMap map[string]string
 var OptionMapRWMutex sync.RWMutex
 
 var ItemsPerPage = 10
-var MaxRecentItems = 100
+var MaxRecentItems = 1000
 
 var PasswordLoginEnabled = true
 var PasswordRegisterEnabled = true
@@ -73,9 +74,13 @@ var MemoryCacheEnabled bool
 
 var LogConsumeEnabled = true
 
+var TLSInsecureSkipVerify bool
+var InsecureTLSConfig = &tls.Config{InsecureSkipVerify: true}
+
 var SMTPServer = ""
 var SMTPPort = 587
 var SMTPSSLEnabled = false
+var SMTPForceAuthLogin = false
 var SMTPAccount = ""
 var SMTPFrom = ""
 var SMTPToken = ""
@@ -171,6 +176,11 @@ var (
 
 	DownloadRateLimitNum            = 10
 	DownloadRateLimitDuration int64 = 60
+
+	// Per-user search rate limit (applies after authentication, keyed by user ID)
+	SearchRateLimitEnable         = true
+	SearchRateLimitNum            = 10
+	SearchRateLimitDuration int64 = 60
 )
 
 var RateLimitKeyExpirationDuration = 20 * time.Minute
@@ -203,5 +213,6 @@ const (
 const (
 	TopUpStatusPending = "pending"
 	TopUpStatusSuccess = "success"
+	TopUpStatusFailed  = "failed"
 	TopUpStatusExpired = "expired"
 )

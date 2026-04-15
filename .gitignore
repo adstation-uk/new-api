@@ -1,12 +1,14 @@
 .idea
 .vscode
 .zed
+.history
 upload
 *.exe
 *.db
 build
 *.db-journal
 logs
+web/dist
 .env
 one-api
 new-api
@@ -22,6 +24,9 @@ website/dist
 admin/bun.lock
 website/bun.lock
 plans
+web/bun.lock
+plans
+.claude
 
 electron/node_modules
 electron/dist
@@ -33,3 +38,5 @@ data/
 *.tar.gz
 
 node_modules
+
+token_estimator_test.go

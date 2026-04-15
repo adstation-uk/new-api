@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, {
   useState,
   useEffect,
@@ -15,6 +34,13 @@ import {
   Tag,
 } from '@douyinfe/semi-ui';
 import { IconSearch } from '@douyinfe/semi-icons';
+
+const OFFICIAL_RATIO_PRESET_ID = -100;
+const MODELS_DEV_PRESET_ID = -101;
+const OFFICIAL_RATIO_PRESET_NAME = '官方倍率预设';
+const MODELS_DEV_PRESET_NAME = 'models.dev 价格预设';
+const OFFICIAL_RATIO_PRESET_BASE_URL = 'https://basellm.github.io';
+const MODELS_DEV_PRESET_BASE_URL = 'https://models.dev';
 
 const ChannelSelectorModal = forwardRef(
   (
@@ -51,9 +77,12 @@ const ChannelSelectorModal = forwardRef(
       const base = record?._originalData?.base_url || '';
       const name = record?.label || '';
       return (
-        id === -100 ||
-        base === 'https://basellm.github.io' ||
-        name === '官方倍率预设'
+        id === OFFICIAL_RATIO_PRESET_ID ||
+        id === MODELS_DEV_PRESET_ID ||
+        base === OFFICIAL_RATIO_PRESET_BASE_URL ||
+        base === MODELS_DEV_PRESET_BASE_URL ||
+        name === OFFICIAL_RATIO_PRESET_NAME ||
+        name === MODELS_DEV_PRESET_NAME
       );
     };
 
@@ -98,6 +127,7 @@ const ChannelSelectorModal = forwardRef(
       const getEndpointType = (ep) => {
         if (ep === '/api/ratio_config') return 'ratio_config';
         if (ep === '/api/pricing') return 'pricing';
+        if (ep === 'openrouter') return 'openrouter';
         return 'custom';
       };
 
@@ -108,6 +138,8 @@ const ChannelSelectorModal = forwardRef(
           updateEndpoint(channelId, '/api/ratio_config');
         } else if (val === 'pricing') {
           updateEndpoint(channelId, '/api/pricing');
+        } else if (val === 'openrouter') {
+          updateEndpoint(channelId, 'openrouter');
         } else {
           if (currentType !== 'custom') {
             updateEndpoint(channelId, '');
@@ -125,6 +157,7 @@ const ChannelSelectorModal = forwardRef(
             optionList={[
               { label: 'ratio_config', value: 'ratio_config' },
               { label: 'pricing', value: 'pricing' },
+              { label: 'OpenRouter', value: 'openrouter' },
               { label: 'custom', value: 'custom' },
             ]}
           />

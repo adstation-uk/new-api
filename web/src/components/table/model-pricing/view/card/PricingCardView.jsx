@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import {
   Card,
@@ -48,6 +67,7 @@ const PricingCardView = ({
   setModalImageUrl,
   setIsModalOpenurl,
   currency,
+  siteDisplayType,
   tokenUnit,
   displayPrice,
   showRatio,
@@ -227,6 +247,7 @@ const PricingCardView = ({
             tokenUnit,
             displayPrice,
             currency,
+            quotaDisplayType: siteDisplayType,
           });
 
           return (
@@ -242,11 +263,11 @@ const PricingCardView = ({
                   <div className='flex items-start space-x-3 flex-1 min-w-0'>
                     {getModelIcon(model)}
                     <div className='flex-1 min-w-0'>
-                      <h3 className='text-lg font-bold truncate'>
+                      <h3 className='text-lg font-bold text-gray-900 truncate'>
                         {model.model_name}
                       </h3>
-                      <div className='flex items-center gap-3 text-xs mt-1'>
-                        {formatPriceInfo(priceData, t)}
+                      <div className='flex flex-col gap-1 text-xs mt-1'>
+                        {formatPriceInfo(priceData, t, siteDisplayType)}
                       </div>
                     </div>
                   </div>

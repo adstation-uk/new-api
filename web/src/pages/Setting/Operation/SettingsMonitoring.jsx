@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Col, Form, Row, Spin } from '@douyinfe/semi-ui';
 import {
@@ -6,9 +25,10 @@ import {
   showError,
   showSuccess,
   showWarning,
-  verifyJSON,
+  parseHttpStatusCodeRules,
 } from '../../../helpers';
 import { useTranslation } from 'react-i18next';
+import HttpStatusCodeRulesInput from '../../../components/settings/HttpStatusCodeRulesInput';
 
 export default function SettingsMonitoring(props) {
   const { t } = useTranslation();
@@ -19,21 +39,50 @@ export default function SettingsMonitoring(props) {
     AutomaticDisableChannelEnabled: false,
     AutomaticEnableChannelEnabled: false,
     AutomaticDisableKeywords: '',
+    AutomaticDisableStatusCodes: '401',
+    AutomaticRetryStatusCodes:
+      '100-199,300-399,401-407,409-499,500-503,505-523,525-599',
     'monitor_setting.auto_test_channel_enabled': false,
     'monitor_setting.auto_test_channel_minutes': 10,
   });
   const refForm = useRef();
   const [inputsRow, setInputsRow] = useState(inputs);
+  const parsedAutoDisableStatusCodes = parseHttpStatusCodeRules(
+    inputs.AutomaticDisableStatusCodes || '',
+  );
+  const parsedAutoRetryStatusCodes = parseHttpStatusCodeRules(
+    inputs.AutomaticRetryStatusCodes || '',
+  );
 
   function onSubmit() {
     const updateArray = compareObjects(inputs, inputsRow);
     if (!updateArray.length) return showWarning(t('你似乎并没有修改什么'));
+    if (!parsedAutoDisableStatusCodes.ok) {
+      const details =
+        parsedAutoDisableStatusCodes.invalidTokens &&
+        parsedAutoDisableStatusCodes.invalidTokens.length > 0
+          ? `: ${parsedAutoDisableStatusCodes.invalidTokens.join(', ')}`
+          : '';
+      return showError(`${t('自动禁用状态码格式不正确')}${details}`);
+    }
+    if (!parsedAutoRetryStatusCodes.ok) {
+      const details =
+        parsedAutoRetryStatusCodes.invalidTokens &&
+        parsedAutoRetryStatusCodes.invalidTokens.length > 0
+          ? `: ${parsedAutoRetryStatusCodes.invalidTokens.join(', ')}`
+          : '';
+      return showError(`${t('自动重试状态码格式不正确')}${details}`);
+    }
     const requestQueue = updateArray.map((item) => {
       let value = '';
       if (typeof inputs[item.key] === 'boolean') {
         value = String(inputs[item.key]);
       } else {
-        value = inputs[item.key];
+        const normalizedMap = {
+          AutomaticDisableStatusCodes: parsedAutoDisableStatusCodes.normalized,
+          AutomaticRetryStatusCodes: parsedAutoRetryStatusCodes.normalized,
+        };
+        value = normalizedMap[item.key] ?? inputs[item.key];
       }
       return API.put('/api/option/', {
         key: item.key,
@@ -188,6 +237,32 @@ export default function SettingsMonitoring(props) {
             </Row>
             <Row gutter={16}>
               <Col xs={24} sm={16}>
+                <HttpStatusCodeRulesInput
+                  label={t('自动禁用状态码')}
+                  placeholder={t('例如：401, 403, 429, 500-599')}
+                  extraText={t(
+                    '支持填写单个状态码或范围（含首尾），使用逗号分隔',
+                  )}
+                  field={'AutomaticDisableStatusCodes'}
+                  onChange={(value) =>
+                    setInputs({ ...inputs, AutomaticDisableStatusCodes: value })
+                  }
+                  parsed={parsedAutoDisableStatusCodes}
+                  invalidText={t('自动禁用状态码格式不正确')}
+                />
+                <HttpStatusCodeRulesInput
+                  label={t('自动重试状态码')}
+                  placeholder={t('例如：401, 403, 429, 500-599')}
+                  extraText={t(
+                    '支持填写单个状态码或范围（含首尾），使用逗号分隔；504 和 524 始终不重试，不受此处配置影响',
+                  )}
+                  field={'AutomaticRetryStatusCodes'}
+                  onChange={(value) =>
+                    setInputs({ ...inputs, AutomaticRetryStatusCodes: value })
+                  }
+                  parsed={parsedAutoRetryStatusCodes}
+                  invalidText={t('自动重试状态码格式不正确')}
+                />
                 <Form.TextArea
                   label={t('自动禁用关键词')}
                   placeholder={t('一行一个，不区分大小写')}

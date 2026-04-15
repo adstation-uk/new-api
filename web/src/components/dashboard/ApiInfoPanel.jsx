@@ -1,6 +1,25 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React from 'react';
 import { Card, Avatar, Tag, Divider, Empty } from '@douyinfe/semi-ui';
-import { Server, Gauge, ExternalLink } from 'lucide-react';
+import { Server, Gauge, ExternalLink, Copy } from 'lucide-react';
 import {
   IllustrationConstruction,
   IllustrationConstructionDark,
@@ -68,11 +87,18 @@ const ApiInfoPanel = ({
                       </Tag>
                     </div>
                   </div>
-                  <div
-                    className='!text-semi-color-primary break-all cursor-pointer hover:underline mb-1'
-                    onClick={() => handleCopyUrl(api.url)}
-                  >
-                    {api.url}
+                  <div className='flex items-center gap-1 mb-1'>
+                    <span
+                      className='!text-semi-color-primary break-all cursor-pointer hover:underline'
+                      onClick={() => handleCopyUrl(api.url)}
+                    >
+                      {api.url}
+                    </span>
+                    <Copy
+                      size={14}
+                      className='flex-shrink-0 text-gray-400 hover:text-semi-color-primary cursor-pointer transition-colors'
+                      onClick={() => handleCopyUrl(api.url)}
+                    />
                   </div>
                   <div className='text-gray-500'>{api.description}</div>
                 </div>

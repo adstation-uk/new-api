@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SSE } from 'sse.js';
@@ -177,10 +196,17 @@ export const useApiRequest = (
 
         if (!response.ok) {
           let errorBody = '';
+          let parsedError = null;
           try {
             errorBody = await response.text();
+            const errorJson = JSON.parse(errorBody);
+            if (errorJson?.error) {
+              parsedError = errorJson.error;
+            }
           } catch (e) {
-            errorBody = '无法读取错误响应体';
+            if (!errorBody) {
+              errorBody = '无法读取错误响应体';
+            }
           }
 
           const errorInfo = handleApiError(
@@ -196,9 +222,13 @@ export const useApiRequest = (
           }));
           setActiveDebugTab(DEBUG_TABS.RESPONSE);
 
-          throw new Error(
-            `HTTP error! status: ${response.status}, body: ${errorBody}`,
+          const err = new Error(
+            parsedError?.message ||
+              `HTTP error! status: ${response.status}, body: ${errorBody}`,
           );
+          err.errorCode = parsedError?.code || null;
+          err.errorType = parsedError?.type || null;
+          throw err;
         }
 
         const data = await response.json();
@@ -258,6 +288,7 @@ export const useApiRequest = (
             newMessages[newMessages.length - 1] = {
               ...lastMessage,
               content: t('请求发生错误: ') + error.message,
+              errorCode: error.errorCode || null,
               status: MESSAGE_STATUS.ERROR,
               ...autoCollapseState,
             };
@@ -360,7 +391,20 @@ export const useApiRequest = (
         // 只有在流没有正常完成且连接状态异常时才处理错误
         if (!isStreamComplete && source.readyState !== 2) {
           console.error('SSE Error:', e);
-          const errorMessage = e.data || t('请求发生错误');
+          let errorMessage = e.data || t('请求发生错误');
+          let errorCode = null;
+
+          if (e.data) {
+            try {
+              const errorJson = JSON.parse(e.data);
+              if (errorJson?.error) {
+                errorMessage = errorJson.error.message || errorMessage;
+                errorCode = errorJson.error.code || null;
+              }
+            } catch (_) {
+              // not JSON, use raw data as error message
+            }
+          }
 
           const errorInfo = handleApiError(new Error(errorMessage));
           errorInfo.readyState = source.readyState;
@@ -374,8 +418,19 @@ export const useApiRequest = (
           }));
           setActiveDebugTab(DEBUG_TABS.RESPONSE);
 
-          streamMessageUpdate(errorMessage, 'content');
-          completeMessage(MESSAGE_STATUS.ERROR);
+          setMessage((prevMessage) => {
+            const newMessages = [...prevMessage];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.status !== MESSAGE_STATUS.COMPLETE && lastMessage.status !== MESSAGE_STATUS.ERROR) {
+              newMessages[newMessages.length - 1] = {
+                ...lastMessage,
+                content: (lastMessage.content || '') + errorMessage,
+                errorCode: errorCode,
+                status: MESSAGE_STATUS.ERROR,
+              };
+            }
+            return newMessages;
+          });
           sseSourceRef.current = null;
           source.close();
         }
@@ -427,6 +482,7 @@ export const useApiRequest = (
     [
       setDebugData,
       setActiveDebugTab,
+      setMessage,
       streamMessageUpdate,
       completeMessage,
       t,

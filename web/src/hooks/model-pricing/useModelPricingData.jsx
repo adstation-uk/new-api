@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import { useState, useEffect, useContext, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API, copy, showError, showInfo, showSuccess } from '../../helpers';
@@ -54,7 +73,7 @@ export const useModelPricingData = () => {
     [statusState],
   );
 
-  // 默认货币与站点展示类型同步（USD/CNY），TOKENS 时仍允许切换视图内货币
+  // 默认货币与站点展示类型同步；TOKENS 由视图层走倍率展示
   const siteDisplayType = useMemo(
     () => statusState?.status?.quota_display_type || 'USD',
     [statusState],
@@ -66,6 +85,13 @@ export const useModelPricingData = () => {
       siteDisplayType === 'CUSTOM'
     ) {
       setCurrency(siteDisplayType);
+    }
+  }, [siteDisplayType]);
+
+  useEffect(() => {
+    if (siteDisplayType === 'TOKENS') {
+      setShowWithRecharge(false);
+      setCurrency('USD');
     }
   }, [siteDisplayType]);
 
@@ -337,6 +363,7 @@ export const useModelPricingData = () => {
     setCurrentPage,
     currency,
     setCurrency,
+    siteDisplayType,
     showWithRecharge,
     setShowWithRecharge,
     tokenUnit,

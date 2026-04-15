@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +38,7 @@ const routerMap = {
   recharge: '/console/recharge',
   topup: '/console/topup',
   user: '/console/user',
+  subscription: '/console/subscription',
   log: '/console/log',
   midjourney: '/console/midjourney',
   setting: '/console/setting',
@@ -140,6 +160,12 @@ const SiderBar = ({ onNavigate = () => {} }) => {
         className: isAdmin() ? '' : 'tableHiddle',
       },
       {
+        text: t('订阅管理'),
+        itemKey: 'subscription',
+        to: '/subscription',
+        className: isAdmin() ? '' : 'tableHiddle',
+      },
+      {
         text: t('模型管理'),
         itemKey: 'models',
         to: '/console/models',
@@ -231,9 +257,9 @@ const SiderBar = ({ onNavigate = () => {} }) => {
             for (let key in chats[i]) {
               let link = chats[i][key];
               if (typeof link !== 'string') continue; // 确保链接是字符串
-              if (link.startsWith('fluent')) {
+              if (link.startsWith('fluent') || link.startsWith('ccswitch')) {
                 shouldSkip = true;
-                break; // 跳过 Fluent Read
+                break;
               }
               chat.text = key;
               chat.itemKey = 'chat' + i;

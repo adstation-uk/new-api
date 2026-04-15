@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal } from '@douyinfe/semi-ui';
@@ -21,6 +40,7 @@ export const useTaskLogsData = () => {
     FINISH_TIME: 'finish_time',
     DURATION: 'duration',
     CHANNEL: 'channel',
+    USERNAME: 'username',
     PLATFORM: 'platform',
     TYPE: 'type',
     TASK_ID: 'task_id',
@@ -51,6 +71,14 @@ export const useTaskLogsData = () => {
   // 新增：视频预览弹窗状态
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
+
+  // Audio preview modal state
+  const [isAudioModalOpen, setIsAudioModalOpen] = useState(false);
+  const [audioClips, setAudioClips] = useState([]);
+
+  // User info modal state
+  const [showUserInfo, setShowUserInfoModal] = useState(false);
+  const [userInfoData, setUserInfoData] = useState(null);
 
   // Form state
   const [formApi, setFormApi] = useState(null);
@@ -85,6 +113,7 @@ export const useTaskLogsData = () => {
         // For non-admin users, force-hide admin-only columns (does not touch admin settings)
         if (!isAdminUser) {
           merged[COLUMN_KEYS.CHANNEL] = false;
+          merged[COLUMN_KEYS.USERNAME] = false;
         }
         setVisibleColumns(merged);
       } catch (e) {
@@ -103,6 +132,7 @@ export const useTaskLogsData = () => {
       [COLUMN_KEYS.FINISH_TIME]: true,
       [COLUMN_KEYS.DURATION]: true,
       [COLUMN_KEYS.CHANNEL]: isAdminUser,
+      [COLUMN_KEYS.USERNAME]: isAdminUser,
       [COLUMN_KEYS.PLATFORM]: true,
       [COLUMN_KEYS.TYPE]: true,
       [COLUMN_KEYS.TASK_ID]: true,
@@ -132,7 +162,10 @@ export const useTaskLogsData = () => {
     const updatedColumns = {};
 
     allKeys.forEach((key) => {
-      if (key === COLUMN_KEYS.CHANNEL && !isAdminUser) {
+      if (
+        (key === COLUMN_KEYS.CHANNEL || key === COLUMN_KEYS.USERNAME) &&
+        !isAdminUser
+      ) {
         updatedColumns[key] = false;
       } else {
         updatedColumns[key] = checked;
@@ -248,6 +281,26 @@ export const useTaskLogsData = () => {
     setIsVideoModalOpen(true);
   };
 
+  const openAudioModal = (clips) => {
+    setAudioClips(clips);
+    setIsAudioModalOpen(true);
+  };
+
+  // User info function
+  const showUserInfoFunc = async (userId) => {
+    if (!isAdminUser) {
+      return;
+    }
+    const res = await API.get(`/api/user/${userId}`);
+    const { success, message, data } = res.data;
+    if (success) {
+      setUserInfoData(data);
+      setShowUserInfoModal(true);
+    } else {
+      showError(message);
+    }
+  };
+
   // Initialize data
   useEffect(() => {
     const localPageSize =
@@ -275,6 +328,11 @@ export const useTaskLogsData = () => {
     setIsVideoModalOpen,
     videoUrl,
 
+    // Audio preview modal
+    isAudioModalOpen,
+    setIsAudioModalOpen,
+    audioClips,
+
     // Form state
     formApi,
     setFormApi,
@@ -294,6 +352,12 @@ export const useTaskLogsData = () => {
     compactMode,
     setCompactMode,
 
+    // User info modal
+    showUserInfo,
+    setShowUserInfoModal,
+    userInfoData,
+    showUserInfoFunc,
+
     // Functions
     loadLogs,
     handlePageChange,
@@ -301,7 +365,8 @@ export const useTaskLogsData = () => {
     refresh,
     copyText,
     openContentModal,
-    openVideoModal, // 新增
+    openVideoModal,
+    openAudioModal,
     enrichLogs,
     syncPageData,
 

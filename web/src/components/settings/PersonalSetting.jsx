@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,6 +39,7 @@ import { useTranslation } from 'react-i18next';
 import UserInfoHeader from './personal/components/UserInfoHeader';
 import AccountManagement from './personal/cards/AccountManagement';
 import NotificationSettings from './personal/cards/NotificationSettings';
+import PreferencesSettings from './personal/cards/PreferencesSettings';
 import CheckinCalendar from './personal/cards/CheckinCalendar';
 import EmailBindModal from './personal/modals/EmailBindModal';
 import WeChatBindModal from './personal/modals/WeChatBindModal';
@@ -66,6 +86,7 @@ const PersonalSetting = () => {
     gotifyUrl: '',
     gotifyToken: '',
     gotifyPriority: 5,
+    upstreamModelUpdateNotifyEnabled: false,
     acceptUnsetModelRatioModel: false,
     recordIpLog: false,
   });
@@ -138,6 +159,8 @@ const PersonalSetting = () => {
         gotifyToken: settings.gotify_token || '',
         gotifyPriority:
           settings.gotify_priority !== undefined ? settings.gotify_priority : 5,
+        upstreamModelUpdateNotifyEnabled:
+          settings.upstream_model_update_notify_enabled === true,
         acceptUnsetModelRatioModel:
           settings.accept_unset_model_ratio_model || false,
         recordIpLog: settings.record_ip_log || false,
@@ -283,9 +306,9 @@ const PersonalSetting = () => {
 
   const bindWeChat = async () => {
     if (inputs.wechat_verification_code === '') return;
-    const res = await API.get(
-      `/api/oauth/wechat/bind?code=${inputs.wechat_verification_code}`,
-    );
+    const res = await API.post('/api/oauth/wechat/bind', {
+      code: inputs.wechat_verification_code,
+    });
     const { success, message } = res.data;
     if (success) {
       showSuccess(t('微信账户绑定成功！'));
@@ -355,16 +378,12 @@ const PersonalSetting = () => {
       return;
     }
     setLoading(true);
-    const res = await API.get(
-      `/api/oauth/email/bind?email=${inputs.email}&code=${inputs.email_verification_code}`,
-    );
+    const res = await API.post('/api/oauth/email/bind', {
+      email: inputs.email,
+      code: inputs.email_verification_code,
+    });
     const { success, message } = res.data;
     if (success) {
-      if (typeof window.gtag === 'function') {
-        window.gtag('event', 'conversion', {
-          send_to: 'AW-17369711139/D_RoCLrAmegbEKOEw9pA',
-        });
-      }
       showSuccess(t('邮箱账户绑定成功！'));
       setShowEmailBindModal(false);
       userState.user.email = inputs.email;
@@ -411,6 +430,8 @@ const PersonalSetting = () => {
           const parsed = parseInt(notificationSettings.gotifyPriority);
           return isNaN(parsed) ? 5 : parsed;
         })(),
+        upstream_model_update_notify_enabled:
+          notificationSettings.upstreamModelUpdateNotifyEnabled === true,
         accept_unset_model_ratio_model:
           notificationSettings.acceptUnsetModelRatioModel,
         record_ip_log: notificationSettings.recordIpLog,
@@ -449,24 +470,29 @@ const PersonalSetting = () => {
           {/* 账户管理和其他设置 */}
           <div className='grid grid-cols-1 xl:grid-cols-2 items-start gap-4 md:gap-6 mt-4 md:mt-6'>
             {/* 左侧：账户管理设置 */}
-            <AccountManagement
-              t={t}
-              userState={userState}
-              status={status}
-              systemToken={systemToken}
-              setShowEmailBindModal={setShowEmailBindModal}
-              setShowWeChatBindModal={setShowWeChatBindModal}
-              generateAccessToken={generateAccessToken}
-              handleSystemTokenClick={handleSystemTokenClick}
-              setShowChangePasswordModal={setShowChangePasswordModal}
-              setShowAccountDeleteModal={setShowAccountDeleteModal}
-              passkeyStatus={passkeyStatus}
-              passkeySupported={passkeySupported}
-              passkeyRegisterLoading={passkeyRegisterLoading}
-              passkeyDeleteLoading={passkeyDeleteLoading}
-              onPasskeyRegister={handleRegisterPasskey}
-              onPasskeyDelete={handleRemovePasskey}
-            />
+            <div className='flex flex-col gap-4 md:gap-6'>
+              <AccountManagement
+                t={t}
+                userState={userState}
+                status={status}
+                systemToken={systemToken}
+                setShowEmailBindModal={setShowEmailBindModal}
+                setShowWeChatBindModal={setShowWeChatBindModal}
+                generateAccessToken={generateAccessToken}
+                handleSystemTokenClick={handleSystemTokenClick}
+                setShowChangePasswordModal={setShowChangePasswordModal}
+                setShowAccountDeleteModal={setShowAccountDeleteModal}
+                passkeyStatus={passkeyStatus}
+                passkeySupported={passkeySupported}
+                passkeyRegisterLoading={passkeyRegisterLoading}
+                passkeyDeleteLoading={passkeyDeleteLoading}
+                onPasskeyRegister={handleRegisterPasskey}
+                onPasskeyDelete={handleRemovePasskey}
+              />
+
+              {/* 偏好设置（语言等） */}
+              <PreferencesSettings t={t} />
+            </div>
 
             {/* 右侧：其他设置 */}
             <NotificationSettings

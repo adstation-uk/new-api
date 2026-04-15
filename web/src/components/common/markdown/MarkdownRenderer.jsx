@@ -1,3 +1,22 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import ReactMarkdown from 'react-markdown';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github.css';
@@ -71,6 +90,49 @@ export function Mermaid(props) {
     >
       {props.code}
     </div>
+  );
+}
+
+function SandboxedHtmlPreview({ code }) {
+  const iframeRef = useRef(null);
+  const [iframeHeight, setIframeHeight] = useState(150);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+
+    const handleLoad = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (doc) {
+          const height =
+            doc.documentElement.scrollHeight || doc.body.scrollHeight;
+          setIframeHeight(Math.min(Math.max(height + 16, 60), 600));
+        }
+      } catch {
+        // sandbox restrictions may prevent access, that's fine
+      }
+    };
+
+    iframe.addEventListener('load', handleLoad);
+    return () => iframe.removeEventListener('load', handleLoad);
+  }, [code]);
+
+  return (
+    <iframe
+      ref={iframeRef}
+      sandbox='allow-same-origin'
+      srcDoc={code}
+      title='HTML Preview'
+      style={{
+        width: '100%',
+        height: `${iframeHeight}px`,
+        border: 'none',
+        overflow: 'auto',
+        backgroundColor: '#fff',
+        borderRadius: '4px',
+      }}
+    />
   );
 }
 
@@ -208,7 +270,7 @@ export function PreCode(props) {
           >
             HTML预览:
           </div>
-          <div dangerouslySetInnerHTML={{ __html: htmlCode }} />
+          <SandboxedHtmlPreview code={htmlCode} />
         </div>
       )}
     </>
