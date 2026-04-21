@@ -1,4 +1,24 @@
+/*
+Copyright (C) 2025 QuantumNous
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+For commercial licensing, please contact support@quantumnous.com
+*/
+
 import React, { useEffect, useState, useContext, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   API,
   showError,
@@ -22,6 +42,7 @@ import TopupHistoryModal from './modals/TopupHistoryModal';
 
 const TopUp = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [userState, userDispatch] = useContext(UserContext);
   const [statusState] = useContext(StatusContext);
 
@@ -50,6 +71,13 @@ const TopUp = () => {
   const [creemOpen, setCreemOpen] = useState(false);
   const [selectedCreemProduct, setSelectedCreemProduct] = useState(null);
 
+  // Waffo 相关状态
+  const [enableWaffoTopUp, setEnableWaffoTopUp] = useState(false);
+  const [waffoPayMethods, setWaffoPayMethods] = useState([]);
+  const [waffoMinTopUp, setWaffoMinTopUp] = useState(1);
+  const [enableWaffoPancakeTopUp, setEnableWaffoPancakeTopUp] = useState(false);
+  const [waffoPancakeMinTopUp, setWaffoPancakeMinTopUp] = useState(1);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
   const [payWay, setPayWay] = useState('');
@@ -68,6 +96,14 @@ const TopUp = () => {
   // 账单Modal状态
   const [openHistory, setOpenHistory] = useState(false);
 
+  // 订阅相关
+  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(true);
+  const [billingPreference, setBillingPreference] =
+    useState('subscription_first');
+  const [activeSubscriptions, setActiveSubscriptions] = useState([]);
+  const [allSubscriptions, setAllSubscriptions] = useState([]);
+
   // 预设充值额度选项
   const [presetAmounts, setPresetAmounts] = useState([]);
   const [selectedPreset, setSelectedPreset] = useState(null);
@@ -77,6 +113,39 @@ const TopUp = () => {
     amount_options: [],
     discount: {},
   });
+
+  const confirmPayMethods = [
+    ...payMethods,
+    ...waffoPayMethods.map((method, index) => ({
+      ...method,
+      type: `waffo:${index}`,
+      min_topup: waffoMinTopUp,
+      color: method.color || 'rgba(var(--semi-primary-5), 1)',
+    })),
+  ];
+
+  const getPayMethodConfig = (payment) =>
+    confirmPayMethods.find((method) => method.type === payment);
+
+  const getPaymentMinTopUp = (payment) => {
+    const configuredMinTopUp = Number(getPayMethodConfig(payment)?.min_topup);
+    return Number.isFinite(configuredMinTopUp) && configuredMinTopUp > 0
+      ? configuredMinTopUp
+      : minTopUp;
+  };
+
+  const requestAmountByPayment = async (payment, value) => {
+    if (payment === 'stripe') {
+      return getStripeAmount(value);
+    }
+    if (payment === 'waffo_pancake') {
+      return getWaffoPancakeAmount(value);
+    }
+    if (typeof payment === 'string' && payment.startsWith('waffo:')) {
+      return getWaffoAmount(value);
+    }
+    return getAmount(value);
+  };
 
   const topUp = async () => {
     if (redemptionCode === '') {
@@ -128,6 +197,16 @@ const TopUp = () => {
         showError(t('管理员未开启Stripe充值！'));
         return;
       }
+    } else if (payment === 'waffo_pancake') {
+      if (!enableWaffoPancakeTopUp) {
+        showError(t('管理员未开启 Waffo Pancake 充值！'));
+        return;
+      }
+    } else if (payment.startsWith('waffo:')) {
+      if (!enableWaffoTopUp) {
+        showError(t('管理员未开启 Waffo 充值！'));
+        return;
+      }
     } else {
       if (!enableOnlineTopUp) {
         showError(t('管理员未开启在线充值！'));
@@ -138,14 +217,11 @@ const TopUp = () => {
     setPayWay(payment);
     setPaymentLoading(true);
     try {
-      if (payment === 'stripe') {
-        await getStripeAmount();
-      } else {
-        await getAmount();
-      }
+      const selectedMinTopUp = getPaymentMinTopUp(payment);
+      await requestAmountByPayment(payment);
 
-      if (topUpCount < minTopUp) {
-        showError(t('充值数量不能小于') + minTopUp);
+      if (topUpCount < selectedMinTopUp) {
+        showError(t('充值数量不能小于') + selectedMinTopUp);
         return;
       }
       setOpen(true);
@@ -157,6 +233,29 @@ const TopUp = () => {
   };
 
   const onlineTopUp = async () => {
+    if (payWay === 'waffo_pancake') {
+      setConfirmLoading(true);
+      try {
+        await waffoPancakeTopUp();
+      } finally {
+        setOpen(false);
+        setConfirmLoading(false);
+      }
+      return;
+    }
+
+    if (payWay.startsWith('waffo:')) {
+      const payMethodIndex = Number(payWay.split(':')[1]);
+      setConfirmLoading(true);
+      try {
+        await waffoTopUp(Number.isFinite(payMethodIndex) ? payMethodIndex : 0);
+      } finally {
+        setOpen(false);
+        setConfirmLoading(false);
+      }
+      return;
+    }
+
     if (payWay === 'stripe') {
       // Stripe 支付处理
       if (amount === 0) {
@@ -170,7 +269,7 @@ const TopUp = () => {
     }
 
     if (topUpCount < minTopUp) {
-      showError(t('充值数量不能小于') + minTopUp);
+      showError('充值数量不能小于' + minTopUp);
       return;
     }
     setConfirmLoading(true);
@@ -221,13 +320,14 @@ const TopUp = () => {
             document.body.removeChild(form);
           }
         } else {
-          showError(data);
+          const errorMsg =
+            typeof data === 'string' ? data : message || t('支付失败');
+          showError(errorMsg);
         }
       } else {
         showError(res);
       }
     } catch (err) {
-      console.log(err);
       showError(t('支付请求失败'));
     } finally {
       setOpen(false);
@@ -265,17 +365,139 @@ const TopUp = () => {
         if (message === 'success') {
           processCreemCallback(data);
         } else {
-          showError(data);
+          const errorMsg =
+            typeof data === 'string' ? data : message || t('支付失败');
+          showError(errorMsg);
         }
       } else {
         showError(res);
       }
     } catch (err) {
-      console.log(err);
       showError(t('支付请求失败'));
     } finally {
       setCreemOpen(false);
       setConfirmLoading(false);
+    }
+  };
+
+  const waffoTopUp = async (payMethodIndex) => {
+    try {
+      if (topUpCount < waffoMinTopUp) {
+        showError(t('充值数量不能小于') + waffoMinTopUp);
+        return;
+      }
+      setPaymentLoading(true);
+      const requestBody = {
+        amount: parseInt(topUpCount),
+      };
+      if (payMethodIndex != null) {
+        requestBody.pay_method_index = payMethodIndex;
+      }
+      const res = await API.post('/api/user/waffo/pay', requestBody);
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success' && data?.payment_url) {
+          window.open(data.payment_url, '_blank');
+        } else {
+          showError(data || t('支付请求失败'));
+        }
+      } else {
+        showError(res);
+      }
+    } catch (e) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const getWaffoAmount = async (value) => {
+    if (value === undefined) {
+      value = topUpCount;
+    }
+    setAmountLoading(true);
+    try {
+      const res = await API.post('/api/user/waffo/amount', {
+        amount: parseInt(value),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          setAmount(parseFloat(data));
+        } else {
+          setAmount(0);
+          Toast.error({ content: '错误：' + data, id: 'getAmount' });
+        }
+      } else {
+        showError(res);
+      }
+    } catch (err) {
+      // amount fetch failed silently
+    } finally {
+      setAmountLoading(false);
+    }
+  };
+
+  const waffoPancakeTopUp = async () => {
+    const minTopUpValue = Number(waffoPancakeMinTopUp || 1);
+    if (topUpCount < minTopUpValue) {
+      showError(t('充值数量不能小于') + minTopUpValue);
+      return;
+    }
+
+    setPaymentLoading(true);
+    try {
+      const res = await API.post('/api/user/waffo-pancake/pay', {
+        amount: parseInt(topUpCount),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          const checkoutUrl = data?.checkout_url || '';
+          if (checkoutUrl) {
+            window.open(checkoutUrl, '_blank');
+          } else {
+            showError(t('支付请求失败'));
+          }
+        } else {
+          const errorMsg =
+            typeof data === 'string' ? data : message || t('支付请求失败');
+          showError(errorMsg);
+        }
+      } else {
+        showError(res);
+      }
+    } catch (e) {
+      showError(t('支付请求失败'));
+    } finally {
+      setPaymentLoading(false);
+    }
+  };
+
+  const getWaffoPancakeAmount = async (value) => {
+    if (value === undefined) {
+      value = topUpCount;
+    }
+    setAmountLoading(true);
+    try {
+      const res = await API.post('/api/user/waffo-pancake/amount', {
+        amount: parseInt(value),
+      });
+      if (res !== undefined) {
+        const { message, data } = res.data;
+        if (message === 'success') {
+          setAmount(parseFloat(data));
+        } else {
+          setAmount(0);
+          Toast.error({ content: '错误：' + data, id: 'getAmount' });
+        }
+      } else {
+        showError(res);
+      }
+    } catch (err) {
+      // amount fetch failed silently
+    } finally {
+      setAmountLoading(false);
     }
   };
 
@@ -291,6 +513,61 @@ const TopUp = () => {
       userDispatch({ type: 'login', payload: data });
     } else {
       showError(message);
+    }
+  };
+
+  const getSubscriptionPlans = async () => {
+    setSubscriptionLoading(true);
+    try {
+      const res = await API.get('/api/subscription/plans');
+      if (res.data?.success) {
+        setSubscriptionPlans(res.data.data || []);
+      }
+    } catch (e) {
+      setSubscriptionPlans([]);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  const getSubscriptionSelf = async () => {
+    try {
+      const res = await API.get('/api/subscription/self');
+      if (res.data?.success) {
+        setBillingPreference(
+          res.data.data?.billing_preference || 'subscription_first',
+        );
+        // Active subscriptions
+        const activeSubs = res.data.data?.subscriptions || [];
+        setActiveSubscriptions(activeSubs);
+        // All subscriptions (including expired)
+        const allSubs = res.data.data?.all_subscriptions || [];
+        setAllSubscriptions(allSubs);
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  const updateBillingPreference = async (pref) => {
+    const previousPref = billingPreference;
+    setBillingPreference(pref);
+    try {
+      const res = await API.put('/api/subscription/self/preference', {
+        billing_preference: pref,
+      });
+      if (res.data?.success) {
+        showSuccess(t('更新成功'));
+        const normalizedPref =
+          res.data?.data?.billing_preference || pref || previousPref;
+        setBillingPreference(normalizedPref);
+      } else {
+        showError(res.data?.message || t('更新失败'));
+        setBillingPreference(previousPref);
+      }
+    } catch (e) {
+      showError(t('请求失败'));
+      setBillingPreference(previousPref);
     }
   };
 
@@ -359,21 +636,31 @@ const TopUp = () => {
           const enableStripeTopUp = data.enable_stripe_topup || false;
           const enableOnlineTopUp = data.enable_online_topup || false;
           const enableCreemTopUp = data.enable_creem_topup || false;
+          const enableWaffoTopUp = data.enable_waffo_topup || false;
+          const enableWaffoPancakeTopUp =
+            data.enable_waffo_pancake_topup || false;
           const minTopUpValue = enableOnlineTopUp
             ? data.min_topup
             : enableStripeTopUp
               ? data.stripe_min_topup
-              : 1;
+              : enableWaffoTopUp
+                ? data.waffo_min_topup
+                : enableWaffoPancakeTopUp
+                  ? data.waffo_pancake_min_topup
+                : 1;
           setEnableOnlineTopUp(enableOnlineTopUp);
           setEnableStripeTopUp(enableStripeTopUp);
           setEnableCreemTopUp(enableCreemTopUp);
+          setEnableWaffoTopUp(enableWaffoTopUp);
+          setWaffoPayMethods(data.waffo_pay_methods || []);
+          setWaffoMinTopUp(data.waffo_min_topup || 1);
+          setEnableWaffoPancakeTopUp(enableWaffoPancakeTopUp);
+          setWaffoPancakeMinTopUp(data.waffo_pancake_min_topup || 1);
           setMinTopUp(minTopUpValue);
           setTopUpCount(minTopUpValue);
 
           // 设置 Creem 产品
           try {
-            console.log(' data is ?', data);
-            console.log(' creem products is ?', data.creem_products);
             const products = JSON.parse(data.creem_products || '[]');
             setCreemProducts(products);
           } catch (e) {
@@ -388,7 +675,6 @@ const TopUp = () => {
           // 初始化显示实付金额
           getAmount(minTopUpValue);
         } catch (e) {
-          console.log('解析支付方式失败:', e);
           setPayMethods([]);
         }
 
@@ -401,10 +687,10 @@ const TopUp = () => {
           setPresetAmounts(customPresets);
         }
       } else {
-        console.error('获取充值配置失败:', data);
+        showError(data || t('获取充值配置失败'));
       }
     } catch (error) {
-      console.error('获取充值配置异常:', error);
+      showError(t('获取充值配置异常'));
     }
   };
 
@@ -445,10 +731,18 @@ const TopUp = () => {
     showSuccess(t('邀请链接已复制到剪切板'));
   };
 
+  // URL 参数自动打开账单弹窗（支付回跳时触发）
   useEffect(() => {
-    if (!userState?.user?.id) {
-      getUserQuota().then();
+    if (searchParams.get('show_history') === 'true') {
+      setOpenHistory(true);
+      searchParams.delete('show_history');
+      setSearchParams(searchParams, { replace: true });
     }
+  }, []);
+
+  useEffect(() => {
+    // 始终获取最新用户数据，确保余额等统计信息准确
+    getUserQuota().then();
     setTransferAmount(getQuotaPerUnit());
   }, []);
 
@@ -461,6 +755,8 @@ const TopUp = () => {
   // 在 statusState 可用时获取充值信息
   useEffect(() => {
     getTopupInfo().then();
+    getSubscriptionPlans().then();
+    getSubscriptionSelf().then();
   }, []);
 
   useEffect(() => {
@@ -494,13 +790,13 @@ const TopUp = () => {
           setAmount(parseFloat(data));
         } else {
           setAmount(0);
-          Toast.error({ content: t('错误：') + data, id: 'getAmount' });
+          Toast.error({ content: '错误：' + data, id: 'getAmount' });
         }
       } else {
         showError(res);
       }
     } catch (err) {
-      console.log(err);
+      // amount fetch failed silently
     }
     setAmountLoading(false);
   };
@@ -520,13 +816,13 @@ const TopUp = () => {
           setAmount(parseFloat(data));
         } else {
           setAmount(0);
-          Toast.error({ content: t('错误：') + data, id: 'getAmount' });
+          Toast.error({ content: '错误：' + data, id: 'getAmount' });
         }
       } else {
         showError(res);
       }
     } catch (err) {
-      console.log(err);
+      // amount fetch failed silently
     } finally {
       setAmountLoading(false);
     }
@@ -604,7 +900,7 @@ const TopUp = () => {
         amountLoading={amountLoading}
         renderAmount={renderAmount}
         payWay={payWay}
-        payMethods={payMethods}
+        payMethods={confirmPayMethods}
         amountNumber={amount}
         discountRate={topupInfo?.discount?.[topUpCount] || 1.0}
       />
@@ -644,61 +940,61 @@ const TopUp = () => {
         )}
       </Modal>
 
-      {/* 用户信息头部 */}
-      <div className='space-y-6'>
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
-          {/* 左侧充值区域 */}
-          <div className='lg:col-span-7 space-y-6 w-full'>
-            <RechargeCard
-              t={t}
-              enableOnlineTopUp={enableOnlineTopUp}
-              enableStripeTopUp={enableStripeTopUp}
-              enableCreemTopUp={enableCreemTopUp}
-              creemProducts={creemProducts}
-              creemPreTopUp={creemPreTopUp}
-              presetAmounts={presetAmounts}
-              selectedPreset={selectedPreset}
-              selectPresetAmount={selectPresetAmount}
-              formatLargeNumber={formatLargeNumber}
-              priceRatio={priceRatio}
-              topUpCount={topUpCount}
-              minTopUp={minTopUp}
-              renderQuotaWithAmount={renderQuotaWithAmount}
-              getAmount={getAmount}
-              setTopUpCount={setTopUpCount}
-              setSelectedPreset={setSelectedPreset}
-              renderAmount={renderAmount}
-              amountLoading={amountLoading}
-              payMethods={payMethods}
-              preTopUp={preTopUp}
-              paymentLoading={paymentLoading}
-              payWay={payWay}
-              redemptionCode={redemptionCode}
-              setRedemptionCode={setRedemptionCode}
-              topUp={topUp}
-              isSubmitting={isSubmitting}
-              topUpLink={topUpLink}
-              openTopUpLink={openTopUpLink}
-              userState={userState}
-              renderQuota={renderQuota}
-              statusLoading={statusLoading}
-              topupInfo={topupInfo}
-              onOpenHistory={handleOpenHistory}
-            />
-          </div>
-
-          {/* 右侧信息区域 */}
-          <div className='lg:col-span-5'>
-            <InvitationCard
-              t={t}
-              userState={userState}
-              renderQuota={renderQuota}
-              setOpenTransfer={setOpenTransfer}
-              affLink={affLink}
-              handleAffLinkClick={handleAffLinkClick}
-            />
-          </div>
-        </div>
+      {/* 主布局区域 */}
+      <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
+        <RechargeCard
+          t={t}
+          enableOnlineTopUp={enableOnlineTopUp}
+          enableStripeTopUp={enableStripeTopUp}
+          enableCreemTopUp={enableCreemTopUp}
+          creemProducts={creemProducts}
+          creemPreTopUp={creemPreTopUp}
+          enableWaffoTopUp={enableWaffoTopUp}
+          enableWaffoPancakeTopUp={enableWaffoPancakeTopUp}
+          presetAmounts={presetAmounts}
+          selectedPreset={selectedPreset}
+          selectPresetAmount={selectPresetAmount}
+          formatLargeNumber={formatLargeNumber}
+          priceRatio={priceRatio}
+          topUpCount={topUpCount}
+          minTopUp={minTopUp}
+          renderQuotaWithAmount={renderQuotaWithAmount}
+          getAmount={getAmount}
+          setTopUpCount={setTopUpCount}
+          setSelectedPreset={setSelectedPreset}
+          renderAmount={renderAmount}
+          amountLoading={amountLoading}
+          payMethods={confirmPayMethods}
+          preTopUp={preTopUp}
+          paymentLoading={paymentLoading}
+          payWay={payWay}
+          redemptionCode={redemptionCode}
+          setRedemptionCode={setRedemptionCode}
+          topUp={topUp}
+          isSubmitting={isSubmitting}
+          topUpLink={topUpLink}
+          openTopUpLink={openTopUpLink}
+          userState={userState}
+          renderQuota={renderQuota}
+          statusLoading={statusLoading}
+          topupInfo={topupInfo}
+          onOpenHistory={handleOpenHistory}
+          subscriptionLoading={subscriptionLoading}
+          subscriptionPlans={subscriptionPlans}
+          billingPreference={billingPreference}
+          onChangeBillingPreference={updateBillingPreference}
+          activeSubscriptions={activeSubscriptions}
+          allSubscriptions={allSubscriptions}
+          reloadSubscriptionSelf={getSubscriptionSelf}
+        />
+        <InvitationCard
+          t={t}
+          userState={userState}
+          renderQuota={renderQuota}
+          setOpenTransfer={setOpenTransfer}
+          affLink={affLink}
+          handleAffLinkClick={handleAffLinkClick}
+        />
       </div>
     </div>
   );
