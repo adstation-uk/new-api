@@ -1,6 +1,7 @@
 package openai
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 
@@ -13,11 +14,17 @@ import (
 )
 
 func OaiResponsesCompactionHandler(c *gin.Context, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
+	if resp == nil || resp.Body == nil {
+		return nil, types.NewOpenAIError(fmt.Errorf("empty response"), types.ErrorCodeEmptyResponse, http.StatusInternalServerError)
+	}
 	defer service.CloseResponseBodyGracefully(resp)
 
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
+	}
+	if len(responseBody) == 0 {
+		return nil, types.NewOpenAIError(fmt.Errorf("empty response"), types.ErrorCodeEmptyResponse, http.StatusInternalServerError)
 	}
 
 	var compactResp dto.OpenAIResponsesCompactionResponse

@@ -3,6 +3,7 @@ package operation_setting
 import (
 	"testing"
 
+	"github.com/QuantumNous/new-api/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -70,7 +71,7 @@ func TestShouldRetryByStatusCode(t *testing.T) {
 
 func TestShouldRetryByStatusCode_DefaultMatchesLegacyBehavior(t *testing.T) {
 	require.False(t, ShouldRetryByStatusCode(200))
-	require.False(t, ShouldRetryByStatusCode(400))
+	require.True(t, ShouldRetryByStatusCode(400))
 	require.True(t, ShouldRetryByStatusCode(401))
 	require.False(t, ShouldRetryByStatusCode(408))
 	require.True(t, ShouldRetryByStatusCode(429))
@@ -84,4 +85,10 @@ func TestIsAlwaysSkipRetryStatusCode(t *testing.T) {
 	require.True(t, IsAlwaysSkipRetryStatusCode(504))
 	require.True(t, IsAlwaysSkipRetryStatusCode(524))
 	require.False(t, IsAlwaysSkipRetryStatusCode(500))
+}
+
+func TestIsAlwaysSkipRetryCode(t *testing.T) {
+	require.True(t, IsAlwaysSkipRetryCode(types.ErrorCodeBadResponseBody))
+	require.True(t, IsAlwaysSkipRetryCode(types.ErrorCodePromptBlocked))
+	require.False(t, IsAlwaysSkipRetryCode(types.ErrorCodeEmptyResponse))
 }

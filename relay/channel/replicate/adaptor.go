@@ -177,7 +177,7 @@ func (a *Adaptor) DoRequest(c *gin.Context, info *relaycommon.RelayInfo, request
 
 func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (any, *types.NewAPIError) {
 	if resp == nil {
-		return nil, types.NewError(errors.New("replicate adaptor: empty response"), types.ErrorCodeBadResponse)
+		return nil, types.NewError(errors.New("replicate adaptor: empty response"), types.ErrorCodeEmptyResponse)
 	}
 
 	responseBody, err := io.ReadAll(resp.Body)
@@ -237,7 +237,7 @@ func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycom
 	}
 
 	if len(urls) == 0 {
-		return nil, types.NewError(errors.New("replicate adaptor: empty prediction output"), types.ErrorCodeBadResponseBody)
+		return nil, types.NewError(errors.New("replicate adaptor: empty prediction output"), types.ErrorCodeEmptyResponse)
 	}
 
 	var imageReq *dto.ImageRequest

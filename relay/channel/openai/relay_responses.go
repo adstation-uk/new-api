@@ -18,6 +18,9 @@ import (
 )
 
 func OaiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
+	if resp == nil || resp.Body == nil {
+		return nil, types.NewOpenAIError(fmt.Errorf("empty response"), types.ErrorCodeEmptyResponse, http.StatusInternalServerError)
+	}
 	defer service.CloseResponseBodyGracefully(resp)
 
 	// read response body
@@ -25,6 +28,9 @@ func OaiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, types.NewOpenAIError(err, types.ErrorCodeReadResponseBodyFailed, http.StatusInternalServerError)
+	}
+	if len(responseBody) == 0 {
+		return nil, types.NewOpenAIError(fmt.Errorf("empty response"), types.ErrorCodeEmptyResponse, http.StatusInternalServerError)
 	}
 	err = common.Unmarshal(responseBody, &responsesResponse)
 	if err != nil {
@@ -71,7 +77,7 @@ func OaiResponsesHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http
 func OaiResponsesStreamHandler(c *gin.Context, info *relaycommon.RelayInfo, resp *http.Response) (*dto.Usage, *types.NewAPIError) {
 	if resp == nil || resp.Body == nil {
 		logger.LogError(c, "invalid response or response body")
-		return nil, types.NewError(fmt.Errorf("invalid response"), types.ErrorCodeBadResponse)
+		return nil, types.NewOpenAIError(fmt.Errorf("empty response"), types.ErrorCodeEmptyResponse, http.StatusInternalServerError)
 	}
 
 	defer service.CloseResponseBodyGracefully(resp)

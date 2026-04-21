@@ -130,3 +130,14 @@ For request structs that are parsed from client JSON and then re-marshaled to up
   - field absent in client JSON => `nil` => omitted on marshal;
   - field explicitly set to zero/false => non-`nil` pointer => must still be sent upstream.
 - Avoid using non-pointer scalars with `omitempty` for optional request parameters, because zero values (`0`, `0.0`, `false`) will be silently dropped during marshal.
+
+### Rule 7: Relay Retry and Channel Switching — Keep Semantics Incremental
+
+When updating channel retry/switch behavior, treat `controller/relay.go` `shouldRetry()` as the single decision point and make incremental changes around the existing rules instead of scattering special cases across adaptors.
+
+- Default retry status codes now include HTTP `400`; `408` is still excluded.
+- HTTP `504` and `524` MUST remain in the always-skip list unless there is an explicit, reviewed policy change.
+- Explicit empty upstream responses MUST be represented as `types.ErrorCodeEmptyResponse` instead of generic `bad_response` / `bad_response_body` so they can participate in retry consistently.
+- Do NOT broaden retry by removing `bad_response_body` from the skip list globally; only map confirmed empty-response branches to `empty_response`.
+- Upstream/content-policy rejections that should stop immediately (for example `prompt_blocked`) must stay non-retryable via error-code-based skip rules even if their HTTP status is retryable.
+- When adding a new retryable or non-retryable case, update the related unit tests in `setting/operation_setting/status_code_ranges_test.go` and `controller/relay_test.go` first.
